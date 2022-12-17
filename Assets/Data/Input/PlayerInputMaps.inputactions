@@ -1,0 +1,122 @@
+{
+    "name": "PlayerInputMaps",
+    "maps": [
+        {
+            "name": "Camera",
+            "id": "d415c405-59a5-4286-b306-b5ec1a911695",
+            "actions": [
+                {
+                    "name": "MouseScrollDelta",
+                    "type": "Value",
+                    "id": "74a4f15c-5bfe-4b0e-a4cb-82005b8ff06e",
+                    "expectedControlType": "Axis",
+                    "processors": "Normalize(min=-1,max=1)",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "MouseScroll",
+                    "type": "Button",
+                    "id": "a30037c3-0f53-4ade-be72-08f0053939c6",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "MouseDelta",
+                    "type": "Value",
+                    "id": "e7939596-6e5d-489f-88b6-65c454ab1b7c",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "9314e22b-a8c7-4193-89d4-b110dd8197af",
+                    "path": "<Mouse>/scroll/y",
+                    "interactions": "",
+                    "processors": "Normalize(min=-1,max=1)",
+                    "groups": "",
+                    "action": "MouseScrollDelta",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "3d1bc566-9f11-4d1f-b3b8-d5c2f1c58249",
+                    "path": "<Mouse>/middleButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "MouseScroll",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "10af7ec1-dfb9-4e79-8fc7-eaf60e7ec444",
+                    "path": "<Mouse>/delta",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "MouseDelta",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        },
+        {
+            "name": "Input",
+            "id": "b93b49ca-aa7e-434f-bd97-1242f59d1612",
+            "actions": [
+                {
+                    "name": "ChoosingClick",
+                    "type": "Button",
+                    "id": "23d39185-290a-42ba-aeee-1507c9512ffd",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "TargetingClick",
+                    "type": "Button",
+                    "id": "b7b47bc1-97b7-42c2-9663-99636b14783f",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "5f4f92fd-c017-4260-8d1a-abac4d299996",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "Press",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ChoosingClick",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "e6bb1036-8d5b-4e5d-929c-20669ab0058f",
+                    "path": "<Mouse>/rightButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "TargetingClick",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}
