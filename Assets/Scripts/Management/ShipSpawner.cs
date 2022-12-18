@@ -12,13 +12,6 @@ public class ShipSpawner : MonoBehaviour, IShipsFactory
     [SerializeField] private Transform _shipParent;
     [SerializeField] private List<SpawnZone> _shipSpawnZones;
 
-    private IWeaponFactory _weaponFactory;
-
-    public void Initilize(IWeaponFactory weaponFactory)
-    {
-        _weaponFactory = weaponFactory;
-    }
-
     public List<ShipEntity> CreateShips(List<ShipData> shipDatas, SideData gameSide)
     {
         List<ShipEntity> ships = new List<ShipEntity>();
@@ -35,13 +28,21 @@ public class ShipSpawner : MonoBehaviour, IShipsFactory
     private ShipEntity SpawnShip(ShipData shipData, SideData gameSide)
     {
         ShipInitilizationData shipInitilizationData = new ShipInitilizationData(shipData, gameSide);
-        Transform parent = _shipSpawnZones.Find(f => f.GameSide == gameSide).Zone;
-        ShipEntity shipEntity = PoolManager.Instance["Ship"].GetObject().GetComponent<ShipEntity>();
+       
+        ShipEntity shipEntity = PoolManager.Instance[shipData.ShipHullData.HullPrefab].GetObject().GetComponent<ShipEntity>();
         ShipInitilizer shipInitilizer = shipEntity.GetComponent<ShipInitilizer>();
-        shipInitilizer.InitilizeServices(_weaponFactory);
         shipInitilizer.Initilize(shipInitilizationData);
 
+        shipEntity.transform.SetParent(_shipParent);
+        shipEntity.transform.position = GetSpawnPos(gameSide);
+
         return shipEntity;
+    }
+
+    private Vector3 GetSpawnPos(SideData gameSide)
+    {
+        Transform place = _shipSpawnZones.Find(f => f.GameSide == gameSide).Zone;
+        return place.position.GetRandomPosInsideCircle(Vector3.up, 4);
     }
 }
 

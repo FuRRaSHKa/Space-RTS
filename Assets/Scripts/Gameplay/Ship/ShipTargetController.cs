@@ -25,6 +25,6 @@ public struct TargetData
 
 public interface ITargetable
 {
+    public Transform TargetTransform { get; }
     public TargetData TargetData { get; }
-
 }

@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "ShipData", menuName = "Ships/ShipData")]
+[CreateAssetMenu(fileName = "ShipData", menuName = "Data/Ships/ShipData")]
 public class ShipData : ScriptableObject
 {
     [SerializeField] private ShipHullData _shipHullData;

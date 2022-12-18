@@ -9,9 +9,9 @@ public class ShipGunController : MonoBehaviour, IInitilizable<ShipInitilizationD
     private List<IWeapon> _weaponList = new List<IWeapon>();
     private IWeaponFactory _weaponFactory;
 
-    public void InstallService(IWeaponFactory weaponFactory)
+    private void Awake()
     {
-        _weaponFactory = weaponFactory;
+        _weaponFactory = GetComponent<IWeaponFactory>();
     }
 
     public void Init(ShipInitilizationData data)

@@ -7,9 +7,9 @@ public class PoolManager : MonoSingletone<PoolManager>
     [SerializeField] private List<PoolPair> _poolPairs;
     [SerializeField] private Transform _spawnPoint;
 
-    private Dictionary<string, Pool> _pairs = new Dictionary<string, Pool>();
+    private Dictionary<PoolObject, Pool> _pairs = new Dictionary<PoolObject, Pool>();
 
-    public Pool this[string key] 
+    public Pool this[PoolObject key] 
     {
         get
         {
@@ -24,7 +24,7 @@ public class PoolManager : MonoSingletone<PoolManager>
         foreach (var pair in _poolPairs)
         {
             Pool pool = new Pool(pair.Prefab, pair.PrespawnedCount, _spawnPoint);
-            _pairs.Add(pair.Name, pool);
+            _pairs.Add(pair.Prefab, pool);
         }
     }
 }
@@ -33,6 +33,5 @@ public class PoolManager : MonoSingletone<PoolManager>
 public struct PoolPair
 {
     public PoolObject Prefab;
-    public string Name;
     public int PrespawnedCount;
 }

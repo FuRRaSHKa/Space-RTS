@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0bf9da590fbc5ee4b937e434465e128e, type: 3}
+  m_Name: Team 2
+  m_EditorClassIdentifier: 
+  _sideData: {fileID: 11400000, guid: c7113470a2364404194081c44135b82d, type: 2}
+  _shipDatas:
+  - {fileID: 11400000, guid: e47b3c2383fd1164289aaba78dfbd52a, type: 2}
+  - {fileID: 11400000, guid: e47b3c2383fd1164289aaba78dfbd52a, type: 2}
+  - {fileID: 11400000, guid: e47b3c2383fd1164289aaba78dfbd52a, type: 2}

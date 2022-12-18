@@ -14,6 +14,6 @@ public class ShipMovementController : MonoBehaviour, IMovementController
 
     public void MoveTo(Vector3 targetPos)
     {
-        _navMesh.SetDestination(targetPos); 
+        _navMesh.SetDestination(targetPos);
     }
 }

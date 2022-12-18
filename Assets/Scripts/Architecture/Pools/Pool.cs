@@ -10,7 +10,7 @@ public class Pool
 
     private List<PoolObject> _objects = new List<PoolObject>();
 
-    public Pool(PoolObject prefab, int prebakedCount,Transform spawnPoint)
+    public Pool(PoolObject prefab, int prebakedCount ,Transform spawnPoint)
     {
         _prefab = prefab;
         _spawnPoint = spawnPoint;
@@ -18,7 +18,7 @@ public class Pool
 
     public PoolObject GetObject()
     {
-        PoolObject output = _objects.Find(f => f.gameObject.activeSelf);
+        PoolObject output = _objects.Find(f => !f.gameObject.activeSelf);
         if (output == null)
             output = SpawnObject();
 
