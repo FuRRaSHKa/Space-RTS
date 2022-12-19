@@ -5,17 +5,19 @@ using UnityEngine;
 public class ShipEntity : MonoBehaviour, IInitilizable<ShipInitilizationData>
 {
     private IMovementController _shipMovementController;
-    private ITargetController _shipTargetController;
+    private ITargetable _shipTarget;
     private IStatsController _statsController;
+    private IWeaponController _weaponController;
 
     private SideData _side;
     private ShipData _shipData;
 
     public SideData Side => _side;
     public IMovementController ShipMovement => _shipMovementController;
-    public ITargetController ShipTarget => _shipTargetController;
+    public ITargetable ShipTarget => _shipTarget;
     public IStatsController StatsController => _statsController;
     public ShipData ShipData => _shipData;
+    public IWeaponController WeaponController => _weaponController;
 
     public void Init(ShipInitilizationData data)
     {
@@ -25,8 +27,9 @@ public class ShipEntity : MonoBehaviour, IInitilizable<ShipInitilizationData>
 
     private void Awake()
     {
+        _weaponController = GetComponent<IWeaponController>();
         _shipMovementController = GetComponent<IMovementController>();
-        _shipTargetController = GetComponent<ITargetController>();
+        _shipTarget = GetComponent<ITargetable>();
         _statsController = GetComponent<IStatsController>();
     }
 }

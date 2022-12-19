@@ -22,15 +22,17 @@ public class CameraMover : MonoBehaviour
 
     private Transform _camera;
     private Vector3 _targetLocalPos;
+    private float _currentZoom;
 
     private bool _isCameraRotation = false;
 
     private IInput _input;
 
-    private void Start()
+    private void Awake()
     {
         _camera = Camera.main.transform;
         _targetLocalPos = _camera.localPosition;
+        _currentZoom = _camera.localPosition.magnitude;
     }
 
     public void Initilize(IInput input)
@@ -89,6 +91,7 @@ public class CameraMover : MonoBehaviour
             result = currentZoom.normalized * _maxZoomDistance;
         }
 
+        _currentZoom = result.magnitude;
         _targetLocalPos = result;
     }
 
@@ -115,6 +118,7 @@ public class CameraMover : MonoBehaviour
         else if (mousePOS.y > res.y - _cameraMoveBorders)
             direction += Vector3.forward * _cameraMoveSpeed * Time.deltaTime;
 
-        _center.position += rotation * direction;
+
+        _center.position += rotation * direction * (Mathf.Clamp01(_currentZoom / (_maxZoomDistance - _minZoomDistance)));
     }
 }

@@ -1,11 +1,11 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class RayWeapon : MonoBehaviour, IWeapon
 {
-    private int _localId = 0;
-    private float _fireCycleTime;
+    public event Action<ITargetable> OnShooting;
 
     public void StopShooting()
     {
@@ -20,6 +20,8 @@ public class RayWeapon : MonoBehaviour, IWeapon
 
 public interface IWeapon
 {
+    public event Action<ITargetable> OnShooting;
+
     public void StartShooting(ITargetable targetable);
 
     public void StopShooting();

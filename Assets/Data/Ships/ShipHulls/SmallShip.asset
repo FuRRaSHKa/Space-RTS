@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9f5d0919cec8a804ebc293591cc81568, type: 3}
-  m_Name: LargeShip
+  m_Name: SmallShip
   m_EditorClassIdentifier: 
-  _shipSize: {fileID: 11400000, guid: 7e25bb66bb3413446b9de480670af273, type: 2}
-  _hullPrefab: {fileID: 6549726452801073183, guid: 78fc76d43a054294ca01e6591a5923f9, type: 3}
-  _defaultShipSpeed: 3.5
-  _defaultShipAcceleration: 0.4
-  _defaultShipRotationSpeed: 60
+  _shipSize: {fileID: 11400000, guid: 69a7e069b4802984b9a83639c8c540bc, type: 2}
+  _hullPrefab: {fileID: 6549726452801073183, guid: 3ec9e48e5a39ca046a58696741d4fb8d, type: 3}
+  _defaultShipSpeed: 5
+  _defaultShipAcceleration: 5
+  _defaultShipRotationSpeed: 140

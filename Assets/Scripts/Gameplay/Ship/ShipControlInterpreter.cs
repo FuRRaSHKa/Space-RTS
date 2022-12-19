@@ -25,7 +25,7 @@ public class ShipControlInterpreter : MonoBehaviour, IControllable
 
     public void Target(ITargetable target)
     {
-        _entity.ShipTarget.LockTarget(target);
+        _entity.WeaponController.Shoot(target);
     }
 
     public void TargetPosition(Vector3 target)
