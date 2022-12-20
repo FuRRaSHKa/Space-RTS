@@ -16,8 +16,9 @@ public interface IWeaponTargeter
 public class SimpleWeaponTargeter : MonoBehaviour, IWeaponTargeter, IInitilizable<WeaponData>
 {
     [SerializeField] private Transform _rotationPart;
-    [SerializeField] private float _rotationSpeed;
-    [SerializeField] private Transform _basement; 
+    [SerializeField] private Transform _basement;
+
+    private float _rotationSpeed;
 
     private Vector3 _defautlForward;
     private Vector3 _defaultUpward;
@@ -57,11 +58,11 @@ public class SimpleWeaponTargeter : MonoBehaviour, IWeaponTargeter, IInitilizabl
     private void Rotate()
     {
         Vector3 direction = (_targetable.TargetTransform.position - _rotationPart.transform.position).normalized;
-        _targetRotation = Quaternion.LookRotation(direction, _defaultUpward);     
+        _targetRotation = Quaternion.LookRotation(direction, _defaultUpward);
 
         //Clamp turret rotation
         Vector3 localDirection = _basement.InverseTransformDirection(direction).normalized;
-        localDirection.y = Mathf.Clamp(localDirection.y, -.3f, .7f);
+        localDirection.y = Mathf.Clamp(localDirection.y, -.2f, .7f);
 
         direction = _basement.TransformDirection(localDirection).normalized;
 
@@ -71,7 +72,8 @@ public class SimpleWeaponTargeter : MonoBehaviour, IWeaponTargeter, IInitilizabl
 
     public void Init(WeaponData data)
     {
-        _defaultUpward =  _basement.up;
+        _rotationSpeed = data.RotationSpeed;
+        _defaultUpward = _basement.up;
         _defautlForward = _basement.forward;
     }
 }

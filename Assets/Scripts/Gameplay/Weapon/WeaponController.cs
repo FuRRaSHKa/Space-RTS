@@ -3,10 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class WeaponController : MonoBehaviour, IWeapon
+public class WeaponController : MonoBehaviour, IWeapon, IInitilizable<WeaponData>
 {
-    [SerializeField] private float _shootTime;
-    [SerializeField] private float _maxAngleDeviation;
+    private float _shootTime;
+    private float _maxAngleDeviation;
 
     private ITargetable _target;
     private IShooter _shooter;
@@ -20,6 +20,12 @@ public class WeaponController : MonoBehaviour, IWeapon
     {
         _shooter = GetComponent<IShooter>();
         _weaponTargeter = GetComponent<IWeaponTargeter>();
+    }
+
+    public void Init(WeaponData data)
+    {
+        _shootTime = data.ShootTime;
+        _maxAngleDeviation = data.MaxAngleDeviation;
     }
 
     public void StartShooting(ITargetable targetable)
@@ -36,11 +42,11 @@ public class WeaponController : MonoBehaviour, IWeapon
 
     private void Update()
     {
-        if (_target == null)
-            return;
-
         if (_currentTime > _shootTime)
         {
+            if (_target == null)
+                return;
+
             if (_weaponTargeter.AngleDelta <= _maxAngleDeviation)
                 Shoot();
 

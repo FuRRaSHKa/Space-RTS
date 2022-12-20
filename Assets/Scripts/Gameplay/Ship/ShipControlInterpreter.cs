@@ -9,8 +9,8 @@ public class ShipControlInterpreter : MonoBehaviour, IControllable
 
     private void Awake()
     {
-        _selectGFXController = GetComponent<SelectGFXController>();
-        _entity = GetComponent<ShipEntity>();
+        _selectGFXController = GetComponentInParent<SelectGFXController>();
+        _entity = GetComponentInParent<ShipEntity>();
     }
 
     public void DeSelect()

@@ -10,6 +10,7 @@ public interface IWeaponeVisualizer
 
 public class RayVisualizer : MonoBehaviour, IWeaponeVisualizer
 {
+    [SerializeField] private ParticleSystem _particleSystem;
     [SerializeField] private Transform _shootPoint;
     [SerializeField] private LineRenderer _lineRenderer;
     [SerializeField] private float duration;
@@ -28,6 +29,7 @@ public class RayVisualizer : MonoBehaviour, IWeaponeVisualizer
 
     public void ShowShootEffect(ITargetable targetable)
     {
+        _particleSystem.Play();
         _visualize = true;
         _lineRenderer.enabled = true;
         _target = targetable.TargetTransform;

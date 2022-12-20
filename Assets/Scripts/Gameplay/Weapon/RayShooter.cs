@@ -7,10 +7,17 @@ public interface IShooter
     public void Shoot(ITargetable targetable);
 }
 
-public class RayShooter : MonoBehaviour, IShooter
+public class RayShooter : MonoBehaviour, IShooter, IInitilizable<WeaponData>
 {
+    private int _damage;
+
+    public void Init(WeaponData data)
+    {
+        _damage = data.Damage;
+    }
+
     public void Shoot(ITargetable targetable)
     {
-        Debug.Log("Pew");
+        targetable.DealDamage(_damage);
     }
 }
