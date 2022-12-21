@@ -40,6 +40,7 @@ public class ShipWeaponsController : MonoBehaviour, IInitilizable<ShipInitilizat
         {
             IWeapon weapon = _weaponFactory.CreateWeapon(weaponDatas[i], _gunPositions[i]);
             _weaponList.Add(weapon);
+            weapon.OnShooting += CheckTargetDeath;
         }
     }
 
@@ -56,6 +57,14 @@ public class ShipWeaponsController : MonoBehaviour, IInitilizable<ShipInitilizat
         foreach (var weapon in _weaponList)
         {
             weapon.StopShooting();
+        }
+    }
+
+    private void CheckTargetDeath(ITargetable targetable)
+    {
+        if (targetable.TargetDataObservable.IsDead)
+        {
+            StopShooting();
         }
     }
 }

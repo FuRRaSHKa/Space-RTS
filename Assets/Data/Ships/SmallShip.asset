@@ -16,6 +16,9 @@ MonoBehaviour:
   _weaponDatas:
   - {fileID: 11400000, guid: 6ea90e7e5d91b0a4e9fe3f0be8cd63d0, type: 2}
   _statsDatas:
+  - StatData: {fileID: 11400000, guid: 46dc9c7219e92ef40b683c9c221f00aa, type: 2}
+    StartValue: 300
+    DamageOrder: 1
   - StatData: {fileID: 11400000, guid: d2b4cc9595d6bfa43bb42bf63453e7b7, type: 2}
     StartValue: 300
     DamageOrder: 1

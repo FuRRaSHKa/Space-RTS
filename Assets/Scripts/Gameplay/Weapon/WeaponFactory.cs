@@ -11,7 +11,7 @@ public class WeaponFactory : IWeaponFactory
 {
     public IWeapon CreateWeapon(WeaponData weaponData, Transform parent)
     {
-        WeaponInitilizer weapon = PoolManager.Instance[weaponData.PoolObject].GetObject().GetComponent<WeaponInitilizer>();
+        WeaponInitilizer weapon = Object.Instantiate(weaponData.Prefab).GetComponent<WeaponInitilizer>();
         weapon.transform.SetParent(parent);
         weapon.transform.localRotation = Quaternion.identity;
         weapon.transform.position = parent.position;

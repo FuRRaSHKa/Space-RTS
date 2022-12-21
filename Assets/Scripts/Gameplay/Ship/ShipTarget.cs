@@ -5,14 +5,22 @@ using UnityEngine;
 public class ShipTarget : MonoBehaviour, ITargetable
 {
     private ShipEntity _shipEntity;
+    private ITargetDataObserver _shipDataObserver;
 
     public Transform TargetTransform => transform;
 
-    public TargetData TargetData => throw new System.NotImplementedException();
+    public ITargetDataObserver TargetDataObservable => _shipDataObserver;
+
+    public SideData Side => _shipEntity.Side;
 
     private void Awake()
     {
         _shipEntity = GetComponent<ShipEntity>();
+    }
+
+    private void Start()
+    {
+        _shipDataObserver = new ShipDataObserver(_shipEntity.StatsController, _shipEntity.ShipMovement);
     }
 
     public void DealDamage(int damage)
@@ -21,10 +29,31 @@ public class ShipTarget : MonoBehaviour, ITargetable
     }
 }
 
-public struct TargetData
+public class ShipDataObserver : ITargetDataObserver
 {
-    public int CurrentVelocity;
-    public int CurrentHealth;
+    private readonly IStatsController _statsController;
+    private readonly IMovementController _movementController;
+
+    public ShipDataObserver(IStatsController statsController, IMovementController movementController)
+    {
+        _statsController = statsController;
+        _movementController = movementController;
+    }
+
+    public Vector3 CurrentVelocity => throw new System.NotImplementedException();
+    public bool IsDead => _statsController.IsDeath;
+}
+
+public interface ITargetDataObserver
+{
+    public Vector3 CurrentVelocity
+    {
+        get;
+    }
+    public bool IsDead
+    {
+        get;
+    }
 }
 
 public interface ITargetable
@@ -33,7 +62,11 @@ public interface ITargetable
     {
         get;
     }
-    public TargetData TargetData
+    public ITargetDataObserver TargetDataObservable
+    {
+        get;
+    }
+    public SideData Side
     {
         get;
     }

@@ -6,23 +6,28 @@ using UnityEngine;
 
 public interface IStatsController
 {
+    public bool IsDeath { get; }
+
     public event Action<StatData, int> OnStatChange;
 
     public Stat GetStat(StatData statsData);
     public void ChangeStat(StatData statsData, int delta);
     public int GetStatValue(StatData statsData);
-
     public void DealDamage(int damage);
 }
 
 public class ShipStatsController : MonoBehaviour, IStatsController, IInitilizable<ShipInitilizationData>
 {
+    private bool _isDeath = false;
     private Dictionary<StatData, Stat> _stats = new Dictionary<StatData, Stat>();
+
+    public bool IsDeath => _isDeath;
 
     public event Action<StatData, int> OnStatChange;
 
     public void Init(ShipInitilizationData data)
     {
+        _isDeath = false;
         List<StatStruct> statDatas = data.ShipData.StatDatas;
         foreach (var statData in statDatas)
         {
@@ -76,6 +81,6 @@ public class ShipStatsController : MonoBehaviour, IStatsController, IInitilizabl
 
     private void Death()
     {
-        Debug.Log("Death");
+        _isDeath = true;
     }
 }

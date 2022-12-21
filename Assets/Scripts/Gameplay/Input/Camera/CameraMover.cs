@@ -5,7 +5,8 @@ public class CameraMover : MonoBehaviour
 {
     [SerializeField] private Transform _center;
 
-    [SerializeField] private float _cameraMoveBorders;
+    [SerializeField] private Vector3 _cameraBorders;
+    [SerializeField] private float _mouseMoveTriggerBorders;
     [SerializeField] private float _cameraMoveSpeed;
 
     [Header("Rotation Settings")]
@@ -108,17 +109,21 @@ public class CameraMover : MonoBehaviour
         Vector3 direction = Vector3.zero;
         Quaternion rotation = Quaternion.Euler(new Vector3(0, _camera.eulerAngles.y, 0));
 
-        if (mousePOS.x < _cameraMoveBorders)
+        if (mousePOS.x < _mouseMoveTriggerBorders)
             direction += Vector3.left * _cameraMoveSpeed * Time.deltaTime;
-        else if (mousePOS.x > res.x - _cameraMoveBorders)
+        else if (mousePOS.x > res.x - _mouseMoveTriggerBorders)
             direction += Vector3.right * _cameraMoveSpeed * Time.deltaTime;
 
-        if (mousePOS.y < _cameraMoveBorders)
+        if (mousePOS.y < _mouseMoveTriggerBorders)
             direction += Vector3.back * _cameraMoveSpeed * Time.deltaTime;
-        else if (mousePOS.y > res.y - _cameraMoveBorders)
+        else if (mousePOS.y > res.y - _mouseMoveTriggerBorders)
             direction += Vector3.forward * _cameraMoveSpeed * Time.deltaTime;
 
 
         _center.position += rotation * direction * (Mathf.Clamp01(_currentZoom / (_maxZoomDistance - _minZoomDistance)));
+        Vector3 pos = _center.position;
+        pos.x = Mathf.Clamp(pos.x, -_cameraBorders.x, _cameraBorders.x);
+        pos.z = Mathf.Clamp(pos.z, -_cameraBorders.z, _cameraBorders.z);
+        _center.position = pos;
     }
 }

@@ -20,10 +20,6 @@ public class SimpleWeaponTargeter : MonoBehaviour, IWeaponTargeter, IInitilizabl
 
     private float _rotationSpeed;
 
-    private Vector3 _defautlForward;
-    private Vector3 _defaultUpward;
-    private Vector3 _defoultRight;
-
     private Quaternion _currentRotation;
     private Quaternion _targetRotation;
 
@@ -51,29 +47,27 @@ public class SimpleWeaponTargeter : MonoBehaviour, IWeaponTargeter, IInitilizabl
 
     private void RotateToDefault()
     {
-        _currentRotation = Quaternion.LookRotation(_basement.forward, _defaultUpward);
+        _currentRotation = Quaternion.LookRotation(_basement.forward, _basement.up);
         _rotationPart.rotation = Quaternion.RotateTowards(_rotationPart.rotation, _currentRotation, _rotationSpeed * Time.deltaTime);
     }
 
     private void Rotate()
     {
         Vector3 direction = (_targetable.TargetTransform.position - _rotationPart.transform.position).normalized;
-        _targetRotation = Quaternion.LookRotation(direction, _defaultUpward);
+        _targetRotation = Quaternion.LookRotation(direction, _basement.up);
 
         //Clamp turret rotation
         Vector3 localDirection = _basement.InverseTransformDirection(direction).normalized;
-        localDirection.y = Mathf.Clamp(localDirection.y, -.2f, .7f);
+        localDirection.y = Mathf.Clamp(localDirection.y, 0f, .7f);
 
         direction = _basement.TransformDirection(localDirection).normalized;
 
-        _currentRotation = Quaternion.LookRotation(direction, _defaultUpward);
+        _currentRotation = Quaternion.LookRotation(direction, _basement.up);
         _rotationPart.rotation = Quaternion.RotateTowards(_rotationPart.rotation, _currentRotation, _rotationSpeed * Time.deltaTime);
     }
 
     public void Init(WeaponData data)
     {
         _rotationSpeed = data.RotationSpeed;
-        _defaultUpward = _basement.up;
-        _defautlForward = _basement.forward;
     }
 }

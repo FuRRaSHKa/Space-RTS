@@ -15,5 +15,5 @@ MonoBehaviour:
   _sideData: {fileID: 11400000, guid: c7113470a2364404194081c44135b82d, type: 2}
   _shipDatas:
   - {fileID: 11400000, guid: e47b3c2383fd1164289aaba78dfbd52a, type: 2}
-  - {fileID: 11400000, guid: e47b3c2383fd1164289aaba78dfbd52a, type: 2}
-  - {fileID: 11400000, guid: e47b3c2383fd1164289aaba78dfbd52a, type: 2}
+  - {fileID: 11400000, guid: c0c117dd200f803429fae5f795dbf4aa, type: 2}
+  - {fileID: 11400000, guid: c0c117dd200f803429fae5f795dbf4aa, type: 2}

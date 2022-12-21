@@ -9,12 +9,14 @@ public class WeaponData : ScriptableObject
     [SerializeField] private float _shootTime;
     [SerializeField] private float _maxAngleDeviation;
     [SerializeField] private int _damage;
+    [SerializeField] private float _distance;
 
-    [SerializeField] private PoolObject _weaponePrefab;
+    [SerializeField] private GameObject _weaponPrefab;
 
+    public float Distance => _distance;
     public float RotationSpeed => _rotaionSpeed;
     public float ShootTime => _shootTime;
     public float MaxAngleDeviation => _maxAngleDeviation;
     public int Damage => _damage;
-    public PoolObject PoolObject => _weaponePrefab;
+    public GameObject Prefab => _weaponPrefab;
 }

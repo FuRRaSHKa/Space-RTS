@@ -12,8 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 023c906e4c7daeb45a50caaabd26b867, type: 3}
   m_Name: DefaultWeapon
   m_EditorClassIdentifier: 
-  _rotaionSpeed: 60
+  _rotaionSpeed: 120
   _shootTime: 5
   _maxAngleDeviation: 10
   _damage: 30
-  _weaponePrefab: {fileID: 8342865107422713863, guid: 104cf2eda209dfa4b86323144c5d28f6, type: 3}
+  _distance: 20
+  _weaponPrefab: {fileID: 6378737804925603883, guid: 104cf2eda209dfa4b86323144c5d28f6, type: 3}

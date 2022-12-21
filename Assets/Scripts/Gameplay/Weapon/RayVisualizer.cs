@@ -13,7 +13,8 @@ public class RayVisualizer : MonoBehaviour, IWeaponeVisualizer
     [SerializeField] private ParticleSystem _particleSystem;
     [SerializeField] private Transform _shootPoint;
     [SerializeField] private LineRenderer _lineRenderer;
-    [SerializeField] private float duration;
+    [SerializeField] private float _duration;
+    [SerializeField] private float _rayFlyDuration; 
 
     private Transform _target;
 
@@ -32,6 +33,7 @@ public class RayVisualizer : MonoBehaviour, IWeaponeVisualizer
         _particleSystem.Play();
         _visualize = true;
         _lineRenderer.enabled = true;
+        _lineRenderer.SetPosition(1, _shootPoint.position);
         _target = targetable.TargetTransform;
         _curTime = 0;
     }
@@ -48,14 +50,16 @@ public class RayVisualizer : MonoBehaviour, IWeaponeVisualizer
             return;
 
         _curTime += Time.deltaTime;
-        if (_curTime > duration)
+        if (_curTime > _duration)
         {
             EndVisualize();
             return;
         }
 
         _lineRenderer.SetPosition(0, _shootPoint.position);
-        _lineRenderer.SetPosition(1, _target.position);
+
+        Vector3 pos = Vector3.Lerp(_shootPoint.position, _target.position, _curTime / _rayFlyDuration);
+        _lineRenderer.SetPosition(1, pos);
 
         LerpAlpha();
     }
@@ -64,7 +68,7 @@ public class RayVisualizer : MonoBehaviour, IWeaponeVisualizer
     {
         Material material = _lineRenderer.material;
         Color color = material.color;
-        color.a = Mathf.Lerp(1, 0, _curTime / duration);
+        color.a = Mathf.Lerp(1, 0, _curTime / _duration);
         material.color = color;
 
         _lineRenderer.material = material;

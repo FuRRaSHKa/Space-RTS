@@ -7,6 +7,7 @@ public class WeaponController : MonoBehaviour, IWeapon, IInitilizable<WeaponData
 {
     private float _shootTime;
     private float _maxAngleDeviation;
+    private float _distance;
 
     private ITargetable _target;
     private IShooter _shooter;
@@ -26,6 +27,7 @@ public class WeaponController : MonoBehaviour, IWeapon, IInitilizable<WeaponData
     {
         _shootTime = data.ShootTime;
         _maxAngleDeviation = data.MaxAngleDeviation;
+        _distance = data.Distance;
     }
 
     public void StartShooting(ITargetable targetable)
@@ -47,7 +49,7 @@ public class WeaponController : MonoBehaviour, IWeapon, IInitilizable<WeaponData
             if (_target == null)
                 return;
 
-            if (_weaponTargeter.AngleDelta <= _maxAngleDeviation)
+            if (_weaponTargeter.AngleDelta <= _maxAngleDeviation && _distance > (_target.TargetTransform.position - transform.position).magnitude)
                 Shoot();
 
             return;
