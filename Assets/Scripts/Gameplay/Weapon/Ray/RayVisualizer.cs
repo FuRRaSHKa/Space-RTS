@@ -24,7 +24,7 @@ public class RayVisualizer : MonoBehaviour, IWeaponeVisualizer
 
     private void Awake()
     {
-        _weaponController= GetComponent<WeaponController>();
+        _weaponController = GetComponent<WeaponController>();
         _weaponController.OnShooting += ShowShootEffect;
     }
 
