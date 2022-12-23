@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -23,6 +24,7 @@ public class BulletWrapper
     private float _velocity;
     private int _damage;
     private int _colliderInstanceId;
+    public event Action<Vector3, Vector3> OnHit;
 
     public Vector3 Direction => _direction;
     public Transform Transform => _bullet.transform;
@@ -41,8 +43,9 @@ public class BulletWrapper
         _colliderInstanceId = target.ColliderID;
     }
 
-    public void ExecuteHit()
+    public void ExecuteHit(Vector3 point, Vector3 normal)
     {
+        OnHit?.Invoke(point, normal);
         _target.DealDamage(_damage);
         Death();
     }
@@ -147,7 +150,7 @@ public class BulletsController : MonoBehaviour, IBulletsController
         {
             if (_results[i].colliderInstanceID == _shootedBullets[i].ColliderInstanceId)
             {
-                _shootedBullets[i].ExecuteHit();
+                _shootedBullets[i].ExecuteHit(_results[i].point, _results[i].normal);
                 toDelete.Add(_shootedBullets[i]);
             }
         }

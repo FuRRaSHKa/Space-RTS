@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: ProjWeapon
   m_EditorClassIdentifier: 
   _rotaionSpeed: 120
-  _shootTime: 0.1
+  _shootTime: 1
   _maxAngleDeviation: 5
   _damage: 30
   _distance: 50
