@@ -2,13 +2,20 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public interface IWeaponFactory
+public interface IWeaponFactory : IService
 {
     public IWeapon CreateWeapon(WeaponData weaponData, Transform parent);
 }
 
 public class WeaponFactory : IWeaponFactory
 {
+    private IServiceProvider _serviceProvider;
+
+    public WeaponFactory(IServiceProvider serviceProvider)
+    {
+        _serviceProvider = serviceProvider;
+    }
+
     public IWeapon CreateWeapon(WeaponData weaponData, Transform parent)
     {
         WeaponInitilizer weapon = Object.Instantiate(weaponData.Prefab).GetComponent<WeaponInitilizer>();
@@ -17,6 +24,12 @@ public class WeaponFactory : IWeaponFactory
         weapon.transform.position = parent.position;
 
         weapon.Initilize(weaponData);
+        if (weaponData.WeaponeType == WeaponeType.Projectile)
+        {
+            IProjecterCreator projecterCreator = new BulletSpawner(_serviceProvider.GetService<IBulletsController>());
+            weapon.GetComponent<PojectileShooter>().InitProjectileCreator(projecterCreator);
+        }
+
         return weapon.GetComponent<IWeapon>();
     }
 }

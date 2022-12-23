@@ -4,7 +4,7 @@ using UnityEngine;
 
 public interface IProjecterCreator
 {
-    public void InstantiateBullet(BulletData bulletData, ITargetable targetable, Transform parent, int damage, Vector3 direction);
+    public void InstantiateProjectile(BulletData bulletData, ITargetable targetable, Transform parent, int damage, Vector3 direction);
 }
 
 public class BulletSpawner :  IProjecterCreator
@@ -16,10 +16,9 @@ public class BulletSpawner :  IProjecterCreator
         _bulletsController = bulletsController;
     }
 
-    public void InstantiateBullet(BulletData bulletData, ITargetable targetable, Transform parent, int damage, Vector3 direction)
+    public void InstantiateProjectile(BulletData bulletData, ITargetable targetable, Transform parent, int damage, Vector3 direction)
     {
         PoolObject bulletPoolObject = PoolManager.Instance[bulletData.BulletPrefab].GetObject();
-        bulletPoolObject.transform.SetParent(parent);
         bulletPoolObject.transform.position = parent.position;
         bulletPoolObject.transform.rotation = Quaternion.LookRotation(direction);
 

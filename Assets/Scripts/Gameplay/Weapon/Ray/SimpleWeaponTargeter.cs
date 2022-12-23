@@ -58,7 +58,7 @@ public class SimpleWeaponTargeter : MonoBehaviour, IWeaponTargeter, IInitilizabl
 
         //Clamp turret rotation
         Vector3 localDirection = _basement.InverseTransformDirection(direction).normalized;
-        localDirection.y = Mathf.Clamp(localDirection.y, 0f, .7f);
+        localDirection.y = Mathf.Clamp(localDirection.y, -.1f, .7f);
 
         direction = _basement.TransformDirection(localDirection).normalized;
 

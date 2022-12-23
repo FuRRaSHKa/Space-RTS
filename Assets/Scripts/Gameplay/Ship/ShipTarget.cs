@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class ShipTarget : MonoBehaviour, ITargetable
 {
+    [SerializeField] private Collider _hullCollider;
+
     private ShipEntity _shipEntity;
     private ITargetDataObserver _shipDataObserver;
 
@@ -12,6 +14,8 @@ public class ShipTarget : MonoBehaviour, ITargetable
     public ITargetDataObserver TargetDataObservable => _shipDataObserver;
 
     public SideData Side => _shipEntity.Side;
+
+    public int ColliderID => _hullCollider.GetInstanceID();
 
     private void Awake()
     {
@@ -62,10 +66,17 @@ public interface ITargetable
     {
         get;
     }
+
+    public int ColliderID
+    {
+        get;
+    }
+    
     public ITargetDataObserver TargetDataObservable
     {
         get;
     }
+    
     public SideData Side
     {
         get;

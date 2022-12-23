@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[CreateAssetMenu(fileName = "BulletData", menuName = "Data/Bullet/BulletData")]
 public class BulletData : ScriptableObject
 {
     [SerializeField] private PoolObject _bulletPrefab;

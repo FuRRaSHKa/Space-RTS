@@ -76,7 +76,6 @@ GameObject:
   - component: {fileID: 2315335676634891418}
   - component: {fileID: 2315335676634891417}
   - component: {fileID: 2315335676634891415}
-  - component: {fileID: 6549726452801073183}
   - component: {fileID: 2785537867672239348}
   - component: {fileID: 1652911415166350618}
   - component: {fileID: 7985558532234308080}
@@ -167,6 +166,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b62c20e68b635104ebe0cf8a752b0a97, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _hullCollider: {fileID: 4530104573357672671}
 --- !u!114 &2315335676634891415
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -180,18 +180,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _gfxObject: {fileID: 3935329907878270094}
---- !u!114 &6549726452801073183
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2315335676634891422}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4fa84b7b2b30d5b489aad44e6f1d465d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &2785537867672239348
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -204,6 +192,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8290e58149629df468423fa9aeeb3d36, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _shipWeapons: {fileID: 1652911415166350618}
 --- !u!114 &1652911415166350618
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -702,6 +691,22 @@ MeshCollider:
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: -6989282167128152099, guid: 32c8aaf1aafcb2d4c9fda34ff4759dd1, type: 3}
+--- !u!54 &1411807485967673890
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5457901399154481095}
+  serializedVersion: 2
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_UseGravity: 0
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!4 &6375387162813112045 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8869516086313684725, guid: 32c8aaf1aafcb2d4c9fda34ff4759dd1, type: 3}

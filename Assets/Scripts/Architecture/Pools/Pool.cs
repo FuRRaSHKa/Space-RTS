@@ -14,14 +14,26 @@ public class Pool
     {
         _prefab = prefab;
         _spawnPoint = spawnPoint;
+
+        for (int i = 0; i < prebakedCount; i++)
+        {
+            PoolObject output = Object.Instantiate(_prefab, _spawnPoint);
+            output.DisableObject();
+
+            _objects.Add(output);
+        }
     }
 
     public PoolObject GetObject()
     {
-        PoolObject output = _objects.Find(f => !f.gameObject.activeSelf);
+        PoolObject output = _objects
+            .DefaultIfEmpty(null)
+            .FirstOrDefault(f => !f.gameObject.activeSelf);
+
         if (output == null)
             output = SpawnObject();
 
+        output.gameObject.SetActive(true);
         return output;
     }
 

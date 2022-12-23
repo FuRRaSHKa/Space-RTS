@@ -27,18 +27,17 @@ public class ShipWeaponsController : MonoBehaviour, IInitilizable<ShipInitilizat
         }
     }
 
-    private void Awake()
+    public void InitWeaponeFactory(IWeaponFactory weaponFactory)
     {
-        _weaponFactory = new WeaponFactory();
+        _weaponFactory = weaponFactory;
     }
 
     public void Init(ShipInitilizationData data)
     {
-        List<WeaponData> weaponDatas = new(data.ShipData.WeaponDatas);
-
-        for (int i = 0; i < weaponDatas.Count && i < _gunPositions.Count; i++)
+        WeaponData weaponData = data.ShipData.WeaponData;
+        for (int i = 0; i < _gunPositions.Count; i++)
         {
-            IWeapon weapon = _weaponFactory.CreateWeapon(weaponDatas[i], _gunPositions[i]);
+            IWeapon weapon = _weaponFactory.CreateWeapon(weaponData, _gunPositions[i]);
             _weaponList.Add(weapon);
             weapon.OnShooting += CheckTargetDeath;
         }

@@ -24,7 +24,7 @@ public class PojectileShooter : MonoBehaviour, IShooter, IInitilizable<WeaponDat
 
     public void Shoot(ITargetable targetable)
     {
-        _projecterCreator.InstantiateBullet(_bulletData, targetable, _spawnPoints[_spawnPointId], _damage, _spawnPoints[_spawnPointId].forward);
+        _projecterCreator.InstantiateProjectile(_bulletData, targetable, _spawnPoints[_spawnPointId], _damage, _spawnPoints[_spawnPointId].forward);
         _spawnPointId++;
         _spawnPointId %= _spawnPoints.Count;
     }

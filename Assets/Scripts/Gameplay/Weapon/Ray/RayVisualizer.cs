@@ -3,12 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public interface IWeaponeVisualizer
-{
-    public void ShowShootEffect(ITargetable targetable);
-}
 
-public class RayVisualizer : MonoBehaviour, IWeaponeVisualizer
+public class RayVisualizer : MonoBehaviour
 {
     [SerializeField] private ParticleSystem _particleSystem;
     [SerializeField] private Transform _shootPoint;
@@ -28,7 +24,7 @@ public class RayVisualizer : MonoBehaviour, IWeaponeVisualizer
         _weaponController.OnShooting += ShowShootEffect;
     }
 
-    public void ShowShootEffect(ITargetable targetable)
+    private void ShowShootEffect(ITargetable targetable)
     {
         _particleSystem.Play();
         _visualize = true;

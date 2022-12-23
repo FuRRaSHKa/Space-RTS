@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: LargeShip
   m_EditorClassIdentifier: 
   _shipSize: {fileID: 11400000, guid: 7e25bb66bb3413446b9de480670af273, type: 2}
-  _hullPrefab: {fileID: 6549726452801073183, guid: 78fc76d43a054294ca01e6591a5923f9, type: 3}
+  _hullPrefab: {fileID: 2315335676634891422, guid: 78fc76d43a054294ca01e6591a5923f9, type: 3}
   _defaultShipSpeed: 2
   _defaultShipAcceleration: 2
   _defaultShipRotationSpeed: 60

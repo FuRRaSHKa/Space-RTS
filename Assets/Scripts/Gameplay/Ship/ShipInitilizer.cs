@@ -4,7 +4,17 @@ using UnityEngine;
 
 public class ShipInitilizer : AbstractInitilizer<ShipInitilizationData>
 {
-    private ShipEntity _entity;
+    [SerializeField] private ShipWeaponsController _shipWeapons;
+
+    protected override void Awake()
+    {
+        base.Awake();
+    }
+
+    public void InitServices(IWeaponFactory weaponFactory)
+    {
+        _shipWeapons.InitWeaponeFactory(weaponFactory);
+    }
 }
 
 public readonly struct ShipInitilizationData

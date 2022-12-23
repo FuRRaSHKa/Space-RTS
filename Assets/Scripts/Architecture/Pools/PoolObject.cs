@@ -10,12 +10,6 @@ public class PoolObject : MonoBehaviour
     public void DisableObject()
     {
         OnDisableObject?.Invoke();
-        StartCoroutine(DisableRoutine());
-    }
-
-    private IEnumerator DisableRoutine()
-    {
-        yield return null;
         gameObject.SetActive(false);
     }
 }

@@ -6,11 +6,11 @@ using UnityEngine;
 public class ShipData : ScriptableObject
 {
     [SerializeField] private ShipHullData _shipHullData;
-    [SerializeField] private List<WeaponData> _weaponDatas;
+    [SerializeField] private WeaponData _weaponData;
     [SerializeField] private List<StatStruct> _statsDatas;
 
     public ShipHullData ShipHullData => _shipHullData;
-    public List<WeaponData> WeaponDatas => _weaponDatas;
+    public WeaponData WeaponData => _weaponData;
     public List<StatStruct> StatDatas => _statsDatas;
 }
 
