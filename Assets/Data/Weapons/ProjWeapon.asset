@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 023c906e4c7daeb45a50caaabd26b867, type: 3}
   m_Name: ProjWeapon
   m_EditorClassIdentifier: 
-  _rotaionSpeed: 120
-  _shootTime: 1
-  _maxAngleDeviation: 5
+  _rotaionSpeed: 180
+  _shootTime: 0.1
+  _maxAngleDeviation: 1
   _damage: 30
   _distance: 50
   _weaponeType: 1

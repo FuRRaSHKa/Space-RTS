@@ -5,9 +5,11 @@ using System.Diagnostics;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Jobs;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Jobs;
 using UnityEngine.UIElements;
+using Debug = UnityEngine.Debug;
 
 public interface IBulletsController : IService
 {
@@ -124,7 +126,7 @@ public class BulletsController : MonoBehaviour, IBulletsController
         _results.Dispose();
         _deltas.Dispose();
         _positions.Dispose();
-    }
+    } 
 
     private void SheludeMoving()
     {
@@ -193,6 +195,7 @@ public struct MoveJob : IJobParallelForTransform
     [ReadOnly] public NativeArray<float> velocities;
     [ReadOnly] public float deltaTime;
 
+    [WriteOnly]
     public NativeArray<Vector3> deltas;
 
     public void Execute(int index, TransformAccess transform)
