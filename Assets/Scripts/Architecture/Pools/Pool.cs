@@ -17,10 +17,8 @@ public class Pool
 
         for (int i = 0; i < prebakedCount; i++)
         {
-            PoolObject output = Object.Instantiate(_prefab, _spawnPoint);
+            PoolObject output = SpawnObject();
             output.DisableObject();
-
-            _objects.Add(output);
         }
     }
 
@@ -41,6 +39,7 @@ public class Pool
     {
         PoolObject output = Object.Instantiate(_prefab, _spawnPoint);
         _objects.Add(output);
+        output.gameObject.name = _prefab.name + "_" + _objects.Count;
 
         return output; 
     }
