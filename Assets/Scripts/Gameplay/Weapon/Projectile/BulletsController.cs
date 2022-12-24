@@ -1,15 +1,13 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using Unity.Burst;
 using Unity.Collections;
+using Unity.Collections.LowLevel.Unsafe;
 using Unity.Jobs;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Jobs;
-using UnityEngine.UIElements;
 using Debug = UnityEngine.Debug;
+using Unity.Jobs.LowLevel.Unsafe;
 
 public interface IBulletsController : IService
 {
@@ -28,6 +26,18 @@ public readonly struct MoveData
     }
 }
 
+public readonly struct DeltaMoveData
+{
+    public readonly Vector3 position;
+    public readonly Vector3 delta;
+
+    public DeltaMoveData(Vector3 position, Vector3 delta)
+    {
+        this.position = position;
+        this.delta = delta;
+    }
+}
+
 public class BulletWrapper
 {
     private MoveData _moveData;
@@ -38,11 +48,14 @@ public class BulletWrapper
     private float _currentTime;
     private int _damage;
     private int _colliderInstanceId;
-    public event Action<Vector3, Vector3> OnHit;
+    private bool _toReturn;
 
+    public bool ToReturn => _toReturn;
     public MoveData MoveData => _moveData;
     public Transform Transform => _bullet.transform;
     public int ColliderInstanceId => _colliderInstanceId;
+
+    public event Action<Vector3, Vector3> OnHit;
 
     public BulletWrapper(Vector3 direction, PoolObject bullet, ITargetable target, float lifeTime, float velocity, int damage)
     {
@@ -51,7 +64,7 @@ public class BulletWrapper
         _lifeTime = lifeTime;
         _damage = damage;
 
-        _moveData= new MoveData(velocity, direction);
+        _moveData = new MoveData(velocity, direction);
         _colliderInstanceId = target.ColliderID;
     }
 
@@ -76,6 +89,7 @@ public class BulletWrapper
 
     private void Death()
     {
+        _toReturn = true;
         _bullet.DisableObject();
     }
 }
@@ -89,10 +103,11 @@ public class BulletsController : MonoBehaviour, IBulletsController
     private NativeArray<RaycastHit> _results;
     private TransformAccessArray _transformAccess;
     private NativeArray<MoveData> _moveData;
-    private NativeArray<Vector3> _positions;
-    private NativeArray<Vector3> _deltas;
+    private NativeArray<DeltaMoveData> _deltas;
+    private NativeArray<int> _colliderIDs;
 
     private float _deltaTime;
+    private int _prevBulletCount;
 
     public void AddBullet(BulletWrapper bulletWrapper)
     {
@@ -112,26 +127,26 @@ public class BulletsController : MonoBehaviour, IBulletsController
     {
         _transformAccess = new TransformAccessArray(_shootedBullets.Count);
         _moveData = new NativeArray<MoveData>(_shootedBullets.Count, Allocator.TempJob);
-        _positions = new NativeArray<Vector3>(_shootedBullets.Count, Allocator.TempJob);
-        _deltas = new NativeArray<Vector3>(_shootedBullets.Count, Allocator.TempJob);
+        _deltas = new NativeArray<DeltaMoveData>(_shootedBullets.Count, Allocator.TempJob);
+        _colliderIDs = new NativeArray<int>(_shootedBullets.Count, Allocator.TempJob);
         _deltaTime = Time.deltaTime;
 
         for (int i = 0; i < _shootedBullets.Count; i++)
         {
+            _colliderIDs[i] = _shootedBullets[i].ColliderInstanceId;
             _transformAccess.Add(_shootedBullets[i].Transform);
-            _positions[i] = _shootedBullets[i].Transform.position;
             _moveData[i] = _shootedBullets[i].MoveData;
         }
     }
 
     private void DisposeData()
     {
+        _colliderIDs.Dispose();
         _moveData.Dispose();
         _transformAccess.Dispose();
         _results.Dispose();
         _deltas.Dispose();
-        _positions.Dispose();
-    } 
+    }
 
     private void SheludeMoving()
     {
@@ -149,33 +164,37 @@ public class BulletsController : MonoBehaviour, IBulletsController
     private void Raycasts()
     {
         NativeArray<RaycastCommand> raycastCommands = new NativeArray<RaycastCommand>(_shootedBullets.Count, Allocator.TempJob);
+        NativeList<int> filtered = new NativeList<int>(_shootedBullets.Count, Allocator.TempJob);
+
         _results = new NativeArray<RaycastHit>(raycastCommands.Length, Allocator.TempJob);
 
         for (int i = 0; i < _shootedBullets.Count; i++)
         {
-            raycastCommands[i] = new RaycastCommand(_positions[i], _deltas[i], _layerMask);
+            raycastCommands[i] = new RaycastCommand(_deltas[i].position, _deltas[i].delta, _layerMask);
         }
+
+        RaycastResultJob raycastResultJob = new RaycastResultJob()
+        {
+            results = _results,
+            colliderIDs = _colliderIDs,
+
+            filtered = filtered.AsParallelWriter()
+        };
 
         var raycasts = RaycastCommand.ScheduleBatch(raycastCommands, _results, 1);
+        JobHandle jobHandle = raycastResultJob.Schedule(_shootedBullets.Count, 32, raycasts);
+
         raycasts.Complete();
+        jobHandle.Complete();
 
-        List<BulletWrapper> toDelete = new List<BulletWrapper>();
-        for (int i = 0; i < _shootedBullets.Count; i++)
+        int count = filtered.Length;
+        for (int i = 0; i < count; i++)
         {
-            if (_results[i].colliderInstanceID == _shootedBullets[i].ColliderInstanceId)
-            {
-                _shootedBullets[i].ExecuteHit(_results[i].point, _results[i].normal);
-                toDelete.Add(_shootedBullets[i]);
-            }
+            int id = filtered[i];
+            _shootedBullets[id].ExecuteHit(_results[id].point, _results[id].normal);
         }
 
-        int step = 0;
-        for (int i = 0; i < toDelete.Count; i++)
-        {
-            _shootedBullets.Remove(toDelete[i]);
-            step++;
-        }
-
+        filtered.Dispose();
         raycastCommands.Dispose();
     }
 
@@ -183,7 +202,7 @@ public class BulletsController : MonoBehaviour, IBulletsController
     {
         for (int i = 0; i < _shootedBullets.Count; i++)
         {
-            if (_shootedBullets[i].UpdateLifeTime())
+            if (_shootedBullets[i].UpdateLifeTime() || _shootedBullets[i].ToReturn)
             {
                 _shootedBullets.RemoveAt(i);
                 i--;
@@ -198,17 +217,33 @@ public struct MoveJob : IJobParallelForTransform
     [ReadOnly] public NativeArray<MoveData> moveDatas;
     [ReadOnly] public float deltaTime;
 
-    [WriteOnly]
-    public NativeArray<Vector3> deltas;
+    [WriteOnly] public NativeArray<DeltaMoveData> deltas;
 
     public void Execute(int index, TransformAccess transform)
     {
         Vector3 pos = transform.position;
         Vector3 delta = moveDatas[index].direction * moveDatas[index].velocity * deltaTime;
-       
+
+        deltas[index] = new DeltaMoveData(pos, delta);
         pos += delta;
-        
-        deltas[index] = delta;
+
         transform.position = pos;
+    }
+}
+
+[BurstCompile]
+public struct RaycastResultJob : IJobParallelFor
+{
+    [ReadOnly] public NativeArray<RaycastHit> results;
+    [ReadOnly] public NativeArray<int> colliderIDs;
+
+    [WriteOnly] public NativeList<int>.ParallelWriter filtered;
+
+    public void Execute(int index)
+    {
+        if (results[index].colliderInstanceID == colliderIDs[index])
+        {
+            filtered.AddNoResize(index);
+        }
     }
 }
