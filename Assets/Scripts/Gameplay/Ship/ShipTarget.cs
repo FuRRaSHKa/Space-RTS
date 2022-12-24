@@ -44,7 +44,7 @@ public class ShipDataObserver : ITargetDataObserver
         _movementController = movementController;
     }
 
-    public Vector3 CurrentVelocity => throw new System.NotImplementedException();
+    public Vector3 CurrentVelocity => _movementController.CurrentVelocity;
     public bool IsDead => _statsController.IsDeath;
 }
 

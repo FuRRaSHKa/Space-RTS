@@ -5,12 +5,19 @@ using UnityEngine.AI;
 
 public interface IMovementController
 {
+    public Vector3 CurrentVelocity
+    {
+        get;
+    }
+
     public void MoveTo(Vector3 targetPos);
 }
 
 public class ShipMovementController : MonoBehaviour, IMovementController, IInitilizable<ShipInitilizationData>
 {
     [SerializeField] private NavMeshAgent _navMesh;
+
+    public Vector3 CurrentVelocity => _navMesh.desiredVelocity;
 
     public void Init(ShipInitilizationData data)
     {

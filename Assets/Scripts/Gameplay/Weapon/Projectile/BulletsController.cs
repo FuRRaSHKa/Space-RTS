@@ -7,6 +7,7 @@ using Unity.Collections;
 using Unity.Jobs;
 using UnityEngine;
 using UnityEngine.Jobs;
+using UnityEngine.UIElements;
 
 public interface IBulletsController : IService
 {
@@ -78,13 +79,15 @@ public class BulletsController : MonoBehaviour, IBulletsController
     private TransformAccessArray _transformAccess;
     private NativeArray<Vector3> _directions;
     private NativeArray<float> _velocities;
+    private NativeArray<Vector3> _positions;
+    private NativeArray<Vector3> _deltas;
+
     private float _deltaTime;
 
     public void AddBullet(BulletWrapper bulletWrapper)
     {
         _shootedBullets.Add(bulletWrapper);
     }
-
 
     private void Update()
     {
@@ -100,6 +103,17 @@ public class BulletsController : MonoBehaviour, IBulletsController
         _transformAccess = new TransformAccessArray(_shootedBullets.Count);
         _directions = new NativeArray<Vector3>(_shootedBullets.Count, Allocator.TempJob);
         _velocities = new NativeArray<float>(_shootedBullets.Count, Allocator.TempJob);
+        _positions = new NativeArray<Vector3>(_shootedBullets.Count, Allocator.TempJob);
+        _deltas = new NativeArray<Vector3>(_shootedBullets.Count, Allocator.TempJob);
+        _deltaTime = Time.deltaTime;
+
+        for (int i = 0; i < _shootedBullets.Count; i++)
+        {
+            _transformAccess.Add(_shootedBullets[i].Transform);
+            _positions[i] = _shootedBullets[i].Transform.position;
+            _directions[i] = _shootedBullets[i].Direction;
+            _velocities[i] = _shootedBullets[i].Velocity;
+        }
     }
 
     private void DisposeData()
@@ -108,24 +122,18 @@ public class BulletsController : MonoBehaviour, IBulletsController
         _directions.Dispose();
         _transformAccess.Dispose();
         _results.Dispose();
+        _deltas.Dispose();
+        _positions.Dispose();
     }
 
     private void SheludeMoving()
     {
-        _deltaTime = Time.deltaTime;
-
-        for (int i = 0; i < _shootedBullets.Count; i++)
-        {
-            _transformAccess.Add(_shootedBullets[i].Transform);
-            _directions[i] = _shootedBullets[i].Direction;
-            _velocities[i] = _shootedBullets[i].Velocity;
-        }
-
         MoveJob job = new MoveJob()
         {
             directions = _directions,
             velocities = _velocities,
-            deltaTime = _deltaTime
+            deltaTime = _deltaTime,
+            deltas = _deltas
         };
 
         JobHandle jobHandle = job.Schedule(_transformAccess);
@@ -139,7 +147,7 @@ public class BulletsController : MonoBehaviour, IBulletsController
 
         for (int i = 0; i < _shootedBullets.Count; i++)
         {
-            raycastCommands[i] = new RaycastCommand(_transformAccess[i].position, _directions[i] * _velocities.Length * _deltaTime, _layerMask);
+            raycastCommands[i] = new RaycastCommand(_positions[i], _deltas[i], _layerMask);
         }
 
         var raycasts = RaycastCommand.ScheduleBatch(raycastCommands, _results, 1);
@@ -185,10 +193,14 @@ public struct MoveJob : IJobParallelForTransform
     [ReadOnly] public NativeArray<float> velocities;
     [ReadOnly] public float deltaTime;
 
+    public NativeArray<Vector3> deltas;
+
     public void Execute(int index, TransformAccess transform)
     {
         Vector3 pos = transform.position;
-        pos += directions[index] * velocities[index] * deltaTime;
+        Vector3 delta = directions[index] * velocities[index] * deltaTime;
+        pos += delta;
+        deltas[index] = delta;
         transform.position = pos;
     }
 }
