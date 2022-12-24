@@ -74,10 +74,6 @@ public class BulletsController : MonoBehaviour, IBulletsController
 
     private List<BulletWrapper> _shootedBullets = new List<BulletWrapper>();
 
-    private NativeArray<RaycastHit> _results;
-    private TransformAccessArray _transformAccess;
-    private NativeArray<Vector3> _directions;
-    private NativeArray<float> _velocities;
     private float _deltaTime;
 
     public void AddBullet(BulletWrapper bulletWrapper)
@@ -88,27 +84,11 @@ public class BulletsController : MonoBehaviour, IBulletsController
 
     private void Update()
     {
-        CollectData();
         SheludeMoving();
         Raycasts();
         UpdateLifeTime();
-        DisposeData();
     }
 
-    private void CollectData()
-    {
-        _transformAccess = new TransformAccessArray(_shootedBullets.Count);
-        _directions = new NativeArray<Vector3>(_shootedBullets.Count, Allocator.TempJob);
-        _velocities = new NativeArray<float>(_shootedBullets.Count, Allocator.TempJob);
-    }
-
-    private void DisposeData()
-    {
-        _velocities.Dispose();
-        _directions.Dispose();
-        _transformAccess.Dispose();
-        _results.Dispose();
-    }
 
     private void SheludeMoving()
     {
@@ -116,53 +96,25 @@ public class BulletsController : MonoBehaviour, IBulletsController
 
         for (int i = 0; i < _shootedBullets.Count; i++)
         {
-            _transformAccess.Add(_shootedBullets[i].Transform);
-            _directions[i] = _shootedBullets[i].Direction;
-            _velocities[i] = _shootedBullets[i].Velocity;
+            _shootedBullets[i].Transform.position += _shootedBullets[i].Direction * _shootedBullets[i].Velocity * _deltaTime; 
         }
-
-        MoveJob job = new MoveJob()
-        {
-            directions = _directions,
-            velocities = _velocities,
-            deltaTime = _deltaTime
-        };
-
-        JobHandle jobHandle = job.Schedule(_transformAccess);
-        jobHandle.Complete();
     }
 
     private void Raycasts()
     {
-        NativeArray<RaycastCommand> raycastCommands = new NativeArray<RaycastCommand>(_shootedBullets.Count, Allocator.TempJob);
-        _results = new NativeArray<RaycastHit>(raycastCommands.Length, Allocator.TempJob);
-
         for (int i = 0; i < _shootedBullets.Count; i++)
         {
-            raycastCommands[i] = new RaycastCommand(_transformAccess[i].position, _directions[i] * _velocities.Length * _deltaTime, _layerMask);
-        }
-
-        var raycasts = RaycastCommand.ScheduleBatch(raycastCommands, _results, 1);
-        raycasts.Complete();
-
-        List<BulletWrapper> toDelete = new List<BulletWrapper>();
-        for (int i = 0; i < _shootedBullets.Count; i++)
-        {
-            if (_results[i].colliderInstanceID == _shootedBullets[i].ColliderInstanceId)
+            if (Physics.Raycast(_shootedBullets[i].Transform.position, -_shootedBullets[i].Direction, out RaycastHit result, _shootedBullets[i].Velocity * _deltaTime, _layerMask.value))
             {
-                _shootedBullets[i].ExecuteHit(_results[i].point, _results[i].normal);
-                toDelete.Add(_shootedBullets[i]);
-            }
-        }
+                if (result.colliderInstanceID == _shootedBullets[i].ColliderInstanceId)
+                {
+                    _shootedBullets[i].ExecuteHit(result.point, result.normal);
 
-        int step = 0;
-        for (int i = 0; i < toDelete.Count; i++)
-        {
-            _shootedBullets.Remove(toDelete[i]);
-            step++;
+                    _shootedBullets.RemoveAt(i);
+                    i--;
+                }
+            }         
         }
-
-        raycastCommands.Dispose();
     }
 
     private void UpdateLifeTime()
@@ -175,20 +127,5 @@ public class BulletsController : MonoBehaviour, IBulletsController
                 i--;
             }
         }
-    }
-}
-
-[BurstCompile]
-public struct MoveJob : IJobParallelForTransform
-{
-    [ReadOnly] public NativeArray<Vector3> directions;
-    [ReadOnly] public NativeArray<float> velocities;
-    [ReadOnly] public float deltaTime;
-
-    public void Execute(int index, TransformAccess transform)
-    {
-        Vector3 pos = transform.position;
-        pos += directions[index] * velocities[index] * deltaTime;
-        transform.position = pos;
     }
 }
