@@ -103,6 +103,9 @@ public class BulletsController : MonoBehaviour, IBulletsController
     private void Update()
     {
         ClearData();
+        if (_shootedBullets.Count == 0)
+            return;
+
         CollectData();
         SheludeMoving();
         Raycasts();

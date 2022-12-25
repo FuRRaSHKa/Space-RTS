@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9c96fc37dae7be143bebe3ce60cff39a, type: 3}
-  m_Name: UndeadShip
+  m_Name: UndeadShipLarge
   m_EditorClassIdentifier: 
   _shipHullData: {fileID: 11400000, guid: c5d354f1f2cc6ef4a98462461b5f2b0d, type: 2}
   _weaponData: {fileID: 11400000, guid: fd261f0d5d284ee42902ccf97db41dee, type: 2}

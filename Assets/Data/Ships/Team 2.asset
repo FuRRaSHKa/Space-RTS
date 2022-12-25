@@ -14,4 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _sideData: {fileID: 11400000, guid: c7113470a2364404194081c44135b82d, type: 2}
   _shipDatas:
-  - {fileID: 11400000, guid: cdd270e7ebbe46b4e905f8ebb5eb235a, type: 2}
+  - {fileID: 11400000, guid: b1c77fa1792112644a447c48be411b0f, type: 2}

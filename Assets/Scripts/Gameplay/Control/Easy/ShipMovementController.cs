@@ -17,7 +17,7 @@ public class ShipMovementController : MonoBehaviour, IMovementController, IIniti
 {
     [SerializeField] private NavMeshAgent _navMesh;
 
-    public Vector3 CurrentVelocity => _navMesh.desiredVelocity;
+    public Vector3 CurrentVelocity => _navMesh.velocity;
 
     public void Init(ShipInitilizationData data)
     {
