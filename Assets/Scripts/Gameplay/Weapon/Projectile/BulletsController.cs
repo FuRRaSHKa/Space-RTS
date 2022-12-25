@@ -43,7 +43,7 @@ public class BulletWrapper
         _target = target;
         _lifeTime = lifeTime;
         _damage = damage;
-        _direction= direction;
+        _direction = direction;
         _velocity = velocity;
 
         _colliderInstanceId = target.ColliderID;
@@ -81,12 +81,19 @@ public class BulletsController : MonoBehaviour, IBulletsController
 
     private List<BulletWrapper> _shootedBullets = new List<BulletWrapper>();
 
-    private NativeArray<RaycastHit> _results;
-    private NativeArray<int> _colliderIDs;
-    private NativeArray<RaycastCommand> _raycastCommands;
+    private NativeList<RaycastHit> _results;
+    private NativeList<int> _colliderIDs;
+    private NativeList<RaycastCommand> _raycastCommands;
 
     private float _deltaTime;
     private int _prevBulletCount;
+
+    private void Awake()
+    {
+        _colliderIDs = new NativeList<int>(10, Allocator.Persistent);
+        _raycastCommands = new NativeList<RaycastCommand>(10, Allocator.Persistent);
+        _results = new NativeList<RaycastHit>(10, Allocator.Persistent);
+    }
 
     public void AddBullet(BulletWrapper bulletWrapper)
     {
@@ -95,23 +102,35 @@ public class BulletsController : MonoBehaviour, IBulletsController
 
     private void Update()
     {
+        ClearData();
         CollectData();
         SheludeMoving();
         Raycasts();
         UpdateLifeTime();
-        DisposeData();
+    }
+
+    private void ClearData()
+    {
+        _colliderIDs.Clear();
+        _raycastCommands.Clear();
+        _results.Clear();
     }
 
     private void CollectData()
     {
-        _colliderIDs = new NativeArray<int>(_shootedBullets.Count, Allocator.TempJob);
-        _raycastCommands = new NativeArray<RaycastCommand>(_shootedBullets.Count, Allocator.TempJob);
-        _results = new NativeArray<RaycastHit>(_raycastCommands.Length, Allocator.TempJob);
         _deltaTime = Time.deltaTime;
 
+        if (_shootedBullets.Count > _colliderIDs.Capacity)
+        {
+            _colliderIDs.Capacity = _shootedBullets.Count;
+            _raycastCommands.Capacity = _shootedBullets.Count;
+
+        }
+
+        _results.ResizeUninitialized(_shootedBullets.Count);
         for (int i = 0; i < _shootedBullets.Count; i++)
         {
-            _colliderIDs[i] = _shootedBullets[i].ColliderInstanceId;
+            _colliderIDs.AddNoResize(_shootedBullets[i].ColliderInstanceId);
         }
     }
 
@@ -131,8 +150,8 @@ public class BulletsController : MonoBehaviour, IBulletsController
             Vector3 pos = _shootedBullets[i].Transform.position;
             Vector3 moveDelta = _shootedBullets[i].Direction * _shootedBullets[i].Velocity * _deltaTime;
 
-            _raycastCommands[i] = new RaycastCommand(pos, moveDelta, moveDelta.magnitude, _layerMask.value);
-            
+            RaycastCommand raycastCommand = new RaycastCommand(pos, moveDelta, moveDelta.magnitude, _layerMask.value);
+            _raycastCommands.AddNoResize(raycastCommand);
 
             _shootedBullets[i].Transform.position += moveDelta;
         }
@@ -176,13 +195,18 @@ public class BulletsController : MonoBehaviour, IBulletsController
             }
         }
     }
+
+    private void OnDisable()
+    {
+        DisposeData();
+    }
 }
 
 [BurstCompile]
 public struct RaycastResultJob : IJobParallelFor
 {
-    [ReadOnly] public NativeArray<RaycastHit> results;
-    [ReadOnly] public NativeArray<int> colliderIDs;
+    [ReadOnly] public NativeList<RaycastHit> results;
+    [ReadOnly] public NativeList<int> colliderIDs;
 
     [WriteOnly] public NativeList<int>.ParallelWriter filtered;
 

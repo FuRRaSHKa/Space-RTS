@@ -59,9 +59,31 @@ public class AdvanceWeaponTargeter : MonoBehaviour, IWeaponTargeter, IInitilizab
 
     private Vector3 CalculatePos()
     {
-        float distance = (_targetable.TargetTransform.position - _rotationPart.transform.position).magnitude;
+        if (_targetable.TargetDataObservable.CurrentVelocity.magnitude == _bulletData.Speed)
+        {
+            return _targetable.TargetTransform.position;
+        }
 
-        Vector3 targetPosition = _targetable.TargetTransform.position + _targetable.TargetDataObservable.CurrentVelocity * distance / _bulletData.Speed;
+        Vector3 direction = _targetable.TargetTransform.position - _rotationPart.transform.position;
+        Vector3 targetVelocity = _targetable.TargetDataObservable.CurrentVelocity;
+
+        float distance = direction.magnitude;
+        float targetSquareVelocity = targetVelocity.sqrMagnitude;
+        float cos = Mathf.Cos(180 - Vector3.Angle(direction, targetVelocity));
+        float bulletSquareVelocity = Mathf.Pow(_bulletData.Speed, 2);
+
+        float discriminant = Mathf.Pow(distance, 2) * (2 * targetSquareVelocity * Mathf.Pow(cos, 2) - 4 * (targetSquareVelocity - bulletSquareVelocity));
+        if (discriminant < 0)
+        {
+            return _targetable.TargetTransform.position + _targetable.TargetDataObservable.CurrentVelocity * distance / _bulletData.Speed;
+        }
+
+        float firstTime = (-2 * targetSquareVelocity * cos + distance * Mathf.Sqrt(discriminant)) / (2 * (targetSquareVelocity - bulletSquareVelocity));
+        float secondTime = (-2 * targetSquareVelocity * cos - distance * Mathf.Sqrt(discriminant)) / (targetSquareVelocity - bulletSquareVelocity);
+
+        float resultTime = Mathf.Max(firstTime, secondTime);
+
+        Vector3 targetPosition = _targetable.TargetTransform.position + _targetable.TargetDataObservable.CurrentVelocity * resultTime;
         return targetPosition;
     }
 
