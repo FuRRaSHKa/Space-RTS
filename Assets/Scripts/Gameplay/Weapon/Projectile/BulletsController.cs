@@ -9,73 +9,7 @@ using UnityEngine.Jobs;
 using Debug = UnityEngine.Debug;
 using Unity.Jobs.LowLevel.Unsafe;
 
-public interface IBulletsController : IService
-{
-    public void AddBullet(BulletWrapper shootedBulletStruct);
-}
-
-[System.Serializable]
-public class BulletWrapper
-{
-    private PoolObject _bullet;
-    private ITargetable _target;
-
-    private float _lifeTime;
-    private float _currentTime;
-    private float _velocity;
-    private Vector3 _direction;
-
-    private int _damage;
-    private int _colliderInstanceId;
-    private bool _toReturn;
-
-    public Vector3 Direction => _direction;
-    public float Velocity => _velocity;
-    public bool ToReturn => _toReturn;
-    public Transform Transform => _bullet.transform;
-    public int ColliderInstanceId => _colliderInstanceId;
-
-    public event Action<Vector3, Vector3> OnHit;
-
-    public BulletWrapper(Vector3 direction, PoolObject bullet, ITargetable target, float lifeTime, float velocity, int damage)
-    {
-        _bullet = bullet;
-        _target = target;
-        _lifeTime = lifeTime;
-        _damage = damage;
-        _direction = direction;
-        _velocity = velocity;
-
-        _colliderInstanceId = target.ColliderID;
-    }
-
-    public void ExecuteHit(Vector3 point, Vector3 normal)
-    {
-        OnHit?.Invoke(point, normal);
-        _target.DealDamage(_damage);
-        Death();
-    }
-
-    public bool UpdateLifeTime()
-    {
-        _currentTime += Time.deltaTime;
-        if (_currentTime > _lifeTime)
-        {
-            Death();
-            return true;
-        }
-
-        return false;
-    }
-
-    private void Death()
-    {
-        _toReturn = true;
-        _bullet.DisableObject();
-    }
-}
-
-public class BulletsController : MonoBehaviour, IBulletsController
+public class BulletsController : MonoBehaviour, IService
 {
     [SerializeField] private LayerMask _layerMask;
 
@@ -210,9 +144,7 @@ public struct RaycastResultJob : IJobParallelFor
 {
     [ReadOnly] public NativeList<RaycastHit> results;
     [ReadOnly] public NativeList<int> colliderIDs;
-
     [WriteOnly] public NativeList<int>.ParallelWriter filtered;
-
     public void Execute(int index)
     {
         if (results[index].colliderInstanceID == colliderIDs[index])

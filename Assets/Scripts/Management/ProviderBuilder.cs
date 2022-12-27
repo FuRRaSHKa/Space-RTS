@@ -35,6 +35,6 @@ public class ProviderBuilder : MonoBehaviour
         IWeaponFactory weaponFactory = new WeaponFactory(_serviceProvider);
         _serviceProvider.AddService(weaponFactory);
 
-        _serviceProvider.AddService<IBulletsController>(_bulletsController);
+        _serviceProvider.AddService<BulletsController>(_bulletsController);
     }
 }

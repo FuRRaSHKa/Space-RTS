@@ -26,7 +26,7 @@ public class WeaponFactory : IWeaponFactory
         weapon.Initilize(weaponData);
         if (weaponData.WeaponeType == WeaponeType.Projectile)
         {
-            IProjecterCreator projecterCreator = new BulletSpawner(_serviceProvider.GetService<IBulletsController>());
+            IProjecterCreator projecterCreator = new BulletSpawner(_serviceProvider.GetService<BulletsController>());
             weapon.GetComponent<ProjectileShooter>().InitProjectileCreator(projecterCreator);
         }
 

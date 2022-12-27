@@ -10,9 +10,9 @@ public interface IProjecterCreator
 
 public class BulletSpawner :  IProjecterCreator
 {
-    private IBulletsController _bulletsController;
+    private BulletsController _bulletsController;
 
-    public BulletSpawner(IBulletsController bulletsController)
+    public BulletSpawner(BulletsController bulletsController)
     {
         _bulletsController = bulletsController;
     }
@@ -23,7 +23,7 @@ public class BulletSpawner :  IProjecterCreator
         bulletPoolObject.transform.position = parent.position;
         bulletPoolObject.transform.rotation = Quaternion.LookRotation(direction);
 
-        BulletWrapper bulletWrapper = new BulletWrapper(direction, bulletPoolObject, targetable, bulletData.Lifetime, bulletData.Speed, damage);
+        BulletWrapper bulletWrapper = new BulletWrapper(bulletPoolObject, targetable, bulletData.Lifetime, damage, direction, bulletData.Speed);
         _bulletsController.AddBullet(bulletWrapper);
 
         return bulletWrapper;
