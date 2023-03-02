@@ -20,7 +20,6 @@ public class BulletsController : MonoBehaviour, IService
     private NativeList<RaycastCommand> _raycastCommands;
 
     private float _deltaTime;
-    private int _prevBulletCount;
 
     private void Awake()
     {
@@ -98,19 +97,7 @@ public class BulletsController : MonoBehaviour, IService
     {
         NativeList<int> filtered = new NativeList<int>(_shootedBullets.Count, Allocator.TempJob);
 
-        RaycastResultJob raycastResultJob = new RaycastResultJob()
-        {
-            results = _results,
-            colliderIDs = _colliderIDs,
-
-            filtered = filtered.AsParallelWriter()
-        };
-
-        var raycasts = RaycastCommand.ScheduleBatch(_raycastCommands, _results, 1);
-        JobHandle jobHandle = raycastResultJob.Schedule(_shootedBullets.Count, 32, raycasts);
-
-        raycasts.Complete();
-        jobHandle.Complete();
+        ProjectileRaycaster.Raycasts(_raycastCommands, filtered, _results, _colliderIDs, _shootedBullets.Count);
 
         for (int i = 0; i < filtered.Length; i++)
         {

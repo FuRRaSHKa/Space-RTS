@@ -53,8 +53,6 @@ public class AdvanceWeaponTargeter : MonoBehaviour, IWeaponTargeter, IInitilizab
 
         direction = _basement.TransformDirection(localDirection).normalized;
 
-        Debug.DrawLine(transform.position, position, Color.green);
-
         _currentRotation = Quaternion.LookRotation(direction, _basement.up);
         _rotationPart.rotation = Quaternion.RotateTowards(_rotationPart.rotation, _currentRotation, _rotationSpeed * Time.deltaTime);
     }

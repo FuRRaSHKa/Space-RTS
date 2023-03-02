@@ -7,6 +7,7 @@ using static UnityEngine.GraphicsBuffer;
 public class ProjectileWrapper : MonoBehaviour
 {
     private PoolObject _projectel;
+    private Transform _projectelTransform;
 
     private float _lifeTime;
     private float _currentTime;
@@ -19,7 +20,7 @@ public class ProjectileWrapper : MonoBehaviour
 
     public int ColliderInstanceId => _colliderInstanceId;
     public bool ToReturn => _toReturn;
-    public Transform Transform => _projectel.transform;
+    public Transform Transform => _projectelTransform;
 
     public event Action<Vector3, Vector3> OnHit;
 
@@ -29,6 +30,7 @@ public class ProjectileWrapper : MonoBehaviour
         this.target = target;
         _lifeTime = lifeTime;
         _damage = damage;
+        _projectelTransform = _projectel.transform;
 
         _colliderInstanceId = target.ColliderID;
     }
