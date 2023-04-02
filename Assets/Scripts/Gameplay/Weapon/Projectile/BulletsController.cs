@@ -2,41 +2,37 @@ using System;
 using System.Collections.Generic;
 using Unity.Burst;
 using Unity.Collections;
-using Unity.Collections.LowLevel.Unsafe;
 using Unity.Jobs;
 using UnityEngine;
-using UnityEngine.Jobs;
-using Debug = UnityEngine.Debug;
-using Unity.Jobs.LowLevel.Unsafe;
 
-public class BulletsController : MonoBehaviour, IService
+public abstract class ProjectelController<TProjectel> : MonoBehaviour where TProjectel : ProjectileWrapper
 {
-    [SerializeField] private LayerMask _layerMask;
+    [SerializeField] protected LayerMask layerMask;
 
-    private List<BulletWrapper> _shootedBullets = new List<BulletWrapper>();
+    protected List<TProjectel> shootedProjectel = new List<TProjectel>();
 
-    private NativeList<RaycastHit> _results;
-    private NativeList<int> _colliderIDs;
-    private NativeList<RaycastCommand> _raycastCommands;
+    protected NativeList<RaycastHit> results;
+    protected NativeList<int> colliderIDs;
+    protected NativeList<RaycastCommand> raycastCommands;
 
-    private float _deltaTime;
+    protected float deltaTime;
 
     private void Awake()
     {
-        _colliderIDs = new NativeList<int>(10, Allocator.Persistent);
-        _raycastCommands = new NativeList<RaycastCommand>(10, Allocator.Persistent);
-        _results = new NativeList<RaycastHit>(10, Allocator.Persistent);
+        colliderIDs = new NativeList<int>(10, Allocator.Persistent);
+        raycastCommands = new NativeList<RaycastCommand>(10, Allocator.Persistent);
+        results = new NativeList<RaycastHit>(10, Allocator.Persistent);
     }
 
-    public void AddBullet(BulletWrapper bulletWrapper)
+    public void AddBullet(TProjectel projectelWrapper)
     {
-        _shootedBullets.Add(bulletWrapper);
+        shootedProjectel.Add(projectelWrapper);
     }
 
     private void Update()
     {
         ClearData();
-        if (_shootedBullets.Count == 0)
+        if (shootedProjectel.Count == 0)
             return;
 
         CollectData();
@@ -47,62 +43,48 @@ public class BulletsController : MonoBehaviour, IService
 
     private void ClearData()
     {
-        _colliderIDs.Clear();
-        _raycastCommands.Clear();
-        _results.Clear();
+        colliderIDs.Clear();
+        raycastCommands.Clear();
+        results.Clear();
     }
 
     private void CollectData()
     {
-        _deltaTime = Time.deltaTime;
+        deltaTime = Time.deltaTime;
 
-        if (_shootedBullets.Count > _colliderIDs.Capacity)
+        if (shootedProjectel.Count > colliderIDs.Capacity)
         {
-            _colliderIDs.Capacity = _shootedBullets.Count;
-            _raycastCommands.Capacity = _shootedBullets.Count;
+            colliderIDs.Capacity = shootedProjectel.Count;
+            raycastCommands.Capacity = shootedProjectel.Count;
 
         }
 
-        _results.ResizeUninitialized(_shootedBullets.Count);
-        for (int i = 0; i < _shootedBullets.Count; i++)
+        results.ResizeUninitialized(shootedProjectel.Count);
+        for (int i = 0; i < shootedProjectel.Count; i++)
         {
-            _colliderIDs.AddNoResize(_shootedBullets[i].ColliderInstanceId);
+            colliderIDs.AddNoResize(shootedProjectel[i].ColliderInstanceId);
         }
     }
 
     private void DisposeData()
     {
-        _colliderIDs.Dispose();
-        _results.Dispose();
-        _raycastCommands.Dispose();
+        colliderIDs.Dispose();
+        results.Dispose();
+        raycastCommands.Dispose();
     }
 
-    private void SheludeMoving()
-    {
-        _deltaTime = Time.deltaTime;
-
-        for (int i = 0; i < _shootedBullets.Count; i++)
-        {
-            Vector3 pos = _shootedBullets[i].Transform.position;
-            Vector3 moveDelta = _shootedBullets[i].Direction * _shootedBullets[i].Velocity * _deltaTime;
-
-            RaycastCommand raycastCommand = new RaycastCommand(pos, moveDelta, moveDelta.magnitude, _layerMask.value);
-            _raycastCommands.AddNoResize(raycastCommand);
-
-            _shootedBullets[i].Transform.position += moveDelta;
-        }
-    }
+    protected abstract void SheludeMoving();
 
     private void Raycasts()
     {
-        NativeList<int> filtered = new NativeList<int>(_shootedBullets.Count, Allocator.TempJob);
+        NativeList<int> filtered = new NativeList<int>(shootedProjectel.Count, Allocator.TempJob);
 
-        ProjectileRaycaster.Raycasts(_raycastCommands, filtered, _results, _colliderIDs, _shootedBullets.Count);
+        ProjectileRaycaster.Raycasts(raycastCommands, filtered, results, colliderIDs, shootedProjectel.Count);
 
         for (int i = 0; i < filtered.Length; i++)
         {
             int id = filtered[i];
-            _shootedBullets[id].ExecuteHit(_results[id].point, _results[id].normal);
+            shootedProjectel[id].ExecuteHit(results[id].point, results[id].normal);
         }
 
         filtered.Dispose();
@@ -110,11 +92,11 @@ public class BulletsController : MonoBehaviour, IService
 
     private void UpdateLifeTime()
     {
-        for (int i = 0; i < _shootedBullets.Count; i++)
+        for (int i = 0; i < shootedProjectel.Count; i++)
         {
-            if (_shootedBullets[i].UpdateLifeTime() || _shootedBullets[i].ToReturn)
+            if (shootedProjectel[i].UpdateLifeTime() || shootedProjectel[i].ToReturn)
             {
-                _shootedBullets.RemoveAt(i);
+                shootedProjectel.RemoveAt(i);
                 i--;
             }
         }
@@ -123,6 +105,25 @@ public class BulletsController : MonoBehaviour, IService
     private void OnDisable()
     {
         DisposeData();
+    }
+}
+
+public class BulletsController : ProjectelController<BulletWrapper>, IService
+{
+    protected override void SheludeMoving()
+    {
+        deltaTime = Time.deltaTime;
+
+        for (int i = 0; i < shootedProjectel.Count; i++)
+        {
+            Vector3 pos = shootedProjectel[i].Transform.position;
+            Vector3 moveDelta = shootedProjectel[i].Direction * shootedProjectel[i].Velocity * deltaTime;
+
+            RaycastCommand raycastCommand = new RaycastCommand(pos, moveDelta, moveDelta.magnitude, layerMask.value);
+            raycastCommands.AddNoResize(raycastCommand);
+
+            shootedProjectel[i].Transform.position += moveDelta;
+        }
     }
 }
 

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using static UnityEngine.GraphicsBuffer;
 
-public class ProjectileWrapper : MonoBehaviour
+public class ProjectileWrapper
 {
     private PoolObject _projectel;
     private Transform _projectelTransform;
@@ -76,20 +76,28 @@ public class BulletWrapper : ProjectileWrapper
     }
 }
 
-public class RocketWeapper : ProjectileWrapper
+public class RocketWrapper : ProjectileWrapper
 {
     private float _inertion;
     private float _maxVelocity;
     private Vector3 _direction;
+    private Vector3 _delta;
 
+    public Vector3 Delta => _delta; 
     public Vector3 TargetPos => target.TargetTransform.position;
     public RocketMovementStruct RocketMovement => new RocketMovementStruct(_inertion, _maxVelocity, _direction);
 
-    public RocketWeapper(PoolObject projectel, ITargetable target, float lifeTime, int damage, float inertion, float maxVeloctity, Vector3 direction) : base(projectel, target, lifeTime, damage)
+    public RocketWrapper(PoolObject projectel, ITargetable target, float lifeTime, int damage, float inertion, float maxVeloctity, Vector3 direction) : base(projectel, target, lifeTime, damage)
     {
         _inertion = inertion;
         _maxVelocity = maxVeloctity;
         _direction = direction;
+    }
+
+    public void MoveRocket(Vector3 delta, Vector3 direction)
+    {
+        _delta = delta;
+        _direction = direction; 
     }
 }
 
