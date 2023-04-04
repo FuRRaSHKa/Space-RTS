@@ -10,7 +10,7 @@ public class RocketsController : ProjectelController<RocketWrapper>, IService
 
         for (int i = 0; i < shootedProjectel.Count; i++)
         {
-            CalculateRoketMove(shootedProjectel[i]);
+            CalculateRocketMove(shootedProjectel[i], out Vector3 pos, out Vector3 moveDelta);
 
             RaycastCommand raycastCommand = new RaycastCommand(pos, moveDelta, moveDelta.magnitude, layerMask.value);
             raycastCommands.AddNoResize(raycastCommand);
@@ -19,9 +19,15 @@ public class RocketsController : ProjectelController<RocketWrapper>, IService
         }
     }
 
-    private void CalculateRoketMove(RocketWrapper rocket)
+    private void CalculateRocketMove(RocketWrapper rocket, out Vector3 pos, out Vector3 moveDelta)
     {
-        Vector3 pos = shootedProjectel[i].Transform.position;
-        Vector3 moveDelta = shootedProjectel[i].Direction * shootedProjectel[i].Velocity * deltaTime;
+        pos = rocket.Transform.position;
+        RocketMovementStruct rocketMovementStruct = rocket.RocketMovement;
+
+        Vector3 targetDirection = (rocket.TargetPos - pos).normalized;
+        Vector3 currentDirection = Vector3.Lerp(rocketMovementStruct.currentVelocity, targetDirection * rocketMovementStruct.maxVelocity, rocketMovementStruct.inertia);
+
+        moveDelta =  currentDirection * deltaTime;
+        rocket.MoveRocket(currentDirection);
     }
 }

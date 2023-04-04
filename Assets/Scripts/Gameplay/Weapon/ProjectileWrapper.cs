@@ -81,35 +81,32 @@ public class RocketWrapper : ProjectileWrapper
     private float _inertion;
     private float _maxVelocity;
     private Vector3 _direction;
-    private Vector3 _delta;
 
-    public Vector3 Delta => _delta; 
     public Vector3 TargetPos => target.TargetTransform.position;
     public RocketMovementStruct RocketMovement => new RocketMovementStruct(_inertion, _maxVelocity, _direction);
 
-    public RocketWrapper(PoolObject projectel, ITargetable target, float lifeTime, int damage, float inertion, float maxVeloctity, Vector3 direction) : base(projectel, target, lifeTime, damage)
+    public RocketWrapper(PoolObject projectel, ITargetable target, float lifeTime, int damage, float inertia, float maxVeloctity, Vector3 direction) : base(projectel, target, lifeTime, damage)
     {
-        _inertion = inertion;
+        _inertion = inertia;
         _maxVelocity = maxVeloctity;
         _direction = direction;
     }
 
-    public void MoveRocket(Vector3 delta, Vector3 direction)
+    public void MoveRocket(Vector3 direction)
     {
-        _delta = delta;
-        _direction = direction; 
+        _direction = direction;
     }
 }
 
 public readonly struct RocketMovementStruct
 {
-    public readonly float inertion;
+    public readonly float inertia;
     public readonly float maxVelocity;
     public readonly Vector3 currentVelocity;
 
     public RocketMovementStruct(float inertion, float maxVelocity, Vector3 currentVelocity)
     {
-        this.inertion = inertion;
+        this.inertia = inertion;
         this.maxVelocity = maxVelocity;
         this.currentVelocity = currentVelocity;
     }

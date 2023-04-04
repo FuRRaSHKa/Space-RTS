@@ -7,6 +7,7 @@ public class ProviderBuilder : MonoBehaviour
     [SerializeField] private GameInitiliazer _gameInitiliazer;
     [SerializeField] private ShipSpawner _shipSpawner;
     [SerializeField] private BulletsController _bulletsController;
+    [SerializeField] private RocketsController _rocketsController;
 
     private IServiceProvider _serviceProvider;
 
@@ -27,6 +28,12 @@ public class ProviderBuilder : MonoBehaviour
         _serviceProvider = new ServiceProvider();
 
         _shipSpawner.InitProvider(_serviceProvider);
+
+        RegisterServices();
+    }
+
+    private void RegisterServices()
+    {
         _serviceProvider.AddService<IShipsFactory>(_shipSpawner);
 
         IInput input = new MouseInput();
@@ -36,5 +43,12 @@ public class ProviderBuilder : MonoBehaviour
         _serviceProvider.AddService(weaponFactory);
 
         _serviceProvider.AddService<BulletsController>(_bulletsController);
+        _serviceProvider.AddService<RocketsController>(_rocketsController);
+
+        BulletSpawner bulletSpawner = new BulletSpawner(_bulletsController);
+        RocketSpawner rocketsController = new RocketSpawner(_rocketsController);
+
+        _serviceProvider.AddService(bulletSpawner);
+        _serviceProvider.AddService(rocketsController);
     }
 }

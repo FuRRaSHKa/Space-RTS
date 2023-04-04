@@ -24,7 +24,7 @@ public abstract class ProjectelController<TProjectel> : MonoBehaviour where TPro
         results = new NativeList<RaycastHit>(10, Allocator.Persistent);
     }
 
-    public void AddBullet(TProjectel projectelWrapper)
+    public void AddProjectel(TProjectel projectelWrapper)
     {
         shootedProjectel.Add(projectelWrapper);
     }

@@ -5,8 +5,9 @@ using UnityEngine;
 public enum WeaponeType
 {
     Ray,
-    Projectile
-}
+    Projectile,
+    Rocket
+} 
 
 [CreateAssetMenu(fileName = "WeaponData", menuName = "Data/Weapons/WeaponData")]
 public class WeaponData : ScriptableObject
