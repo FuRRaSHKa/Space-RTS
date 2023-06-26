@@ -230,6 +230,7 @@ GameObject:
   m_Component:
   - component: {fileID: 102239043}
   - component: {fileID: 102239044}
+  - component: {fileID: 102239045}
   m_Layer: 0
   m_Name: GameObjectBulletController
   m_TagString: Untagged
@@ -264,7 +265,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 68a1497fd5508994499be7c4e1aa605b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _layerMask:
+  layerMask:
+    serializedVersion: 2
+    m_Bits: 256
+--- !u!114 &102239045
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 102239042}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 07d3bdbeeea30264aa7055f5a3c22c74, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  layerMask:
     serializedVersion: 2
     m_Bits: 256
 --- !u!1 &227869397
@@ -467,6 +483,8 @@ MonoBehaviour:
   _poolPairs:
   - Prefab: {fileID: 2012335927988370129, guid: e89d2ffd9bc7ead4f9bb2195fd1cc4e9, type: 3}
     PrespawnedCount: 30
+  - Prefab: {fileID: 2012335927988370129, guid: dd67cce7a217aca4e8a8abe0331d204c, type: 3}
+    PrespawnedCount: 10
   _spawnPoint: {fileID: 767109921}
 --- !u!1 &451834344
 GameObject:
@@ -1316,6 +1334,7 @@ MonoBehaviour:
   _gameInitiliazer: {fileID: 2122716754}
   _shipSpawner: {fileID: 451834346}
   _bulletsController: {fileID: 102239044}
+  _rocketsController: {fileID: 102239045}
 --- !u!114 &2122716758
 MonoBehaviour:
   m_ObjectHideFlags: 0

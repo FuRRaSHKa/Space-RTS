@@ -29,6 +29,9 @@ public class ProjectileVisual : MonoBehaviour
 
     private void ShowShootEffect(ITargetable targetable)
     {
+        if (_particleSystem.Length <= 0)
+            return;
+
         _particleSystem[_curId].Play();
         _curId++;
         _curId %= _particleSystem.Length;

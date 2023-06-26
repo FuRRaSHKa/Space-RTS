@@ -136,8 +136,6 @@ public struct RaycastResultJob : IJobParallelFor
     public void Execute(int index)
     {
         if (results[index].colliderInstanceID == colliderIDs[index])
-        {
             filtered.AddNoResize(index);
-        }
     }
 }

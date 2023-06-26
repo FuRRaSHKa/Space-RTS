@@ -53,7 +53,9 @@ public class RocketSpawner : IProjecterCreator
         rocketPoolObject.transform.position = parent.position;
         rocketPoolObject.transform.rotation = Quaternion.LookRotation(direction);
 
-        RocketWrapper rocketWrapper = new RocketWrapper(rocketPoolObject, targetable, rocketData.Lifetime, damage, rocketData.Inertia, rocketData.Speed, direction);
+        RocketWrapper rocketWrapper = new RocketWrapper(rocketPoolObject, targetable, rocketData.Lifetime, damage, rocketData.RotationSpeed,
+            rocketData.Speed, rocketData.Acceleration, rocketData.RotationAcceleration, rocketData.StartSpeed, direction);
+
         _rocketsController.AddProjectel(rocketWrapper);
 
         return rocketWrapper;

@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ee0b8a22a0769114aa0a3935901d675f, type: 3}
+  m_Name: RocketData
+  m_EditorClassIdentifier: 
+  _projectelPrefab: {fileID: 2012335927988370129, guid: dd67cce7a217aca4e8a8abe0331d204c, type: 3}
+  _speed: 20
+  _lifetime: 10
+  _rotationSpeed: 180
+  _rotationAcceleration: 180
+  _startSpeed: 1
+  _acceleration: 5

@@ -78,36 +78,54 @@ public class BulletWrapper : ProjectileWrapper
 
 public class RocketWrapper : ProjectileWrapper
 {
-    private float _inertion;
-    private float _maxVelocity;
+    private readonly float _maxRotationSpeed;
+    private readonly float _maxSpeed;
+    private readonly float _acceleration;
+    private readonly float _rotationAcceleration;
+
+    private float _currentSpeed;
+    private float _currentRotationSpeed;
     private Vector3 _direction;
 
     public Vector3 TargetPos => target.TargetTransform.position;
-    public RocketMovementStruct RocketMovement => new RocketMovementStruct(_inertion, _maxVelocity, _direction);
+    public RocketMovementStruct RocketMovement => new RocketMovementStruct(_maxRotationSpeed, _maxSpeed, _acceleration, _currentSpeed, _rotationAcceleration, _currentRotationSpeed, _direction);
 
-    public RocketWrapper(PoolObject projectel, ITargetable target, float lifeTime, int damage, float inertia, float maxVeloctity, Vector3 direction) : base(projectel, target, lifeTime, damage)
+    public RocketWrapper(PoolObject projectel, ITargetable target, float lifeTime, int damage, float rotationSpeed, float maxSpeed, float acceleration, float rotationAcceleration, float startSpeed,Vector3 direction) : base(projectel, target, lifeTime, damage)
     {
-        _inertion = inertia;
-        _maxVelocity = maxVeloctity;
-        _direction = direction;
+        _rotationAcceleration = rotationAcceleration;
+        _acceleration = acceleration;
+        _maxRotationSpeed = rotationSpeed;
+        _maxSpeed = maxSpeed;
+        _direction = direction * startSpeed;
+        _currentSpeed = startSpeed;
     }
 
-    public void MoveRocket(Vector3 direction)
+    public void MoveRocket(Vector3 direction, float currentSpeed, float currentRotationSpeed)
     {
+        _currentRotationSpeed = currentRotationSpeed;
+        _currentSpeed = currentSpeed;
         _direction = direction;
     }
 }
 
 public readonly struct RocketMovementStruct
 {
-    public readonly float inertia;
-    public readonly float maxVelocity;
-    public readonly Vector3 currentVelocity;
+    public readonly float maxRotationSpeed;
+    public readonly float maxSpeed;
+    public readonly float acceleration;
+    public readonly float currentSpeed;
+    public readonly float currentRotationSpeed;
+    public readonly float rotationAcceleration;
+    public readonly Vector3 direction;
 
-    public RocketMovementStruct(float inertion, float maxVelocity, Vector3 currentVelocity)
+    public RocketMovementStruct(float maxRotationSpeed, float maxSpeed, float acceleration, float currentSpeed, float rotationAcceleration, float currentRotationSpeed, Vector3 direction)
     {
-        this.inertia = inertion;
-        this.maxVelocity = maxVelocity;
-        this.currentVelocity = currentVelocity;
+        this.currentRotationSpeed = currentRotationSpeed;
+        this.rotationAcceleration = rotationAcceleration;
+        this.currentSpeed = currentSpeed;
+        this.acceleration = acceleration;
+        this.maxRotationSpeed = maxRotationSpeed;
+        this.maxSpeed = maxSpeed;
+        this.direction = direction;
     }
 }

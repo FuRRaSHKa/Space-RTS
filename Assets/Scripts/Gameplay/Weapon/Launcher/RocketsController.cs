@@ -10,6 +10,7 @@ public class RocketsController : ProjectelController<RocketWrapper>, IService
 
         for (int i = 0; i < shootedProjectel.Count; i++)
         {
+
             CalculateRocketMove(shootedProjectel[i], out Vector3 pos, out Vector3 moveDelta);
 
             RaycastCommand raycastCommand = new RaycastCommand(pos, moveDelta, moveDelta.magnitude, layerMask.value);
@@ -21,13 +22,16 @@ public class RocketsController : ProjectelController<RocketWrapper>, IService
 
     private void CalculateRocketMove(RocketWrapper rocket, out Vector3 pos, out Vector3 moveDelta)
     {
-        pos = rocket.Transform.position;
         RocketMovementStruct rocketMovementStruct = rocket.RocketMovement;
+        pos = rocket.Transform.position;
 
-        Vector3 targetDirection = (rocket.TargetPos - pos).normalized;
-        Vector3 currentDirection = Vector3.Lerp(rocketMovementStruct.currentVelocity, targetDirection * rocketMovementStruct.maxVelocity, rocketMovementStruct.inertia);
+        float rotationSpeed = Mathf.MoveTowards(rocketMovementStruct.currentRotationSpeed, rocketMovementStruct.maxRotationSpeed, rocketMovementStruct.rotationAcceleration * deltaTime);
+        rocket.Transform.rotation = Quaternion.RotateTowards(rocket.Transform.rotation, Quaternion.LookRotation((rocket.TargetPos - rocket.Transform.position).normalized), rocketMovementStruct.currentRotationSpeed * deltaTime);
 
-        moveDelta =  currentDirection * deltaTime;
-        rocket.MoveRocket(currentDirection);
+        float speed = Mathf.MoveTowards(rocketMovementStruct.currentSpeed, rocketMovementStruct.maxSpeed, rocketMovementStruct.acceleration * deltaTime);
+        Vector3 currentDirection = rocket.Transform.forward * speed;
+
+        moveDelta = currentDirection * deltaTime;
+        rocket.MoveRocket(currentDirection, speed, rotationSpeed);
     }
 }

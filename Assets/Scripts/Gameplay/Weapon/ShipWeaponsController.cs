@@ -45,6 +45,9 @@ public class ShipWeaponsController : MonoBehaviour, IInitilizable<ShipInitilizat
 
     public void Shoot(ITargetable targetable)
     {
+        if (targetable.TargetDataObservable.IsDead)
+            return;
+
         foreach (var weapon in _weaponList)
         {
             weapon.StartShooting(targetable);

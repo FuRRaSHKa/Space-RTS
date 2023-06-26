@@ -60,8 +60,8 @@ public class WeaponController : MonoBehaviour, IWeapon, IInitilizable<WeaponData
 
     private void Shoot()
     {
-        _shooter.Shoot(_target);
-        OnShooting(_target);
         _currentTime = 0;
+        _shooter.Shoot(_target);
+        OnShooting(_target);     
     }
 }

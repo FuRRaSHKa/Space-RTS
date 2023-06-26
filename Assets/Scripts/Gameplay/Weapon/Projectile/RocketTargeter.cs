@@ -4,9 +4,6 @@ using UnityEngine;
 
 public class RocketTargeter : MonoBehaviour, IWeaponTargeter, IInitilizable<WeaponData>
 {
-    [SerializeField] private Transform _rotationPart;
-    [SerializeField] private Transform _basement;
-
     private ITargetable _targetable;
 
     public float AngleDelta => 0;

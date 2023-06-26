@@ -6,7 +6,7 @@ using UnityEngine;
 public class ProjectileShooter : MonoBehaviour, IShooter, IInitilizable<WeaponData>
 {
     [SerializeField] private List<Transform> _spawnPoints;
-    [SerializeField] private BulletData _bulletData;
+    [SerializeField] private ProjectelData _bulletData;
 
     private int _damage;
     private int _spawnPointId = 0;
