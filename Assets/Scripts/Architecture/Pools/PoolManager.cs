@@ -46,7 +46,6 @@ namespace HalloGames.Architecture.PoolSystem
     [Serializable]
     public struct PoolPair
     {
-        public string Name;
         public int PrebakedCount;
         public bool KeepWhenSceneChanged;
         public PoolObject prefab;

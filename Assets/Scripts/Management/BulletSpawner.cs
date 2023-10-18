@@ -28,7 +28,7 @@ namespace HalloGames.SpaceRTS.Management.Factories
             if (bulletData == null)
                 return null;
 
-            PoolObject bulletPoolObject = PoolManager.Instance[bulletData.ProjectelPrefab].GetObject();
+            PoolObject bulletPoolObject = PoolManager.Instance[bulletData.ProjectelPrefab].SpawnObject();
             bulletPoolObject.transform.position = parent.position;
             bulletPoolObject.transform.rotation = Quaternion.LookRotation(direction);
 
@@ -54,7 +54,7 @@ namespace HalloGames.SpaceRTS.Management.Factories
             if (rocketData == null)
                 return null;
 
-            PoolObject rocketPoolObject = PoolManager.Instance[rocketData.ProjectelPrefab].GetObject();
+            PoolObject rocketPoolObject = PoolManager.Instance[rocketData.ProjectelPrefab].SpawnObject();
             rocketPoolObject.transform.position = parent.position;
             rocketPoolObject.transform.rotation = Quaternion.LookRotation(direction);
 

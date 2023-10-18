@@ -63,10 +63,5 @@ namespace HalloGames.Architecture.PoolSystem
         {
             poolObject.transform.SetParent(_spawnPoint, false);
         }
-
-        internal PoolObject GetObject()
-        {
-            throw new System.NotImplementedException();
-        }
     }
 }

@@ -17,5 +17,5 @@ MonoBehaviour:
   _maxAngleDeviation: 1
   _damage: 30
   _distance: 50
-  _weaponeType: 2
+  _weaponType: 2
   _weaponPrefab: {fileID: 1852445092891910645, guid: 58ca04f32185a99459ba414580d0c110, type: 3}

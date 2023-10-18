@@ -477,15 +477,19 @@ MonoBehaviour:
   m_GameObject: {fileID: 373795635}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 608c3ce7ee269d44593249192f5f0276, type: 3}
+  m_Script: {fileID: 11500000, guid: 07953aa703d909e4d9109e59fc0b0b5f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _defaultSpawnPoint: {fileID: 767109921}
   _poolPairs:
-  - Prefab: {fileID: 2012335927988370129, guid: e89d2ffd9bc7ead4f9bb2195fd1cc4e9, type: 3}
-    PrespawnedCount: 30
-  - Prefab: {fileID: 2012335927988370129, guid: dd67cce7a217aca4e8a8abe0331d204c, type: 3}
-    PrespawnedCount: 10
-  _spawnPoint: {fileID: 767109921}
+  - Name: 
+    PrebakedCount: 20
+    KeepWhenSceneChanged: 0
+    prefab: {fileID: 2012335927988370129, guid: e89d2ffd9bc7ead4f9bb2195fd1cc4e9, type: 3}
+  - Name: 
+    PrebakedCount: 5
+    KeepWhenSceneChanged: 0
+    prefab: {fileID: 2012335927988370129, guid: dd67cce7a217aca4e8a8abe0331d204c, type: 3}
 --- !u!1 &451834344
 GameObject:
   m_ObjectHideFlags: 0
@@ -765,7 +769,7 @@ GameObject:
   m_Component:
   - component: {fileID: 767109921}
   m_Layer: 0
-  m_Name: PoolManger
+  m_Name: PoolManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
