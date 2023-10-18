@@ -1,41 +1,44 @@
-using System.Collections;
-using System.Collections.Generic;
+using HalloGames.SpaceRTS.Data.Enums;
+using HalloGames.SpaceRTS.Gameplay.Targets;
 using UnityEngine;
 
-public class ShipControlInterpreter : MonoBehaviour, IControllable
+namespace HalloGames.SpaceRTS.Gameplay.Ship.Control
 {
-    private SelectGFXController _selectGFXController;
-    private ShipEntity _entity;
-
-    private void Awake()
+    public class ShipControlInterpreter : MonoBehaviour, IControllable
     {
-        _selectGFXController = GetComponentInParent<SelectGFXController>();
-        _entity = GetComponentInParent<ShipEntity>();
-    }
+        private SelectGFXController _selectGFXController;
+        private ShipEntity _entity;
 
-    public void DeSelect()
-    {
-        _selectGFXController.DeSelect();
-    }
+        private void Awake()
+        {
+            _selectGFXController = GetComponentInParent<SelectGFXController>();
+            _entity = GetComponentInParent<ShipEntity>();
+        }
 
-    public void Select()
-    {
-        _selectGFXController.Select();    
-    }
+        public void DeSelect()
+        {
+            _selectGFXController.DeSelect();
+        }
 
-    public void Target(ITargetable target)
-    {
-        if(target.Side != _entity.Side)
-            _entity.WeaponController.Shoot(target);
-    }
+        public void Select()
+        {
+            _selectGFXController.Select();
+        }
 
-    public void TargetPosition(Vector3 target)
-    {
-        _entity.ShipMovement.MoveTo(target);
-    }
+        public void Target(ITargetable target)
+        {
+            if (target.Side != _entity.Side)
+                _entity.WeaponController.Shoot(target);
+        }
 
-    public bool IsEnableToControl(SideData side)
-    {
-        return _entity.Side == side;
+        public void TargetPosition(Vector3 target)
+        {
+            _entity.ShipMovement.MoveTo(target);
+        }
+
+        public bool IsEnableToControl(SideData side)
+        {
+            return _entity.Side == side;
+        }
     }
 }

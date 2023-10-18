@@ -1,18 +1,21 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class SelectGFXController : MonoBehaviour, ISelectable
+namespace HalloGames.SpaceRTS.Gameplay.Ship.Control
 {
-    [SerializeField] private GameObject _gfxObject;
-
-    public void Select()
+    public class SelectGFXController : MonoBehaviour, ISelectable
     {
-        _gfxObject.SetActive(true);
-    }
+        [SerializeField] private GameObject _gfxObject;
 
-    public void DeSelect()
-    {
-        _gfxObject.SetActive(false);
+        public void Select()
+        {
+            _gfxObject.SetActive(true);
+        }
+
+        public void DeSelect()
+        {
+            _gfxObject.SetActive(false);
+        }
     }
 }
+
+

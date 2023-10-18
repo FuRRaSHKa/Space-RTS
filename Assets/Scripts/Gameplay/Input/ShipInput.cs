@@ -1,69 +1,76 @@
-using System.Collections;
-using System.Collections.Generic;
+using HalloGames.SpaceRTS.Data.Enums;
+using HalloGames.SpaceRTS.Gameplay.Ship.Control;
+using HalloGames.SpaceRTS.Gameplay.Targets;
 using UnityEngine;
 
-public class ShipInput : MonoBehaviour
+namespace HalloGames.SpaceRTS.Management.Input
 {
-    [SerializeField] private SideData _playerSide;
-
-    private IControllable _currentObject;
-    private IInput _input;
-
-    public void Initilize(IInput input)
+    public class ShipInput : MonoBehaviour
     {
-        _input = input;
+        [SerializeField] private SideData _playerSide;
 
-        _input.OnChoosingClick += ChooseClick;
-        _input.OnTargetingClick += TargetClick;
-    }
+        private IControllable _currentObject;
+        private IInput _input;
 
-    private void ChooseClick()
-    {
-        GameObject chosedObject = ObjectClicker.Instance.GetCurrentObject();
-        if (chosedObject != null)
+        public void Initilize(IInput input)
         {
-            if (chosedObject.TryGetComponent(out IControllable controllable))
+            _input = input;
+
+            _input.OnChoosingClick += ChooseClick;
+            _input.OnTargetingClick += TargetClick;
+        }
+
+        private void ChooseClick()
+        {
+            GameObject chosedObject = ObjectClicker.Instance.GetCurrentObject();
+            if (chosedObject != null)
             {
-                if(controllable != _currentObject)
+                if (chosedObject.TryGetComponent(out IControllable controllable))
                 {
-                    _currentObject?.DeSelect();
-                    _currentObject = controllable;
-                    _currentObject?.Select();
+                    if (controllable != _currentObject)
+                    {
+                        _currentObject?.DeSelect();
+                        _currentObject = controllable;
+                        _currentObject?.Select();
+                    }
+
+                    return;
                 }
-                
-                return;
+            }
+
+            if (_currentObject != null)
+            {
+                _currentObject.DeSelect();
+                _currentObject = null;
             }
         }
 
-        if (_currentObject != null)
+        private void TargetClick()
         {
-            _currentObject.DeSelect();
-            _currentObject = null;
+            if (_currentObject != null && _currentObject.IsEnableToControl(_playerSide))
+            {
+                GameObject gameObject = ObjectClicker.Instance.GetCurrentObject();
+                if (gameObject != null && gameObject.TryGetComponent(out ITargetable targetable))
+                    _currentObject.Target(targetable);
+                else
+                    _currentObject.TargetPosition(ObjectClicker.Instance.GetWorldMousePos());
+            }
         }
     }
+}
 
-    private void TargetClick()
+namespace HalloGames.SpaceRTS.Gameplay.Ship.Control
+{
+    public interface ISelectable
     {
-        if (_currentObject != null && _currentObject.IsEnableToControl(_playerSide))
-        {
-            GameObject gameObject = ObjectClicker.Instance.GetCurrentObject();
-            if (gameObject != null && gameObject.TryGetComponent(out ITargetable targetable))
-                _currentObject.Target(targetable);
-            else
-                _currentObject.TargetPosition(ObjectClicker.Instance.GetWorldMousePos());
-        }
+        public void Select();
+        public void DeSelect();
     }
-}
 
-public interface ISelectable
-{
-    public void Select();
-    public void DeSelect();
-}
-
-public interface IControllable : ISelectable
-{
-    public bool IsEnableToControl(SideData side); 
-    public void Target(ITargetable target);
-    public void TargetPosition(Vector3 target);
+    public interface IControllable : ISelectable
+    {
+        public bool IsEnableToControl(SideData side);
+        public void Target(ITargetable target);
+        public void TargetPosition(Vector3 target);
+    }
 }

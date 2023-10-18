@@ -1,30 +1,36 @@
-using System.Collections;
-using System.Collections.Generic;
+using HalloGames.Architecture.Initilizer;
+using HalloGames.SpaceRTS.Data.Enums;
+using HalloGames.SpaceRTS.Data.Ships;
+using HalloGames.SpaceRTS.Gameplay.Ship.Weapons;
+using HalloGames.SpaceRTS.Management.Factories;
 using UnityEngine;
 
-public class ShipInitilizer : AbstractInitilizer<ShipInitilizationData>
+namespace HalloGames.SpaceRTS.Management.Initialization
 {
-    [SerializeField] private ShipWeaponsController _shipWeapons;
-
-    protected override void Awake()
+    public class ShipInitilizer : AbstractInitilizer<ShipInitilizationData>
     {
-        base.Awake();
+        [SerializeField] private ShipWeaponsController _shipWeapons;
+
+        protected override void Awake()
+        {
+            base.Awake();
+        }
+
+        public void InitServices(IWeaponFactory weaponFactory)
+        {
+            _shipWeapons.InitWeaponeFactory(weaponFactory);
+        }
     }
 
-    public void InitServices(IWeaponFactory weaponFactory)
+    public readonly struct ShipInitilizationData
     {
-        _shipWeapons.InitWeaponeFactory(weaponFactory);
-    }
-}
+        public readonly SideData SideData;
+        public readonly ShipData ShipData;
 
-public readonly struct ShipInitilizationData
-{
-    public readonly SideData SideData;
-    public readonly ShipData ShipData;
-
-    public ShipInitilizationData(ShipData shipData, SideData sideData)
-    {
-        SideData = sideData;
-        ShipData = shipData;
+        public ShipInitilizationData(ShipData shipData, SideData sideData)
+        {
+            SideData = sideData;
+            ShipData = shipData;
+        }
     }
 }

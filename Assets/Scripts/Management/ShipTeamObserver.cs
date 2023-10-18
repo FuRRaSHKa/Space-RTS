@@ -1,31 +1,34 @@
+using HalloGames.SpaceRTS.Data.Enums;
+using HalloGames.SpaceRTS.Gameplay.Ship;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 
-public class ShipTeamObserver
+namespace HalloGames.SpaceRTS.Management.ShipManagement
 {
-    private SideData _sideData;
-    private List<ShipEntity> _ships;
-
-    public event Action OnAllDies;
-
-    public ShipTeamObserver(SideData sideData, List<ShipEntity> ships)
+    public class ShipTeamObserver
     {
-        _sideData = sideData;
-        _ships = ships;
-    }
+        private SideData _sideData;
+        private List<ShipEntity> _ships;
 
-    public void StartObserving()
-    {
-        foreach (var ship in _ships)
+        public event Action OnAllDies;
+
+        public ShipTeamObserver(SideData sideData, List<ShipEntity> ships)
         {
-            
+            _sideData = sideData;
+            _ships = ships;
         }
-    }
 
-    private void ShipDeath()
-    {
+        public void StartObserving()
+        {
+            foreach (var ship in _ships)
+            {
 
+            }
+        }
+
+        private void ShipDeath()
+        {
+
+        }
     }
 }

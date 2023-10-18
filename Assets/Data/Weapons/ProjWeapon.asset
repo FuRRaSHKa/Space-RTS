@@ -15,7 +15,7 @@ MonoBehaviour:
   _rotaionSpeed: 180
   _shootTime: 0.1
   _maxAngleDeviation: 1
-  _damage: 30
+  _damage: 1
   _distance: 50
   _weaponeType: 1
   _weaponPrefab: {fileID: 1852445092891910645, guid: 2997c2c90c010b049966935b5554de4b, type: 3}

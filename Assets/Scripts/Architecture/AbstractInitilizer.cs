@@ -2,40 +2,43 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class AbstractInitilizer<TData> : MonoBehaviour
+namespace HalloGames.Architecture.Initilizer
 {
-    protected IInitilizable<TData>[] _initilizables;
-    protected IDeInitilizable[] _deInitilizables;
-
-    protected virtual void Awake()
+    public abstract class AbstractInitilizer<TData> : MonoBehaviour
     {
-        _deInitilizables = GetComponentsInChildren<IDeInitilizable>();
-        _initilizables = GetComponentsInChildren<IInitilizable<TData>>();
-    }
+        protected IInitilizable<TData>[] _initilizables;
+        protected IDeInitilizable[] _deInitilizables;
 
-    public virtual void Initilize(TData data)
-    {
-        foreach (var item in _initilizables)
+        protected virtual void Awake()
         {
-            item.Init(data);
+            _deInitilizables = GetComponentsInChildren<IDeInitilizable>();
+            _initilizables = GetComponentsInChildren<IInitilizable<TData>>();
+        }
+
+        public virtual void Initilize(TData data)
+        {
+            foreach (var item in _initilizables)
+            {
+                item.Init(data);
+            }
+        }
+
+        public virtual void DeInitilize()
+        {
+            foreach (var item in _deInitilizables)
+            {
+                item.DeInit();
+            }
         }
     }
 
-    public virtual void DeInitilize()
+    public interface IInitilizable<TData>
     {
-        foreach (var item in _deInitilizables)
-        {
-            item.DeInit();
-        }
+        public void Init(TData data);
     }
-}
 
-public interface IInitilizable<TData>
-{
-    public void Init(TData data);
-}
-
-public interface IDeInitilizable
-{
-    public void DeInit();
+    public interface IDeInitilizable
+    {
+        public void DeInit();
+    }
 }

@@ -1,23 +1,36 @@
-using System.Collections;
-using System.Collections.Generic;
+using HalloGames.Architecture.Initilizer;
+using HalloGames.SpaceRTS.Data.Weapon;
+using HalloGames.SpaceRTS.Gameplay.Targets;
+using System;
 using UnityEngine;
 
-public interface IShooter
+namespace HalloGames.SpaceRTS.Gameplay.Guns.Targeter
 {
-    public void Shoot(ITargetable targetable);
-}
-
-public class RayShooter : MonoBehaviour, IShooter, IInitilizable<WeaponData>
-{
-    private int _damage;
-
-    public void Init(WeaponData data)
+    public interface IShooter
     {
-        _damage = data.Damage;
+        public event Action<Vector3, Vector3> OnDealDamage;
+        public event Action<ITargetable> OnShooting;
+
+        public void Shoot(ITargetable targetable);
     }
 
-    public void Shoot(ITargetable targetable)
+    public class RayShooter : MonoBehaviour, IShooter, IInitilizable<WeaponData>
     {
-        targetable.DealDamage(_damage);
+        private int _damage;
+
+        public event Action<Vector3, Vector3> OnDealDamage;
+        public event Action<ITargetable> OnShooting;
+
+        public void Init(WeaponData data)
+        {
+            _damage = data.Damage;
+        }
+
+        public void Shoot(ITargetable targetable)
+        {
+            targetable.DealDamage(_damage);
+            OnShooting?.Invoke(targetable);
+        }
     }
 }
+

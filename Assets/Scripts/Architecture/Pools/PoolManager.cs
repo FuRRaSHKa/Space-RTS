@@ -1,37 +1,54 @@
-using System.Collections;
+using HalloGames.Architecture.Singletones;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PoolManager : MonoSingletone<PoolManager>
+namespace HalloGames.Architecture.PoolSystem
 {
-    [SerializeField] private List<PoolPair> _poolPairs;
-    [SerializeField] private Transform _spawnPoint;
-
-    private Dictionary<PoolObject, Pool> _pairs = new Dictionary<PoolObject, Pool>();
-
-    public Pool this[PoolObject key] 
+    public class PoolManager : MonoSingleton<PoolManager>
     {
-        get
+        [SerializeField] private Transform _defaultSpawnPoint;
+        [SerializeField] private PoolPair[] _poolPairs;
+
+        private Dictionary<PoolObject, ObjectPool> _pools;
+
+        protected override void OverridedAwake()
         {
-            return _pairs[key];
+            _pools = new Dictionary<PoolObject, ObjectPool>(_poolPairs.Length);
+            foreach (var pair in _poolPairs)
+            {
+                ObjectPool pool = new ObjectPool(pair.prefab, _defaultSpawnPoint, pair.PrebakedCount, pair.KeepWhenSceneChanged);
+                _pools.Add(pair.prefab, pool);
+            }
+        }
+
+        public ObjectPool this[PoolObject key]
+        {
+            get
+            {
+                if (!_pools.ContainsKey(key))
+                    throw new NullReferenceException("There is no pool with that name");
+
+                return _pools[key];
+            }
+        }
+
+        public void ReturnPools()
+        {
+            foreach (var pool in _pools.Values)
+            {
+                if (!pool.KeepWhenSceneChanged)
+                    pool.ReturnAllToPools();
+            }
         }
     }
 
-    protected override void Awake()
+    [Serializable]
+    public struct PoolPair
     {
-        base.Awake();
-
-        foreach (var pair in _poolPairs)
-        {
-            Pool pool = new Pool(pair.Prefab, pair.PrespawnedCount, _spawnPoint);
-            _pairs.Add(pair.Prefab, pool);
-        }
+        public string Name;
+        public int PrebakedCount;
+        public bool KeepWhenSceneChanged;
+        public PoolObject prefab;
     }
-}
-
-[System.Serializable]
-public struct PoolPair
-{
-    public PoolObject Prefab;
-    public int PrespawnedCount;
 }

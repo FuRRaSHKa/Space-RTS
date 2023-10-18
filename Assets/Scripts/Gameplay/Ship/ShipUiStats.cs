@@ -1,19 +1,22 @@
-using System.Collections;
+using HalloGames.SpaceRTS.Data.Enums;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ShipUiStats : MonoBehaviour
+namespace HalloGames.SpaceRTS.Gameplay.Ship.Graphic
 {
-    [SerializeField] private List<StatBar> _statBars;
-    [SerializeField] private ShipEntity _shipEntity;
-   
-    private void Start()
+    public class ShipUiStats : MonoBehaviour
     {
-      
-    }
+        [SerializeField] private List<StatBar> _statBars;
+        [SerializeField] private ShipEntity _shipEntity;
 
-    private void StatChanged(StatData statData, int value)
-    {
-        
+        private void Start()
+        {
+
+        }
+
+        private void StatChanged(StatData statData, int value)
+        {
+
+        }
     }
 }

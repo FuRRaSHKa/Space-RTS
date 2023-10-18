@@ -1,40 +1,44 @@
-using System.Collections;
-using System.Collections.Generic;
+using HalloGames.Architecture.Services;
+using HalloGames.SpaceRTS.Data.Weapon;
+using HalloGames.SpaceRTS.Gameplay.Guns;
 using UnityEngine;
 
-public interface IWeaponFactory : IService
+namespace HalloGames.SpaceRTS.Management.Factories
 {
-    public IWeapon CreateWeapon(WeaponData weaponData, Transform parent);
-}
-
-public class WeaponFactory : IWeaponFactory
-{
-    private IServiceProvider _serviceProvider;
-
-    public WeaponFactory(IServiceProvider serviceProvider)
+    public interface IWeaponFactory : IService
     {
-        _serviceProvider = serviceProvider;
+        public IWeapon CreateWeapon(WeaponData weaponData, Transform parent);
     }
 
-    public IWeapon CreateWeapon(WeaponData weaponData, Transform parent)
+    public class WeaponFactory : IWeaponFactory
     {
-        WeaponInitilizer weapon = Object.Instantiate(weaponData.Prefab).GetComponent<WeaponInitilizer>();
-        weapon.transform.SetParent(parent);
-        weapon.transform.localRotation = Quaternion.identity;
-        weapon.transform.position = parent.position;
+        private IServiceProvider _serviceProvider;
 
-        weapon.Initilize(weaponData);
-        if (weaponData.WeaponeType == WeaponeType.Projectile)
+        public WeaponFactory(IServiceProvider serviceProvider)
         {
-            IProjecterCreator projecterCreator = _serviceProvider.GetService<BulletSpawner>();
-            weapon.GetComponent<ProjectileShooter>().InitProjectileCreator(projecterCreator);
-        }
-        else if (weaponData.WeaponeType == WeaponeType.Rocket)
-        {
-            IProjecterCreator projecterCreator = _serviceProvider.GetService<RocketSpawner>();
-            weapon.GetComponent<ProjectileShooter>().InitProjectileCreator(projecterCreator);
+            _serviceProvider = serviceProvider;
         }
 
-        return weapon.GetComponent<IWeapon>();
+        public IWeapon CreateWeapon(WeaponData weaponData, Transform parent)
+        {
+            WeaponInitilizer weapon = Object.Instantiate(weaponData.Prefab).GetComponent<WeaponInitilizer>();
+            weapon.transform.SetParent(parent);
+            weapon.transform.localRotation = Quaternion.identity;
+            weapon.transform.position = parent.position;
+
+            weapon.Initilize(weaponData);
+            if (weaponData.WeaponType == WeaponType.Projectile)
+            {
+                IProjecterCreator projecterCreator = _serviceProvider.GetService<BulletSpawner>();
+                weapon.GetComponent<SequenceProjectileShooter>().InitProjectileCreator(projecterCreator);
+            }
+            else if (weaponData.WeaponType == WeaponType.Rocket)
+            {
+                IProjecterCreator projecterCreator = _serviceProvider.GetService<RocketSpawner>();
+                weapon.GetComponent<SequenceProjectileShooter>().InitProjectileCreator(projecterCreator);
+            }
+
+            return weapon.GetComponent<IWeapon>();
+        }
     }
 }

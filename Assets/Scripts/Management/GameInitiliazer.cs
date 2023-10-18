@@ -1,39 +1,46 @@
-using System.Collections;
-using System.Collections.Generic;
+using HalloGames.Architecture.Services;
+using HalloGames.SpaceRTS.Management.CameraManagement;
+using HalloGames.SpaceRTS.Management.Factories;
+using HalloGames.SpaceRTS.Management.Initialization;
+using HalloGames.SpaceRTS.Management.Input;
+using HalloGames.SpaceRTS.Management.ShipManagement;
 using UnityEngine;
 
-public class GameInitiliazer : MonoBehaviour
+namespace HalloGames.SpaceRTS.Management
 {
-    [SerializeField] private CameraMover _cameraMover;
-    [SerializeField] private ShipInput _shipInput;
-    [SerializeField] private GameController _gameController;
-
-    private IShipsManager _shipsManager;
-    private IServiceProvider _serviceProvider;
-
-    public void Initilize(IServiceProvider serviceProvider)
+    public class GameInitiliazer : MonoBehaviour
     {
-        _serviceProvider = serviceProvider;
+        [SerializeField] private CameraMover _cameraMover;
+        [SerializeField] private ShipInput _shipInput;
+        [SerializeField] private GameController _gameController;
 
-        InitInput();
-        InitilizeShips();
+        private IShipsManager _shipsManager;
+        private IServiceProvider _serviceProvider;
 
-        InitGameController();
-    }
+        public void Initilize(IServiceProvider serviceProvider)
+        {
+            _serviceProvider = serviceProvider;
 
-    private void InitilizeShips()
-    {
-        _shipsManager = new ShipsManager(_serviceProvider.GetService<IShipsFactory>());
-    }
+            InitInput();
+            InitilizeShips();
 
-    private void InitGameController()
-    {
-        _gameController.InitController(_shipsManager);
-    }
+            InitGameController();
+        }
 
-    private void InitInput()
-    {
-        _shipInput.Initilize(_serviceProvider.GetService<IInput>());
-        _cameraMover.Initilize(_serviceProvider.GetService<IInput>());
+        private void InitilizeShips()
+        {
+            _shipsManager = new ShipsManager(_serviceProvider.GetService<IShipsFactory>());
+        }
+
+        private void InitGameController()
+        {
+            _gameController.InitController(_shipsManager);
+        }
+
+        private void InitInput()
+        {
+            _shipInput.Initilize(_serviceProvider.GetService<IInput>());
+            _cameraMover.Initilize(_serviceProvider.GetService<IInput>());
+        }
     }
 }

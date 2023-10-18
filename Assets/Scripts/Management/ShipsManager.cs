@@ -1,50 +1,57 @@
-using System.Collections;
+using HalloGames.SpaceRTS.Data.Enums;
+using HalloGames.SpaceRTS.Data.Team;
+using HalloGames.SpaceRTS.Gameplay.Ship;
+using HalloGames.SpaceRTS.Management.Factories;
 using System.Collections.Generic;
-using UnityEngine;
 
-public interface IShipsManager
+
+namespace HalloGames.SpaceRTS.Management.ShipManagement
 {
-    public void IntallTeams(List<TeamData> teams);
-    public void StartObserving();
-    public void ResetTeams();
-}
-
-public class ShipsManager : IShipsManager
-{
-    private IShipsFactory _shipsFactory;
-    private List<ShipTeamObserver> _teams = new List<ShipTeamObserver>();
-
-    public ShipsManager(IShipsFactory shipsFactory)
+    public interface IShipsManager
     {
-        _shipsFactory = shipsFactory;
+        public void IntallTeams(List<TeamData> teams);
+        public void StartObserving();
+        public void ResetTeams();
     }
 
-    public void IntallTeams(List<TeamData> teams)
+    public class ShipsManager : IShipsManager
     {
-        foreach (var team in teams)
-        {
-            List<ShipEntity> ships = _shipsFactory.CreateShips(team.ShipDatas, team.SideData);
-            ShipTeamObserver shipTeamObserver = new ShipTeamObserver(team.SideData, ships);
+        private IShipsFactory _shipsFactory;
+        private List<ShipTeamObserver> _teams = new List<ShipTeamObserver>();
 
-            _teams.Add(shipTeamObserver);
+        public ShipsManager(IShipsFactory shipsFactory)
+        {
+            _shipsFactory = shipsFactory;
+        }
+
+        public void IntallTeams(List<TeamData> teams)
+        {
+            foreach (var team in teams)
+            {
+                List<ShipEntity> ships = _shipsFactory.CreateShips(team.ShipDatas, team.SideData);
+                ShipTeamObserver shipTeamObserver = new ShipTeamObserver(team.SideData, ships);
+
+                _teams.Add(shipTeamObserver);
+            }
+        }
+
+        public void StartObserving()
+        {
+            foreach (var team in _teams)
+            {
+                team.StartObserving();
+            }
+        }
+
+        private void AllDies(SideData sideData)
+        {
+        }
+
+        public void ResetTeams()
+        {
+
         }
     }
 
-    public void StartObserving()
-    {
-        foreach (var team in _teams)
-        {
-            team.StartObserving();
-        }
-    }
 
-    private void AllDies(SideData sideData)
-    {
-    }
-
-    public void ResetTeams()
-    {
-
-    }
 }
-

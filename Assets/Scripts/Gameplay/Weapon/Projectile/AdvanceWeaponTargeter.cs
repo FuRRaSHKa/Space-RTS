@@ -1,94 +1,99 @@
-using System.Collections;
-using System.Collections.Generic;
+using HalloGames.Architecture.Initilizer;
+using HalloGames.SpaceRTS.Data.Projectel;
+using HalloGames.SpaceRTS.Data.Weapon;
+using HalloGames.SpaceRTS.Gameplay.Targets;
 using UnityEngine;
 
-public class AdvanceWeaponTargeter : MonoBehaviour, IWeaponTargeter, IInitilizable<WeaponData>
+namespace HalloGames.SpaceRTS.Gameplay.Guns.Targeter
 {
-    [SerializeField] private BulletData _bulletData;
-    [SerializeField] private Transform _rotationPart;
-    [SerializeField] private Transform _basement;
-
-    private float _rotationSpeed;
-
-    private Quaternion _currentRotation;
-    private Quaternion _targetRotation;
-
-    private ITargetable _targetable;
-
-    public float AngleDelta => Quaternion.Angle(_rotationPart.rotation, _targetRotation);
-
-    public void StartFolowing(ITargetable targetable)
+    public class AdvanceWeaponTargeter : MonoBehaviour, IWeaponTargeter, IInitilizable<WeaponData>
     {
-        _targetable = targetable;
-    }
+        [SerializeField] private BulletData _bulletData;
+        [SerializeField] private Transform _rotationPart;
+        [SerializeField] private Transform _basement;
 
-    public void StopFolowing()
-    {
-        _targetable = null;
-    }
+        private float _rotationSpeed;
 
-    private void Update()
-    {
-        if (_targetable == null)
-            RotateToDefault();
-        else
-            Rotate();
-    }
+        private Quaternion _currentRotation;
+        private Quaternion _targetRotation;
 
-    private void RotateToDefault()
-    {
-        _currentRotation = Quaternion.LookRotation(_basement.forward, _basement.up);
-        _rotationPart.rotation = Quaternion.RotateTowards(_rotationPart.rotation, _currentRotation, _rotationSpeed * Time.deltaTime);
-    }
+        private ITargetable _targetable;
 
-    private void Rotate()
-    {
-        Vector3 position = CalculatePos();
-        Vector3 direction = (position - _rotationPart.transform.position).normalized;
-        _targetRotation = Quaternion.LookRotation(direction, _basement.up);
+        public float AngleDelta => Quaternion.Angle(_rotationPart.rotation, _targetRotation);
 
-        //Clamp turret rotation
-        Vector3 localDirection = _basement.InverseTransformDirection(direction).normalized;
-        localDirection.y = Mathf.Clamp(localDirection.y, -.1f, .7f);
-
-        direction = _basement.TransformDirection(localDirection).normalized;
-
-        _currentRotation = Quaternion.LookRotation(direction, _basement.up);
-        _rotationPart.rotation = Quaternion.RotateTowards(_rotationPart.rotation, _currentRotation, _rotationSpeed * Time.deltaTime);
-    }
-
-    private Vector3 CalculatePos()
-    {
-        if (_targetable.TargetDataObservable.CurrentVelocity.magnitude == _bulletData.Speed)
+        public void StartFolowing(ITargetable targetable)
         {
-            return _targetable.TargetTransform.position;
+            _targetable = targetable;
         }
 
-        Vector3 direction = _targetable.TargetTransform.position - _rotationPart.transform.position;
-        Vector3 targetVelocity = _targetable.TargetDataObservable.CurrentVelocity;
-
-        float distance = direction.magnitude;
-        float targetSquareVelocity = targetVelocity.sqrMagnitude;
-        float cos = Mathf.Cos((180 - Vector3.Angle(direction, targetVelocity)) * Mathf.Deg2Rad);
-        float bulletSquareVelocity = Mathf.Pow(_bulletData.Speed, 2);
-
-        float discriminant = 4 * Mathf.Pow(distance, 2) * (targetSquareVelocity * Mathf.Pow(cos, 2) - (targetSquareVelocity - bulletSquareVelocity));
-        if (discriminant < 0)
+        public void StopFolowing()
         {
-            return _targetable.TargetTransform.position + _targetable.TargetDataObservable.CurrentVelocity * distance / _bulletData.Speed;
+            _targetable = null;
         }
 
-        float firstTime = (2 * targetVelocity.magnitude * distance * cos +  Mathf.Sqrt(discriminant)) / (2 * (targetSquareVelocity - bulletSquareVelocity));
-        float secondTime = (2 * targetVelocity.magnitude * distance * cos - Mathf.Sqrt(discriminant)) / (2 * (targetSquareVelocity - bulletSquareVelocity));
+        private void Update()
+        {
+            if (_targetable == null)
+                RotateToDefault();
+            else
+                Rotate();
+        }
 
-        float resultTime = Mathf.Max(firstTime, secondTime);
+        private void RotateToDefault()
+        {
+            _currentRotation = Quaternion.LookRotation(_basement.forward, _basement.up);
+            _rotationPart.rotation = Quaternion.RotateTowards(_rotationPart.rotation, _currentRotation, _rotationSpeed * Time.deltaTime);
+        }
 
-        Vector3 targetPosition = _targetable.TargetTransform.position + _targetable.TargetDataObservable.CurrentVelocity * resultTime;
-        return targetPosition;
-    }
+        private void Rotate()
+        {
+            Vector3 position = CalculatePos();
+            Vector3 direction = (position - _rotationPart.transform.position).normalized;
+            _targetRotation = Quaternion.LookRotation(direction, _basement.up);
 
-    public void Init(WeaponData data)
-    {
-        _rotationSpeed = data.RotationSpeed;
+            //Clamp turret rotation
+            Vector3 localDirection = _basement.InverseTransformDirection(direction).normalized;
+            localDirection.y = Mathf.Clamp(localDirection.y, -.1f, .7f);
+
+            direction = _basement.TransformDirection(localDirection).normalized;
+
+            _currentRotation = Quaternion.LookRotation(direction, _basement.up);
+            _rotationPart.rotation = Quaternion.RotateTowards(_rotationPart.rotation, _currentRotation, _rotationSpeed * Time.deltaTime);
+        }
+
+        private Vector3 CalculatePos()
+        {
+            if (_targetable.TargetDataObservable.CurrentVelocity.magnitude == _bulletData.Speed)
+            {
+                return _targetable.TargetTransform.position;
+            }
+
+            Vector3 direction = _targetable.TargetTransform.position - _rotationPart.transform.position;
+            Vector3 targetVelocity = _targetable.TargetDataObservable.CurrentVelocity;
+
+            float distance = direction.magnitude;
+            float targetSquareVelocity = targetVelocity.sqrMagnitude;
+            float cos = Mathf.Cos((180 - Vector3.Angle(direction, targetVelocity)) * Mathf.Deg2Rad);
+            float bulletSquareVelocity = Mathf.Pow(_bulletData.Speed, 2);
+
+            float discriminant = 4 * Mathf.Pow(distance, 2) * (targetSquareVelocity * Mathf.Pow(cos, 2) - (targetSquareVelocity - bulletSquareVelocity));
+            if (discriminant < 0)
+            {
+                return _targetable.TargetTransform.position + _targetable.TargetDataObservable.CurrentVelocity * distance / _bulletData.Speed;
+            }
+
+            float firstTime = (2 * targetVelocity.magnitude * distance * cos + Mathf.Sqrt(discriminant)) / (2 * (targetSquareVelocity - bulletSquareVelocity));
+            float secondTime = (2 * targetVelocity.magnitude * distance * cos - Mathf.Sqrt(discriminant)) / (2 * (targetSquareVelocity - bulletSquareVelocity));
+
+            float resultTime = Mathf.Max(firstTime, secondTime);
+
+            Vector3 targetPosition = _targetable.TargetTransform.position + _targetable.TargetDataObservable.CurrentVelocity * resultTime;
+            return targetPosition;
+        }
+
+        public void Init(WeaponData data)
+        {
+            _rotationSpeed = data.RotationSpeed;
+        }
     }
 }

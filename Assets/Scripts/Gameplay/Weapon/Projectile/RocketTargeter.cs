@@ -1,25 +1,32 @@
-using System.Collections;
-using System.Collections.Generic;
+using HalloGames.Architecture.Initilizer;
+using HalloGames.SpaceRTS.Data.Weapon;
+using HalloGames.SpaceRTS.Gameplay.Guns.Targeter;
+using HalloGames.SpaceRTS.Gameplay.Targets;
 using UnityEngine;
 
-public class RocketTargeter : MonoBehaviour, IWeaponTargeter, IInitilizable<WeaponData>
+namespace HalloGames.SpaceRTS.Gameplay.Guns
 {
-    private ITargetable _targetable;
-
-    public float AngleDelta => 0;
-
-    public void Init(WeaponData data)
+    public class RocketTargeter : MonoBehaviour, IWeaponTargeter, IInitilizable<WeaponData>
     {
-       
-    }
+        private ITargetable _targetable;
 
-    public void StartFolowing(ITargetable targetable)
-    {
-        _targetable = targetable;
-    }
+        public float AngleDelta => 0;
 
-    public void StopFolowing()
-    {
-        _targetable = null;
+        public void Init(WeaponData data)
+        {
+
+        }
+
+        public void StartFolowing(ITargetable targetable)
+        {
+            _targetable = targetable;
+        }
+
+        public void StopFolowing()
+        {
+            _targetable = null;
+        }
     }
 }
+
+

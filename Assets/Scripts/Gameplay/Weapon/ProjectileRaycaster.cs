@@ -1,26 +1,27 @@
-using System.Collections;
-using System.Collections.Generic;
 using Unity.Collections;
 using Unity.Jobs;
 using UnityEngine;
 
-public static class ProjectileRaycaster
+namespace HalloGames.SpaceRTS.Management.ProjectelManagement
 {
-    public static void Raycasts(NativeList<RaycastCommand> raycastCommand, NativeList<int> filtered, NativeList<RaycastHit> results, NativeList<int> colliderIDs, int count)
+    public static class ProjectileRaycaster
     {
-        RaycastResultJob raycastResultJob = new RaycastResultJob()
+        public static void Raycasts(NativeList<RaycastCommand> raycastCommand, NativeList<int> filtered, NativeList<RaycastHit> results, NativeList<int> colliderIDs, int count)
         {
-            results = results,
-            colliderIDs = colliderIDs,
+            RaycastResultJob raycastResultJob = new RaycastResultJob()
+            {
+                results = results,
+                colliderIDs = colliderIDs,
 
-            filtered = filtered.AsParallelWriter()
-        };
+                filtered = filtered.AsParallelWriter()
+            };
 
-        var raycasts = RaycastCommand.ScheduleBatch(raycastCommand, results, 1);
-        JobHandle jobHandle = raycastResultJob.Schedule(count, 32, raycasts);
+            var raycasts = RaycastCommand.ScheduleBatch(raycastCommand, results, 1);
+            JobHandle jobHandle = raycastResultJob.Schedule(count, 32, raycasts);
 
-        raycasts.Complete();
-        jobHandle.Complete();
+            raycasts.Complete();
+            jobHandle.Complete();
+        }
+
     }
-
 }

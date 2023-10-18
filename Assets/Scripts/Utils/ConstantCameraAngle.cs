@@ -2,17 +2,21 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ConstantCameraAngle : MonoBehaviour
+
+namespace HalloGames.Utilities
 {
-    private Camera _camera;
-
-    private void Awake()
+    public class ConstantCameraAngle : MonoBehaviour
     {
-        _camera = Camera.main;
-    }
+        private Camera _camera;
 
-    private void Update()
-    {
-        transform.LookAt(_camera.transform, Vector3.up);
+        private void Awake()
+        {
+            _camera = Camera.main;
+        }
+
+        private void Update()
+        {
+            transform.LookAt(_camera.transform, Vector3.up);
+        }
     }
 }

@@ -1,39 +1,43 @@
-using System.Collections;
-using System.Collections.Generic;
+using HalloGames.SpaceRTS.Gameplay.Guns.Targeter;
+using HalloGames.SpaceRTS.Gameplay.Targets;
 using UnityEngine;
 
-public class ProjectileVisual : MonoBehaviour
+namespace HalloGames.SpaceRTS.Gameplay.Guns.Graphic
 {
-    [SerializeField] private ParticleSystem[] _particleSystem;
-    [SerializeField] protected ParticleSystem _hitSystem;
-
-    private WeaponController _weaponController;
-    private ProjectileShooter _shooter;
-    private int _curId;
-
-    private void Awake()
+    public class ProjectileVisual : MonoBehaviour
     {
-        _weaponController = GetComponent<WeaponController>();
-        _shooter= GetComponent<ProjectileShooter>();
+        [SerializeField] private ParticleSystem[] _particleSystem;
+        [SerializeField] protected ParticleSystem _hitSystem;
 
-        _shooter.OnDealDamage += ShowHit;
-        _weaponController.OnShooting += ShowShootEffect;
-    }
+        private WeaponController _weaponController;
+        private IShooter _shooter;
+        private int _curId;
 
-    private void ShowHit(Vector3 point, Vector3 normal)
-    {
-        _hitSystem.transform.position = point;
-        _hitSystem.transform.rotation = Quaternion.LookRotation(normal);
-        _hitSystem.Play();
-    }
+        private void Awake()
+        {
+            _weaponController = GetComponent<WeaponController>();
+            _shooter = GetComponent<IShooter>();
 
-    private void ShowShootEffect(ITargetable targetable)
-    {
-        if (_particleSystem.Length <= 0)
-            return;
+            _shooter.OnDealDamage += ShowHit;
+            _shooter.OnShooting += ShowShootEffect;
+        }
 
-        _particleSystem[_curId].Play();
-        _curId++;
-        _curId %= _particleSystem.Length;
+        private void ShowHit(Vector3 point, Vector3 normal)
+        {
+            _hitSystem.transform.position = point;
+            _hitSystem.transform.rotation = Quaternion.LookRotation(normal);
+            _hitSystem.Play();
+        }
+
+        private void ShowShootEffect(ITargetable targetable)
+        {
+            if (_particleSystem.Length <= 0)
+                return;
+
+            _particleSystem[_curId].Play();
+            _curId++;
+            _curId %= _particleSystem.Length;
+        }
     }
 }
+

@@ -1,27 +1,32 @@
-using System.Collections;
+using HalloGames.SpaceRTS.Data.Team;
+using HalloGames.SpaceRTS.Management.ShipManagement;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GameController : MonoBehaviour
+namespace HalloGames.SpaceRTS.Management.Initialization
 {
-    [SerializeField] private List<TeamData> _teams;
-
-    private IShipsManager _shipManager;
-
-    private void Start()
+    public class GameController : MonoBehaviour
     {
-        StartGame();
-    }
+        [SerializeField] private List<TeamData> _teams;
 
-    public void InitController(IShipsManager shipManager)
-    {
-        _shipManager = shipManager;
-    }
+        private IShipsManager _shipManager;
 
-    public void StartGame()
-    {
-        _shipManager.IntallTeams(_teams);
+        private void Start()
+        {
+            StartGame();
+        }
 
-        _shipManager.StartObserving();
+        public void InitController(IShipsManager shipManager)
+        {
+            _shipManager = shipManager;
+        }
+
+        public void StartGame()
+        {
+            _shipManager.IntallTeams(_teams);
+
+            _shipManager.StartObserving();
+        }
     }
 }
+

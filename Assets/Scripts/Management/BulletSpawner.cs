@@ -1,63 +1,69 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
+using HalloGames.Architecture.PoolSystem;
+using HalloGames.Architecture.Services;
+using HalloGames.SpaceRTS.Data.Projectel;
+using HalloGames.SpaceRTS.Gameplay.Projectel;
+using HalloGames.SpaceRTS.Gameplay.Targets;
+using HalloGames.SpaceRTS.Management.ProjectelManagement;
 using UnityEngine;
 
-public interface IProjecterCreator : IService
+namespace HalloGames.SpaceRTS.Management.Factories
 {
-    public ProjectileWrapper InstantiateProjectile(ProjectelData projectelData, ITargetable targetable, Transform parent, int damage, Vector3 direction);
-}
-
-public class BulletSpawner : IProjecterCreator
-{
-    private readonly BulletsController _bulletsController;
-
-    public BulletSpawner(BulletsController bulletsController)
+    public interface IProjecterCreator : IService
     {
-        _bulletsController = bulletsController;
+        public ProjectileWrapper InstantiateProjectile(ProjectelData projectelData, ITargetable targetable, Transform parent, int damage, Vector3 direction);
     }
 
-    public ProjectileWrapper InstantiateProjectile(ProjectelData projectelData, ITargetable targetable, Transform parent, int damage, Vector3 direction)
+    public class BulletSpawner : IProjecterCreator
     {
-        BulletData bulletData = projectelData as BulletData;
-        if (bulletData == null)
-            return null;
+        private readonly BulletsController _bulletsController;
 
-        PoolObject bulletPoolObject = PoolManager.Instance[bulletData.ProjectelPrefab].GetObject();
-        bulletPoolObject.transform.position = parent.position;
-        bulletPoolObject.transform.rotation = Quaternion.LookRotation(direction);
+        public BulletSpawner(BulletsController bulletsController)
+        {
+            _bulletsController = bulletsController;
+        }
 
-        BulletWrapper bulletWrapper = new BulletWrapper(bulletPoolObject, targetable, bulletData.Lifetime, damage, direction, bulletData.Speed);
-        _bulletsController.AddProjectel(bulletWrapper);
+        public ProjectileWrapper InstantiateProjectile(ProjectelData projectelData, ITargetable targetable, Transform parent, int damage, Vector3 direction)
+        {
+            BulletData bulletData = projectelData as BulletData;
+            if (bulletData == null)
+                return null;
 
-        return bulletWrapper;
+            PoolObject bulletPoolObject = PoolManager.Instance[bulletData.ProjectelPrefab].GetObject();
+            bulletPoolObject.transform.position = parent.position;
+            bulletPoolObject.transform.rotation = Quaternion.LookRotation(direction);
+
+            BulletWrapper bulletWrapper = new BulletWrapper(bulletPoolObject.GetComponent<ProjectelObject>(), targetable, bulletData.Lifetime, damage, direction, bulletData.Speed);
+            _bulletsController.AddProjectel(bulletWrapper);
+
+            return bulletWrapper;
+        }
     }
-}
 
-public class RocketSpawner : IProjecterCreator
-{
-    private readonly RocketsController _rocketsController;
-
-    public RocketSpawner(RocketsController rocketsController)
+    public class RocketSpawner : IProjecterCreator
     {
-        _rocketsController = rocketsController;
-    }
+        private readonly RocketsController _rocketsController;
 
-    public ProjectileWrapper InstantiateProjectile(ProjectelData projectelData, ITargetable targetable, Transform parent, int damage, Vector3 direction)
-    {
-        RocketData rocketData = projectelData as RocketData;
-        if (rocketData == null)
-            return null;
+        public RocketSpawner(RocketsController rocketsController)
+        {
+            _rocketsController = rocketsController;
+        }
 
-        PoolObject rocketPoolObject = PoolManager.Instance[rocketData.ProjectelPrefab].GetObject();
-        rocketPoolObject.transform.position = parent.position;
-        rocketPoolObject.transform.rotation = Quaternion.LookRotation(direction);
+        public ProjectileWrapper InstantiateProjectile(ProjectelData projectelData, ITargetable targetable, Transform parent, int damage, Vector3 direction)
+        {
+            RocketData rocketData = projectelData as RocketData;
+            if (rocketData == null)
+                return null;
 
-        RocketWrapper rocketWrapper = new RocketWrapper(rocketPoolObject, targetable, rocketData.Lifetime, damage, rocketData.RotationSpeed,
-            rocketData.Speed, rocketData.Acceleration, rocketData.RotationAcceleration, rocketData.StartSpeed, direction);
+            PoolObject rocketPoolObject = PoolManager.Instance[rocketData.ProjectelPrefab].GetObject();
+            rocketPoolObject.transform.position = parent.position;
+            rocketPoolObject.transform.rotation = Quaternion.LookRotation(direction);
 
-        _rocketsController.AddProjectel(rocketWrapper);
+            RocketWrapper rocketWrapper = new RocketWrapper(rocketPoolObject.GetComponent<ProjectelObject>(), targetable, rocketData.Lifetime, damage, rocketData.RotationSpeed,
+                rocketData.Speed, rocketData.Acceleration, rocketData.RotationAcceleration, rocketData.StartSpeed, direction);
 
-        return rocketWrapper;
+            _rocketsController.AddProjectel(rocketWrapper);
+
+            return rocketWrapper;
+        }
     }
 }
