@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6add8b6f8e20c8a4a8372a3aa98f2d49, type: 3}
   m_Name: BulletData
   m_EditorClassIdentifier: 
-  _projectelPrefab: {fileID: 2012335927988370129, guid: e89d2ffd9bc7ead4f9bb2195fd1cc4e9, type: 3}
+  _projectilePrefab: {fileID: 2012335927988370129, guid: e89d2ffd9bc7ead4f9bb2195fd1cc4e9, type: 3}
   _speed: 15
   _lifetime: 3

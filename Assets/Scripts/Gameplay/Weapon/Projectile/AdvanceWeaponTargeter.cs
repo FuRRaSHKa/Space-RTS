@@ -1,5 +1,5 @@
 using HalloGames.Architecture.Initilizer;
-using HalloGames.SpaceRTS.Data.Projectel;
+using HalloGames.SpaceRTS.Data.Projectile;
 using HalloGames.SpaceRTS.Data.Weapon;
 using HalloGames.SpaceRTS.Gameplay.Targets;
 using UnityEngine;

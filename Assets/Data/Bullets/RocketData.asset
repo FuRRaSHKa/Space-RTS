@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ee0b8a22a0769114aa0a3935901d675f, type: 3}
   m_Name: RocketData
   m_EditorClassIdentifier: 
-  _projectelPrefab: {fileID: 2012335927988370129, guid: dd67cce7a217aca4e8a8abe0331d204c, type: 3}
+  _projectilePrefab: {fileID: 2012335927988370129, guid: dd67cce7a217aca4e8a8abe0331d204c, type: 3}
   _speed: 20
   _lifetime: 10
   _rotationSpeed: 180

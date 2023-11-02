@@ -1,24 +1,24 @@
 using HalloGames.Architecture.Services;
-using HalloGames.SpaceRTS.Gameplay.Projectel;
+using HalloGames.SpaceRTS.Gameplay.Projectile;
 using UnityEngine;
 
-namespace HalloGames.SpaceRTS.Management.ProjectelManagement
+namespace HalloGames.SpaceRTS.Management.ProjectileManagement
 {
-    public class RocketsController : ProjectelController<RocketWrapper>, IService
+    public class RocketsController : ProjectilelController<RocketWrapper>, IService
     {
         protected override void SheludeMoving()
         {
             deltaTime = Time.deltaTime;
 
-            for (int i = 0; i < shootedProjectel.Count; i++)
+            for (int i = 0; i < shootedProjectile.Count; i++)
             {
 
-                CalculateRocketMove(shootedProjectel[i], out Vector3 pos, out Vector3 moveDelta);
+                CalculateRocketMove(shootedProjectile[i], out Vector3 pos, out Vector3 moveDelta);
 
                 RaycastCommand raycastCommand = new RaycastCommand(pos, moveDelta, moveDelta.magnitude, layerMask.value);
                 raycastCommands.AddNoResize(raycastCommand);
 
-                shootedProjectel[i].Transform.position += moveDelta;
+                shootedProjectile[i].Transform.position += moveDelta;
             }
         }
 

@@ -1,8 +1,8 @@
 using UnityEngine;
 
-namespace HalloGames.SpaceRTS.Gameplay.Projectel
+namespace HalloGames.SpaceRTS.Gameplay.Projectile
 {
-    public class BulletObject : ProjectelObject
+    public class BulletObject : ProjectileObject
     {
         [SerializeField] private TrailRenderer _trail;
 

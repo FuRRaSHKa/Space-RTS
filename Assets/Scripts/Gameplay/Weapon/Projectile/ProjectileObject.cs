@@ -1,9 +1,9 @@
 using HalloGames.Architecture.PoolSystem;
 using UnityEngine;
 
-namespace HalloGames.SpaceRTS.Gameplay.Projectel
+namespace HalloGames.SpaceRTS.Gameplay.Projectile
 {
-    public class ProjectelObject : MonoBehaviour
+    public class ProjectileObject : MonoBehaviour
     {
         [SerializeField] private PoolObject _poolObject;
 

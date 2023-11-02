@@ -1,9 +1,9 @@
 using HalloGames.Architecture.CoroutineManagement;
 using UnityEngine;
 
-namespace HalloGames.SpaceRTS.Gameplay.Projectel
+namespace HalloGames.SpaceRTS.Gameplay.Projectile
 {
-    public class RocketObject : ProjectelObject
+    public class RocketObject : ProjectileObject
     {
         [SerializeField] private GameObject _gfx;
         [SerializeField] private ParticleSystem[] _trails;

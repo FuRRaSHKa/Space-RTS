@@ -2,12 +2,12 @@ using HalloGames.SpaceRTS.Gameplay.Targets;
 using System;
 using UnityEngine;
 
-namespace HalloGames.SpaceRTS.Gameplay.Projectel
+namespace HalloGames.SpaceRTS.Gameplay.Projectile
 {
     public class ProjectileWrapper
     {
-        private ProjectelObject _projectel;
-        private Transform _projectelTransform;
+        private ProjectileObject _projectile;
+        private Transform _projectileTransform;
 
         private float _lifeTime;
         private float _currentTime;
@@ -20,21 +20,21 @@ namespace HalloGames.SpaceRTS.Gameplay.Projectel
 
         public int ColliderInstanceId => _colliderInstanceId;
         public bool ToReturn => _toReturn;
-        public Transform Transform => _projectelTransform;
+        public Transform Transform => _projectileTransform;
 
         public event Action<Vector3, Vector3> OnHit;
 
-        public ProjectileWrapper(ProjectelObject projectel, ITargetable target, float lifeTime, int damage)
+        public ProjectileWrapper(ProjectileObject projectile, ITargetable target, float lifeTime, int damage)
         {
-            _projectel = projectel;
+            _projectile = projectile;
             this.target = target;
             _lifeTime = lifeTime;
             _damage = damage;
-            _projectelTransform = _projectel.transform;
+            _projectileTransform = _projectile.transform;
 
             _colliderInstanceId = target.ColliderID;
 
-            _projectel.EnableObject();
+            _projectile.EnableObject();
         }
 
         public void ExecuteHit(Vector3 point, Vector3 normal)
@@ -59,7 +59,7 @@ namespace HalloGames.SpaceRTS.Gameplay.Projectel
         private void Death()
         {
             _toReturn = true;
-            _projectel.DisableObject();
+            _projectile.DisableObject();
         }
     }
 
@@ -71,7 +71,7 @@ namespace HalloGames.SpaceRTS.Gameplay.Projectel
         public Vector3 Direction => _direction;
         public float Velocity => _velocity;
 
-        public BulletWrapper(ProjectelObject projectel, ITargetable target, float lifeTime, int damage, Vector3 direction, float velocity) : base(projectel, target, lifeTime, damage)
+        public BulletWrapper(ProjectileObject projectile, ITargetable target, float lifeTime, int damage, Vector3 direction, float velocity) : base(projectile, target, lifeTime, damage)
         {
             _direction = direction;
             _velocity = velocity;
@@ -92,7 +92,7 @@ namespace HalloGames.SpaceRTS.Gameplay.Projectel
         public Vector3 TargetPos => target.TargetTransform.position;
         public RocketMovementStruct RocketMovement => new RocketMovementStruct(_maxRotationSpeed, _maxSpeed, _acceleration, _currentSpeed, _rotationAcceleration, _currentRotationSpeed, _direction);
 
-        public RocketWrapper(ProjectelObject projectel, ITargetable target, float lifeTime, int damage, float rotationSpeed, float maxSpeed, float acceleration, float rotationAcceleration, float startSpeed, Vector3 direction) : base(projectel, target, lifeTime, damage)
+        public RocketWrapper(ProjectileObject projectile, ITargetable target, float lifeTime, int damage, float rotationSpeed, float maxSpeed, float acceleration, float rotationAcceleration, float startSpeed, Vector3 direction) : base(projectile, target, lifeTime, damage)
         {
             _rotationAcceleration = rotationAcceleration;
             _acceleration = acceleration;

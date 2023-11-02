@@ -1,9 +1,9 @@
 using UnityEngine;
 
-namespace HalloGames.SpaceRTS.Data.Projectel
+namespace HalloGames.SpaceRTS.Data.Projectile
 {
     [CreateAssetMenu(fileName = "RocketData", menuName = "Data/Rocket/RocketData")]
-    public class RocketData : ProjectelData
+    public class RocketData : ProjectileData
     {
         [SerializeField] private float _rotationSpeed;
         [SerializeField] private float _rotationAcceleration;

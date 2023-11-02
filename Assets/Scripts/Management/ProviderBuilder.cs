@@ -1,7 +1,7 @@
 using HalloGames.Architecture.Services;
 using HalloGames.SpaceRTS.Management.Factories;
 using HalloGames.SpaceRTS.Management.Input;
-using HalloGames.SpaceRTS.Management.ProjectelManagement;
+using HalloGames.SpaceRTS.Management.ProjectileManagement;
 using UnityEngine;
 
 namespace HalloGames.SpaceRTS.Management.Initialization

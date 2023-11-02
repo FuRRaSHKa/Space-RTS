@@ -1,5 +1,5 @@
 using HalloGames.Architecture.Initilizer;
-using HalloGames.SpaceRTS.Data.Projectel;
+using HalloGames.SpaceRTS.Data.Projectile;
 using HalloGames.SpaceRTS.Data.Weapon;
 using HalloGames.SpaceRTS.Gameplay.Guns.Targeter;
 using HalloGames.SpaceRTS.Gameplay.Targets;
@@ -13,7 +13,7 @@ namespace HalloGames.SpaceRTS.Gameplay.Guns
     public class SequenceProjectileShooter : MonoBehaviour, IShooter, IInitilizable<WeaponData>
     {
         [SerializeField] private List<Transform> _spawnPoints;
-        [SerializeField] private ProjectelData _bulletData;
+        [SerializeField] private ProjectileData _bulletData;
 
         private int _damage;
         private int _spawnPointId = 0;

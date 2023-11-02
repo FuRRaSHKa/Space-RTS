@@ -2,7 +2,7 @@ using Unity.Collections;
 using Unity.Jobs;
 using UnityEngine;
 
-namespace HalloGames.SpaceRTS.Management.ProjectelManagement
+namespace HalloGames.SpaceRTS.Management.ProjectileManagement
 {
     public static class ProjectileRaycaster
     {
