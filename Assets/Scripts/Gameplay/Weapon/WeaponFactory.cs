@@ -29,12 +29,12 @@ namespace HalloGames.SpaceRTS.Management.Factories
             weapon.Initilize(weaponData);
             if (weaponData.WeaponType == WeaponType.Projectile)
             {
-                IProjecterCreator projecterCreator = _serviceProvider.GetService<BulletSpawner>();
+                IProjectileCreator projecterCreator = _serviceProvider.GetService<BulletSpawner>();
                 weapon.GetComponent<SequenceProjectileShooter>().InitProjectileCreator(projecterCreator);
             }
             else if (weaponData.WeaponType == WeaponType.Rocket)
             {
-                IProjecterCreator projecterCreator = _serviceProvider.GetService<RocketSpawner>();
+                IProjectileCreator projecterCreator = _serviceProvider.GetService<RocketSpawner>();
                 weapon.GetComponent<SequenceProjectileShooter>().InitProjectileCreator(projecterCreator);
             }
 

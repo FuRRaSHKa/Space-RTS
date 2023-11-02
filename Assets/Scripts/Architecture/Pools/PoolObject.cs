@@ -16,9 +16,9 @@ namespace HalloGames.Architecture.PoolSystem
 
         public void DisableObject()
         {
-            if (gameObject.activeSelf && _disableObjectRoutine == null)
+            if (gameObject.activeInHierarchy && _disableObjectRoutine == null)
             {
-                _disableObjectRoutine = RoutineManager.CreateRoutine().NextFrame(() =>
+                _disableObjectRoutine = RoutineManager.CreateRoutine(this).NextFrame(() =>
                 {
                     gameObject.SetActive(false);
                     _enableToSpawn = true;

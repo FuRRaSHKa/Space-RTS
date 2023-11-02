@@ -17,7 +17,7 @@ namespace HalloGames.SpaceRTS.Gameplay.Guns
 
         private int _damage;
 
-        private IProjecterCreator _projecterCreator;
+        private IProjectileCreator _projecterCreator;
 
         public event Action<Vector3, Vector3> OnDealDamage;
         public event Action<ITargetable> OnShooting;
@@ -27,7 +27,7 @@ namespace HalloGames.SpaceRTS.Gameplay.Guns
             _damage = data.Damage;
         }
 
-        public void InitProjectileCreator(IProjecterCreator creator)
+        public void InitProjectileCreator(IProjectileCreator creator)
         {
             _projecterCreator = creator;
         }

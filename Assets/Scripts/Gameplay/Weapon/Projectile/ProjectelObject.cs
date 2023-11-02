@@ -14,7 +14,7 @@ namespace HalloGames.SpaceRTS.Gameplay.Projectel
 
         public virtual void DisableObject()
         {
-            _poolObject.DisableObject();
+            _poolObject.ForceDisable();
         }
     }
 }

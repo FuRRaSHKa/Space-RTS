@@ -98,6 +98,8 @@ namespace HalloGames.SpaceRTS.Gameplay.Ship.Stats
         {
             _isDead = true;
             OnDeath?.Invoke();
+
+            OnDeath = null;
         }
     }
 

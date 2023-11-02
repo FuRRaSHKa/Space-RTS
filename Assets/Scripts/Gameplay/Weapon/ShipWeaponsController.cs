@@ -66,7 +66,6 @@ namespace HalloGames.SpaceRTS.Gameplay.Ship.Weapons
 
         public void StopShooting()
         {
-            _currentTarget.TargetDataObservable.DeathHandler.OnDeath -= StopShooting;
             _currentTarget = null;
 
             foreach (var weapon in _weaponList)

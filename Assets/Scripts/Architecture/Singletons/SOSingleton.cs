@@ -13,7 +13,7 @@ namespace HalloGames.Architecture.Singletones
         protected static string GetName(Type type) => type.Name;
 
 #if UNITY_EDITOR
-        [MenuItem("Tools/JoyWay/Create Missing Singleton Assets")]
+        [MenuItem("Tools/HalloGames/Create Missing Singleton Assets")]
         private static void CreateMissingSingletonAssets()
         {
             var baseType = typeof(SOSingleton);

@@ -8,12 +8,12 @@ using UnityEngine;
 
 namespace HalloGames.SpaceRTS.Management.Factories
 {
-    public interface IProjecterCreator : IService
+    public interface IProjectileCreator : IService
     {
         public ProjectileWrapper InstantiateProjectile(ProjectelData projectelData, ITargetable targetable, Transform parent, int damage, Vector3 direction);
     }
 
-    public class BulletSpawner : IProjecterCreator
+    public class BulletSpawner : IProjectileCreator
     {
         private readonly BulletsController _bulletsController;
 
@@ -39,7 +39,7 @@ namespace HalloGames.SpaceRTS.Management.Factories
         }
     }
 
-    public class RocketSpawner : IProjecterCreator
+    public class RocketSpawner : IProjectileCreator
     {
         private readonly RocketsController _rocketsController;
 
