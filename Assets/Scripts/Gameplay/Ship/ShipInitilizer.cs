@@ -1,4 +1,4 @@
-using HalloGames.Architecture.Initilizer;
+using HalloGames.Architecture.Initializer;
 using HalloGames.SpaceRTS.Data.Enums;
 using HalloGames.SpaceRTS.Data.Ships;
 using HalloGames.SpaceRTS.Gameplay.Ship.Weapons;
@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace HalloGames.SpaceRTS.Management.Initialization
 {
-    public class ShipInitilizer : AbstractInitilizer<ShipInitilizationData>
+    public class ShipInitilizer : AbstractInitilizer<ShipInitializationData>
     {
         [SerializeField] private ShipWeaponsController _shipWeapons;
 
@@ -18,16 +18,16 @@ namespace HalloGames.SpaceRTS.Management.Initialization
 
         public void InitServices(IWeaponFactory weaponFactory)
         {
-            _shipWeapons.InitWeaponeFactory(weaponFactory);
+            _shipWeapons.InitWeaponFactory(weaponFactory);
         }
     }
 
-    public readonly struct ShipInitilizationData
+    public readonly struct ShipInitializationData
     {
         public readonly SideData SideData;
         public readonly ShipData ShipData;
 
-        public ShipInitilizationData(ShipData shipData, SideData sideData)
+        public ShipInitializationData(ShipData shipData, SideData sideData)
         {
             SideData = sideData;
             ShipData = shipData;

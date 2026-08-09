@@ -17,17 +17,17 @@ namespace HalloGames.SpaceRTS.Management
         private IShipsManager _shipsManager;
         private IServiceProvider _serviceProvider;
 
-        public void Initilize(IServiceProvider serviceProvider)
+        public void Initialize(IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;
 
             InitInput();
-            InitilizeShips();
+            InitializeShips();
 
             InitGameController();
         }
 
-        private void InitilizeShips()
+        private void InitializeShips()
         {
             _shipsManager = new ShipsManager(_serviceProvider.GetService<IShipsFactory>());
         }
@@ -39,8 +39,8 @@ namespace HalloGames.SpaceRTS.Management
 
         private void InitInput()
         {
-            _shipInput.Initilize(_serviceProvider.GetService<IInput>());
-            _cameraMover.Initilize(_serviceProvider.GetService<IInput>());
+            _shipInput.Initialize(_serviceProvider.GetService<IInput>());
+            _cameraMover.Initialize(_serviceProvider.GetService<IInput>());
         }
     }
 }

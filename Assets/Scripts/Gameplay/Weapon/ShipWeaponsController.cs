@@ -1,4 +1,4 @@
-using HalloGames.Architecture.Initilizer;
+using HalloGames.Architecture.Initializer;
 using HalloGames.SpaceRTS.Data.Weapon;
 using HalloGames.SpaceRTS.Gameplay.Guns;
 using HalloGames.SpaceRTS.Gameplay.Targets;
@@ -15,7 +15,7 @@ namespace HalloGames.SpaceRTS.Gameplay.Ship.Weapons
         public void StopShooting();
     }
 
-    public class ShipWeaponsController : MonoBehaviour, IInitilizable<ShipInitilizationData>, IWeaponController
+    public class ShipWeaponsController : MonoBehaviour, IInitializable<ShipInitializationData>, IWeaponController
     {
         [SerializeField] private List<Transform> _gunPositions;
 
@@ -25,22 +25,22 @@ namespace HalloGames.SpaceRTS.Gameplay.Ship.Weapons
 
         private void OnDrawGizmos()
         {
-            foreach (var postion in _gunPositions)
+            foreach (var position in _gunPositions)
             {
-                Ray r = new Ray(postion.position, postion.up);
+                Ray r = new Ray(position.position, position.up);
                 Gizmos.DrawRay(r);
 
-                r = new Ray(postion.position, postion.forward);
+                r = new Ray(position.position, position.forward);
                 Gizmos.DrawRay(r);
             }
         }
 
-        public void InitWeaponeFactory(IWeaponFactory weaponFactory)
+        public void InitWeaponFactory(IWeaponFactory weaponFactory)
         {
             _weaponFactory = weaponFactory;
         }
 
-        public void Init(ShipInitilizationData data)
+        public void Init(ShipInitializationData data)
         {
             WeaponData weaponData = data.ShipData.WeaponData;
             for (int i = 0; i < _gunPositions.Count; i++)

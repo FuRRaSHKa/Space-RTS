@@ -1,4 +1,4 @@
-using HalloGames.Architecture.Initilizer;
+using HalloGames.Architecture.Initializer;
 using HalloGames.SpaceRTS.Data.Enums;
 using HalloGames.SpaceRTS.Data.Ships;
 using HalloGames.SpaceRTS.Management.Initialization;
@@ -30,7 +30,7 @@ namespace HalloGames.SpaceRTS.Gameplay.Ship.Stats
         public event Action OnDeath;
     }
 
-    public class ShipStatsController : MonoBehaviour, IStatsController, IInitilizable<ShipInitilizationData>, IDeathHandler
+    public class ShipStatsController : MonoBehaviour, IStatsController, IInitializable<ShipInitializationData>, IDeathHandler
     {
         private bool _isDead = false;
         private Dictionary<StatData, Stat> _stats = new Dictionary<StatData, Stat>();
@@ -40,7 +40,7 @@ namespace HalloGames.SpaceRTS.Gameplay.Ship.Stats
         public event Action<StatData, int> OnStatChange;
         public event Action OnDeath;
 
-        public void Init(ShipInitilizationData data)
+        public void Init(ShipInitializationData data)
         {
             _isDead = false;
             List<StatStruct> statDatas = data.ShipData.StatDatas;
@@ -74,10 +74,10 @@ namespace HalloGames.SpaceRTS.Gameplay.Ship.Stats
 
         public void DealDamage(int damage)
         {
-            List<Stat> damagableStats = _stats.Values.Where(w => w.DamageOrder > 0).OrderByDescending(w => w.DamageOrder).ToList();
+            List<Stat> damageableStats = _stats.Values.Where(w => w.DamageOrder > 0).OrderByDescending(w => w.DamageOrder).ToList();
 
             int tempDamage = Mathf.Abs(damage);
-            foreach (var stat in damagableStats)
+            foreach (var stat in damageableStats)
             {
                 int statValue = stat.GetValue();
                 stat.ChangeStat(-tempDamage);
@@ -89,7 +89,7 @@ namespace HalloGames.SpaceRTS.Gameplay.Ship.Stats
                     break;
             }
 
-            int health = damagableStats.Sum(a => a.GetValue());
+            int health = damageableStats.Sum(a => a.GetValue());
             if (health <= 0)
                 Death();
         }

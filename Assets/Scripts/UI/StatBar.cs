@@ -1,4 +1,4 @@
-using HalloGames.Architecture.Initilizer;
+using HalloGames.Architecture.Initializer;
 using HalloGames.SpaceRTS.Data.Enums;
 using HalloGames.SpaceRTS.Data.Ships;
 using HalloGames.SpaceRTS.Management.Initialization;
@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 namespace HalloGames.SpaceRTS.Gameplay.Ship.Graphic
 {
-    public class StatBar : MonoBehaviour, IInitilizable<ShipInitilizationData>
+    public class StatBar : MonoBehaviour, IInitializable<ShipInitializationData>
     {
         [SerializeField] private ShipEntity _shipEntity;
         [SerializeField] private Image _bar;
@@ -31,7 +31,7 @@ namespace HalloGames.SpaceRTS.Gameplay.Ship.Graphic
             SetValue(_maxValue);
         }
 
-        public void Init(ShipInitilizationData data)
+        public void Init(ShipInitializationData data)
         {
             StatStruct statData = data.ShipData.StatDatas.Find(f => f.StatData == _statData);
             Init(statData);

@@ -12,7 +12,7 @@ namespace HalloGames.Architecture.PoolSystem
 
         private Dictionary<PoolObject, ObjectPool> _pools;
 
-        protected override void OverridedAwake()
+        protected override void OverriddenAwake()
         {
             _pools = new Dictionary<PoolObject, ObjectPool>(_poolPairs.Length);
             foreach (var pair in _poolPairs)

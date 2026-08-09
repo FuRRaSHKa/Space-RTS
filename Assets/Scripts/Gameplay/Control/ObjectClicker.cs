@@ -13,10 +13,10 @@ namespace HalloGames.SpaceRTS.Management.Input
         private GameObject _currentObject;
         private Vector3 _pos;
 
-        protected override void OverridedAwake()
+        protected override void OverriddenAwake()
         {
             _camera = Camera.main;
-            base.OverridedAwake();
+            base.OverriddenAwake();
         }
 
         private void Update()

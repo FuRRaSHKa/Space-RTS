@@ -1,4 +1,4 @@
-using HalloGames.Architecture.Initilizer;
+using HalloGames.Architecture.Initializer;
 using HalloGames.SpaceRTS.Data.Enums;
 using HalloGames.SpaceRTS.Data.Ships;
 using HalloGames.SpaceRTS.Gameplay.Ship.Control;
@@ -10,7 +10,7 @@ using UnityEngine;
 
 namespace HalloGames.SpaceRTS.Gameplay.Ship
 {
-    public class ShipEntity : MonoBehaviour, IInitilizable<ShipInitilizationData>
+    public class ShipEntity : MonoBehaviour, IInitializable<ShipInitializationData>
     {
         private IMovementController _shipMovementController;
         private ITargetable _shipTarget;
@@ -29,7 +29,7 @@ namespace HalloGames.SpaceRTS.Gameplay.Ship
         public ShipData ShipData => _shipData;
         public IWeaponController WeaponController => _weaponController;
 
-        public void Init(ShipInitilizationData data)
+        public void Init(ShipInitializationData data)
         {
             _side = data.SideData;
             _shipData = data.ShipData;

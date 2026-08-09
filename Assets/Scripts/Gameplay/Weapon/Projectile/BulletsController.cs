@@ -8,11 +8,11 @@ using UnityEngine;
 
 namespace HalloGames.SpaceRTS.Management.ProjectileManagement
 {
-    public abstract class ProjectilelController<TProjectile> : MonoBehaviour where TProjectile : ProjectileWrapper
+    public abstract class ProjectileController<TProjectile> : MonoBehaviour where TProjectile : ProjectileWrapper
     {
         [SerializeField] protected LayerMask layerMask;
 
-        protected List<TProjectile> shootedProjectile = new List<TProjectile>();
+        protected List<TProjectile> shotProjectile = new List<TProjectile>();
 
         protected NativeList<RaycastHit> results;
         protected NativeList<int> colliderIDs;
@@ -27,19 +27,19 @@ namespace HalloGames.SpaceRTS.Management.ProjectileManagement
             results = new NativeList<RaycastHit>(10, Allocator.Persistent);
         }
 
-        public void AddProjectile(TProjectile projectilelWrapper)
+        public void AddProjectile(TProjectile projectileWrapper)
         {
-            shootedProjectile.Add(projectilelWrapper);
+            shotProjectile.Add(projectileWrapper);
         }
 
         private void Update()
         {
             ClearData();
-            if (shootedProjectile.Count == 0)
+            if (shotProjectile.Count == 0)
                 return;
 
             CollectData();
-            SheludeMoving();
+            ScheduleMoving();
             Raycasts();
             UpdateLifeTime();
         }
@@ -55,17 +55,17 @@ namespace HalloGames.SpaceRTS.Management.ProjectileManagement
         {
             deltaTime = Time.deltaTime;
 
-            if (shootedProjectile.Count > colliderIDs.Capacity)
+            if (shotProjectile.Count > colliderIDs.Capacity)
             {
-                colliderIDs.Capacity = shootedProjectile.Count;
-                raycastCommands.Capacity = shootedProjectile.Count;
+                colliderIDs.Capacity = shotProjectile.Count;
+                raycastCommands.Capacity = shotProjectile.Count;
 
             }
 
-            results.ResizeUninitialized(shootedProjectile.Count);
-            for (int i = 0; i < shootedProjectile.Count; i++)
+            results.ResizeUninitialized(shotProjectile.Count);
+            for (int i = 0; i < shotProjectile.Count; i++)
             {
-                colliderIDs.AddNoResize(shootedProjectile[i].ColliderInstanceId);
+                colliderIDs.AddNoResize(shotProjectile[i].ColliderInstanceId);
             }
         }
 
@@ -76,18 +76,18 @@ namespace HalloGames.SpaceRTS.Management.ProjectileManagement
             raycastCommands.Dispose();
         }
 
-        protected abstract void SheludeMoving();
+        protected abstract void ScheduleMoving();
 
         private void Raycasts()
         {
-            NativeList<int> filtered = new NativeList<int>(shootedProjectile.Count, Allocator.TempJob);
+            NativeList<int> filtered = new NativeList<int>(shotProjectile.Count, Allocator.TempJob);
 
-            ProjectileRaycaster.Raycasts(raycastCommands, filtered, results, colliderIDs, shootedProjectile.Count);
+            ProjectileRaycaster.Raycasts(raycastCommands, filtered, results, colliderIDs, shotProjectile.Count);
 
             for (int i = 0; i < filtered.Length; i++)
             {
                 int id = filtered[i];
-                shootedProjectile[id].ExecuteHit(results[id].point, results[id].normal);
+                shotProjectile[id].ExecuteHit(results[id].point, results[id].normal);
             }
 
             filtered.Dispose();
@@ -95,11 +95,11 @@ namespace HalloGames.SpaceRTS.Management.ProjectileManagement
 
         private void UpdateLifeTime()
         {
-            for (int i = 0; i < shootedProjectile.Count; i++)
+            for (int i = 0; i < shotProjectile.Count; i++)
             {
-                if (shootedProjectile[i].UpdateLifeTime() || shootedProjectile[i].ToReturn)
+                if (shotProjectile[i].UpdateLifeTime() || shotProjectile[i].ToReturn)
                 {
-                    shootedProjectile.RemoveAt(i);
+                    shotProjectile.RemoveAt(i);
                     i--;
                 }
             }
@@ -111,21 +111,21 @@ namespace HalloGames.SpaceRTS.Management.ProjectileManagement
         }
     }
 
-    public class BulletsController : ProjectilelController<BulletWrapper>, IService
+    public class BulletsController : ProjectileController<BulletWrapper>, IService
     {
-        protected override void SheludeMoving()
+        protected override void ScheduleMoving()
         {
             deltaTime = Time.deltaTime;
 
-            for (int i = 0; i < shootedProjectile.Count; i++)
+            for (int i = 0; i < shotProjectile.Count; i++)
             {
-                Vector3 pos = shootedProjectile[i].Transform.position;
-                Vector3 moveDelta = shootedProjectile[i].Direction * shootedProjectile[i].Velocity * deltaTime;
+                Vector3 pos = shotProjectile[i].Transform.position;
+                Vector3 moveDelta = shotProjectile[i].Direction * shotProjectile[i].Velocity * deltaTime;
 
                 RaycastCommand raycastCommand = new RaycastCommand(pos, moveDelta, moveDelta.magnitude, layerMask.value);
                 raycastCommands.AddNoResize(raycastCommand);
 
-                shootedProjectile[i].Transform.position += moveDelta;
+                shotProjectile[i].Transform.position += moveDelta;
             }
         }
     }

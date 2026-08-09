@@ -12,7 +12,7 @@ namespace HalloGames.SpaceRTS.Management.Input
         private IControllable _currentObject;
         private IInput _input;
 
-        public void Initilize(IInput input)
+        public void Initialize(IInput input)
         {
             _input = input;
 
@@ -22,10 +22,10 @@ namespace HalloGames.SpaceRTS.Management.Input
 
         private void ChooseClick()
         {
-            GameObject chosedObject = ObjectClicker.Instance.GetCurrentObject();
-            if (chosedObject != null)
+            GameObject chosenObject = ObjectClicker.Instance.GetCurrentObject();
+            if (chosenObject != null)
             {
-                if (chosedObject.TryGetComponent(out IControllable controllable))
+                if (chosenObject.TryGetComponent(out IControllable controllable))
                 {
                     if (controllable != _currentObject)
                     {

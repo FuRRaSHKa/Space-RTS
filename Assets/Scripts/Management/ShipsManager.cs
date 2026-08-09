@@ -9,7 +9,7 @@ namespace HalloGames.SpaceRTS.Management.ShipManagement
 {
     public interface IShipsManager
     {
-        public void IntallTeams(List<TeamData> teams);
+        public void InstallTeams(List<TeamData> teams);
         public void StartObserving();
         public void ResetTeams();
     }
@@ -24,7 +24,7 @@ namespace HalloGames.SpaceRTS.Management.ShipManagement
             _shipsFactory = shipsFactory;
         }
 
-        public void IntallTeams(List<TeamData> teams)
+        public void InstallTeams(List<TeamData> teams)
         {
             foreach (var team in teams)
             {

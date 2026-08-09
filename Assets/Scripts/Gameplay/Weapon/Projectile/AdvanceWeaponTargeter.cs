@@ -1,4 +1,4 @@
-using HalloGames.Architecture.Initilizer;
+using HalloGames.Architecture.Initializer;
 using HalloGames.SpaceRTS.Data.Projectile;
 using HalloGames.SpaceRTS.Data.Weapon;
 using HalloGames.SpaceRTS.Gameplay.Targets;
@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace HalloGames.SpaceRTS.Gameplay.Guns.Targeter
 {
-    public class AdvanceWeaponTargeter : MonoBehaviour, IWeaponTargeter, IInitilizable<WeaponData>
+    public class AdvanceWeaponTargeter : MonoBehaviour, IWeaponTargeter, IInitializable<WeaponData>
     {
         [SerializeField] private BulletData _bulletData;
         [SerializeField] private Transform _rotationPart;
@@ -21,12 +21,12 @@ namespace HalloGames.SpaceRTS.Gameplay.Guns.Targeter
 
         public float AngleDelta => Quaternion.Angle(_rotationPart.rotation, _targetRotation);
 
-        public void StartFolowing(ITargetable targetable)
+        public void StartFollowing(ITargetable targetable)
         {
             _targetable = targetable;
         }
 
-        public void StopFolowing()
+        public void StopFollowing()
         {
             _targetable = null;
         }

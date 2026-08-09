@@ -1,4 +1,4 @@
-using HalloGames.Architecture.Initilizer;
+using HalloGames.Architecture.Initializer;
 using HalloGames.SpaceRTS.Data.Weapon;
 using HalloGames.SpaceRTS.Gameplay.Targets;
 using System;
@@ -14,7 +14,7 @@ namespace HalloGames.SpaceRTS.Gameplay.Guns.Targeter
         public void Shoot(ITargetable targetable);
     }
 
-    public class RayShooter : MonoBehaviour, IShooter, IInitilizable<WeaponData>
+    public class RayShooter : MonoBehaviour, IShooter, IInitializable<WeaponData>
     {
         private int _damage;
 

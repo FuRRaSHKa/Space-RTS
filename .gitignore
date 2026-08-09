@@ -79,3 +79,29 @@ crashlytics-build.properties
 /OVRAssetBundles/
 Assets/#JoyWay/Scripts/Shaki`s Local Scripts/
 Assets/#JoyWay/Scripts/Shaki`s Local Scripts.meta
+
+# --- AI agent tooling ---
+# Local agent state, caches and per-machine settings.
+# The shared rules stay tracked: /AGENTS.md, /CLAUDE.md, /Docs/Agents/**
+# .claude/settings.json is tracked on purpose — it carries the enforced git ban.
+.claude/*
+!.claude/settings.json
+.claude/settings.local.json
+.codex/
+.cursor/
+.aider*/
+.aider*
+.windsurf/
+.continue/
+.codeium/
+.gemini/
+.opencode/
+.agent/
+.agents/
+.ai/
+/AgentScratch/
+/Docs/Agents/local/
+
+# Uncomment to share a specific agent folder with the team:
+# !.claude/
+# !.claude/commands/

@@ -19,12 +19,12 @@ namespace HalloGames.SpaceRTS.Management.Initialization
         {
             CreateServiceProvider();
 
-            InitilizeGame();
+            InitializeGame();
         }
 
-        private void InitilizeGame()
+        private void InitializeGame()
         {
-            _gameInitiliazer.Initilize(_serviceProvider);
+            _gameInitiliazer.Initialize(_serviceProvider);
         }
 
         private void CreateServiceProvider()

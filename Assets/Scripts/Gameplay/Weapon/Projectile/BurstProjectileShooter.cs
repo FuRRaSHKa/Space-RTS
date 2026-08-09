@@ -1,4 +1,4 @@
-using HalloGames.Architecture.Initilizer;
+using HalloGames.Architecture.Initializer;
 using HalloGames.SpaceRTS.Data.Projectile;
 using HalloGames.SpaceRTS.Data.Weapon;
 using HalloGames.SpaceRTS.Gameplay.Guns.Targeter;
@@ -10,14 +10,14 @@ using UnityEngine;
 
 namespace HalloGames.SpaceRTS.Gameplay.Guns
 {
-    public class BurstProjectileShooter : MonoBehaviour, IShooter, IInitilizable<WeaponData>
+    public class BurstProjectileShooter : MonoBehaviour, IShooter, IInitializable<WeaponData>
     {
         [SerializeField] private List<Transform> _spawnPoints;
         [SerializeField] private ProjectileData _bulletData;
 
         private int _damage;
 
-        private IProjectileCreator _projecterCreator;
+        private IProjectileCreator _projectileCreator;
 
         public event Action<Vector3, Vector3> OnDealDamage;
         public event Action<ITargetable> OnShooting;
@@ -29,7 +29,7 @@ namespace HalloGames.SpaceRTS.Gameplay.Guns
 
         public void InitProjectileCreator(IProjectileCreator creator)
         {
-            _projecterCreator = creator;
+            _projectileCreator = creator;
         }
 
         public void BulletHit(Vector3 point, Vector3 normal)
@@ -41,7 +41,7 @@ namespace HalloGames.SpaceRTS.Gameplay.Guns
         {
             for (int spawnPointId = 0; spawnPointId < _spawnPoints.Count; spawnPointId++)
             {
-                _projecterCreator.InstantiateProjectile(_bulletData, targetable, _spawnPoints[spawnPointId], _damage, _spawnPoints[spawnPointId].forward)
+                _projectileCreator.InstantiateProjectile(_bulletData, targetable, _spawnPoints[spawnPointId], _damage, _spawnPoints[spawnPointId].forward)
                     .OnHit += BulletHit;
 
                 OnShooting?.Invoke(targetable);

@@ -18,7 +18,7 @@ namespace HalloGames.SpaceRTS.Management.ShipManagement
             _ships[side].Add(shipEntity);
         }
 
-        public List<ShipEntity> GetChosedShips(Vector3 firstPos, Vector3 secondPos, SideData side)
+        public List<ShipEntity> GetChosenShips(Vector3 firstPos, Vector3 secondPos, SideData side)
         {
             Vector3 size = (secondPos - firstPos) / 2;
             Bounds bounds = new Bounds(firstPos + size, size);

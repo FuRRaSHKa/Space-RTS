@@ -1,6 +1,7 @@
 using HalloGames.SpaceRTS.Management.Input;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Serialization;
 
 namespace HalloGames.SpaceRTS.Management.CameraManagement
 {
@@ -15,12 +16,15 @@ namespace HalloGames.SpaceRTS.Management.CameraManagement
         [Header("Rotation Settings")]
         [SerializeField] private float _xRotationMaxBorder;
         [SerializeField] private float _xRotationMinBorder;
-        [SerializeField] private float _xRotationSensivity;
-        [SerializeField] private float _yRotationSensivity;
+        [FormerlySerializedAs("_xRotationSensivity")]
+        [SerializeField] private float _xRotationSensitivity;
+        [FormerlySerializedAs("_yRotationSensivity")]
+        [SerializeField] private float _yRotationSensitivity;
 
         [Header("Zoom Settings")]
         [SerializeField] private float _zoomSpeed;
-        [SerializeField] private float _zoomSensivity;
+        [FormerlySerializedAs("_zoomSensivity")]
+        [SerializeField] private float _zoomSensitivity;
         [SerializeField] private float _minZoomDistance;
         [SerializeField] private float _maxZoomDistance;
 
@@ -39,7 +43,7 @@ namespace HalloGames.SpaceRTS.Management.CameraManagement
             _currentZoom = _camera.localPosition.magnitude;
         }
 
-        public void Initilize(IInput input)
+        public void Initialize(IInput input)
         {
             _input = input;
 
@@ -68,8 +72,8 @@ namespace HalloGames.SpaceRTS.Management.CameraManagement
             Vector2 camDelta = _input.MouseDelta;
             Vector3 rotation = _center.transform.eulerAngles;
 
-            rotation.x = Mathf.Clamp(rotation.x + -camDelta.y * _xRotationSensivity * Time.deltaTime, _xRotationMinBorder, _xRotationMaxBorder);
-            rotation.y += camDelta.x * _yRotationSensivity * Time.deltaTime;
+            rotation.x = Mathf.Clamp(rotation.x + -camDelta.y * _xRotationSensitivity * Time.deltaTime, _xRotationMinBorder, _xRotationMaxBorder);
+            rotation.y += camDelta.x * _yRotationSensitivity * Time.deltaTime;
 
             _center.rotation = Quaternion.Euler(rotation);
         }
@@ -83,7 +87,7 @@ namespace HalloGames.SpaceRTS.Management.CameraManagement
         {
             zoomDelta = -Mathf.Clamp(zoomDelta, -1, 1);
             Vector3 currentZoom = _camera.localPosition;
-            Vector3 zoomVectorDelta = currentZoom.normalized * zoomDelta * _zoomSensivity;
+            Vector3 zoomVectorDelta = currentZoom.normalized * zoomDelta * _zoomSensitivity;
 
             Vector3 result = currentZoom + zoomVectorDelta;
             if (result.magnitude < _minZoomDistance)

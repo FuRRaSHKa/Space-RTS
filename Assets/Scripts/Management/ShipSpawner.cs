@@ -41,12 +41,12 @@ namespace HalloGames.SpaceRTS.Management.Factories
 
         private ShipEntity SpawnShip(ShipData shipData, SideData gameSide)
         {
-            ShipInitilizationData shipInitilizationData = new ShipInitilizationData(shipData, gameSide);
+            ShipInitializationData shipInitializationData = new ShipInitializationData(shipData, gameSide);
 
             ShipEntity shipEntity = Instantiate(shipData.ShipHullData.HullPrefab).GetComponent<ShipEntity>();
             ShipInitilizer shipInitilizer = shipEntity.GetComponent<ShipInitilizer>();
             shipInitilizer.InitServices(_serviceProvider.GetService<IWeaponFactory>());
-            shipInitilizer.Initilize(shipInitilizationData);
+            shipInitilizer.Initialize(shipInitializationData);
 
             shipEntity.transform.SetParent(_shipParent);
             shipEntity.transform.position = GetSpawnPos(gameSide);

@@ -1,4 +1,4 @@
-using HalloGames.Architecture.Initilizer;
+using HalloGames.Architecture.Initializer;
 using HalloGames.SpaceRTS.Data.Weapon;
 using HalloGames.SpaceRTS.Gameplay.Guns.Targeter;
 using HalloGames.SpaceRTS.Gameplay.Targets;
@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace HalloGames.SpaceRTS.Gameplay.Guns
 {
-    public class WeaponController : MonoBehaviour, IWeapon, IInitilizable<WeaponData>
+    public class WeaponController : MonoBehaviour, IWeapon, IInitializable<WeaponData>
     {
         private float _shootTime;
         private float _maxAngleDeviation;
@@ -37,12 +37,12 @@ namespace HalloGames.SpaceRTS.Gameplay.Guns
         public void StartShooting(ITargetable targetable)
         {
             _target = targetable;
-            _weaponTargeter.StartFolowing(targetable);
+            _weaponTargeter.StartFollowing(targetable);
         }
 
         public void StopShooting()
         {
-            _weaponTargeter.StopFolowing();
+            _weaponTargeter.StopFollowing();
             _target = null;
         }
 

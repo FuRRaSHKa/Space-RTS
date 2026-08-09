@@ -23,7 +23,7 @@ namespace HalloGames.SpaceRTS.Management.Initialization
 
         public void StartGame()
         {
-            _shipManager.IntallTeams(_teams);
+            _shipManager.InstallTeams(_teams);
 
             _shipManager.StartObserving();
         }

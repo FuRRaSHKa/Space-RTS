@@ -19,13 +19,13 @@ namespace HalloGames.Architecture.Singletones
             }
 
             Instance = this as TInstance;
-            OverridedAwake();
+            OverriddenAwake();
         }
 
         /// <summary>
         /// Call this instead Awake
         /// </summary>
-        protected virtual void OverridedAwake()
+        protected virtual void OverriddenAwake()
         {
 
         }

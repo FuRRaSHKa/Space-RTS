@@ -5,16 +5,16 @@ using System;
 
 namespace HalloGames.Architecture.Singletones
 {
-    public class NoneLazySingletone<TIntance> where TIntance : class
+    public class NoneLazySingletone<TInstance> where TInstance : class
     {
-        private static TIntance _instance;
+        private static TInstance _instance;
 
-        public static TIntance Instance => _instance;
+        public static TInstance Instance => _instance;
 
         public NoneLazySingletone()
         {
             if (_instance == null)
-                _instance = this as TIntance;
+                _instance = this as TInstance;
         }
     }
 }

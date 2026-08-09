@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace HalloGames.SpaceRTS.Data.Weapon
 {
@@ -14,7 +15,8 @@ namespace HalloGames.SpaceRTS.Data.Weapon
     [CreateAssetMenu(fileName = "WeaponData", menuName = "Data/Weapons/WeaponData")]
     public class WeaponData : ScriptableObject
     {
-        [SerializeField] private float _rotaionSpeed;
+        [FormerlySerializedAs("_rotaionSpeed")]
+        [SerializeField] private float _rotationSpeed;
         [SerializeField] private float _shootTime;
         [SerializeField] private float _maxAngleDeviation;
         [SerializeField] private int _damage;
@@ -25,7 +27,7 @@ namespace HalloGames.SpaceRTS.Data.Weapon
 
         public WeaponType WeaponType => _weaponType;
         public float Distance => _distance;
-        public float RotationSpeed => _rotaionSpeed;
+        public float RotationSpeed => _rotationSpeed;
         public float ShootTime => _shootTime;
         public float MaxAngleDeviation => _maxAngleDeviation;
         public int Damage => _damage;

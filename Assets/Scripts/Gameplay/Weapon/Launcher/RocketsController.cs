@@ -4,21 +4,21 @@ using UnityEngine;
 
 namespace HalloGames.SpaceRTS.Management.ProjectileManagement
 {
-    public class RocketsController : ProjectilelController<RocketWrapper>, IService
+    public class RocketsController : ProjectileController<RocketWrapper>, IService
     {
-        protected override void SheludeMoving()
+        protected override void ScheduleMoving()
         {
             deltaTime = Time.deltaTime;
 
-            for (int i = 0; i < shootedProjectile.Count; i++)
+            for (int i = 0; i < shotProjectile.Count; i++)
             {
 
-                CalculateRocketMove(shootedProjectile[i], out Vector3 pos, out Vector3 moveDelta);
+                CalculateRocketMove(shotProjectile[i], out Vector3 pos, out Vector3 moveDelta);
 
                 RaycastCommand raycastCommand = new RaycastCommand(pos, moveDelta, moveDelta.magnitude, layerMask.value);
                 raycastCommands.AddNoResize(raycastCommand);
 
-                shootedProjectile[i].Transform.position += moveDelta;
+                shotProjectile[i].Transform.position += moveDelta;
             }
         }
 

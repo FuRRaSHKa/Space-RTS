@@ -1,13 +1,13 @@
-using HalloGames.Architecture.Initilizer;
+using HalloGames.Architecture.Initializer;
 using HalloGames.SpaceRTS.Data.Weapon;
 
 namespace HalloGames.SpaceRTS.Gameplay.Guns
 {
     public class WeaponInitilizer : AbstractInitilizer<WeaponData>
     {
-        public override void Initilize(WeaponData data)
+        public override void Initialize(WeaponData data)
         {
-            base.Initilize(data);
+            base.Initialize(data);
         }
     }
 }

@@ -26,16 +26,16 @@ namespace HalloGames.SpaceRTS.Management.Factories
             weapon.transform.localRotation = Quaternion.identity;
             weapon.transform.position = parent.position;
 
-            weapon.Initilize(weaponData);
+            weapon.Initialize(weaponData);
             if (weaponData.WeaponType == WeaponType.Projectile)
             {
-                IProjectileCreator projecterCreator = _serviceProvider.GetService<BulletSpawner>();
-                weapon.GetComponent<SequenceProjectileShooter>().InitProjectileCreator(projecterCreator);
+                IProjectileCreator projectileCreator = _serviceProvider.GetService<BulletSpawner>();
+                weapon.GetComponent<SequenceProjectileShooter>().InitProjectileCreator(projectileCreator);
             }
             else if (weaponData.WeaponType == WeaponType.Rocket)
             {
-                IProjectileCreator projecterCreator = _serviceProvider.GetService<RocketSpawner>();
-                weapon.GetComponent<SequenceProjectileShooter>().InitProjectileCreator(projecterCreator);
+                IProjectileCreator projectileCreator = _serviceProvider.GetService<RocketSpawner>();
+                weapon.GetComponent<SequenceProjectileShooter>().InitProjectileCreator(projectileCreator);
             }
 
             return weapon.GetComponent<IWeapon>();

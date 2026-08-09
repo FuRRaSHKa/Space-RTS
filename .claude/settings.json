@@ -1,0 +1,94 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "permissions": {
+    "deny": [
+      "Bash(git commit:*)",
+      "Bash(git add:*)",
+      "Bash(git rm:*)",
+      "Bash(git mv:*)",
+      "Bash(git push:*)",
+      "Bash(git pull:*)",
+      "Bash(git merge:*)",
+      "Bash(git rebase:*)",
+      "Bash(git reset:*)",
+      "Bash(git revert:*)",
+      "Bash(git cherry-pick:*)",
+      "Bash(git tag:*)",
+      "Bash(git checkout:*)",
+      "Bash(git restore:*)",
+      "Bash(git switch:*)",
+      "Bash(git clean:*)",
+      "Bash(git stash:*)",
+      "Bash(git apply:*)",
+      "Bash(git am:*)",
+      "Bash(git filter-branch:*)",
+      "Bash(git filter-repo:*)",
+      "Bash(git gc:*)",
+      "Bash(git update-ref:*)",
+      "Bash(git reflog:*)",
+      "Bash(git notes:*)",
+      "Bash(git worktree:*)",
+      "Bash(git submodule:*)",
+      "Bash(git lfs migrate:*)",
+      "Bash(git lfs prune:*)",
+      "PowerShell(git commit:*)",
+      "PowerShell(git add:*)",
+      "PowerShell(git rm:*)",
+      "PowerShell(git mv:*)",
+      "PowerShell(git push:*)",
+      "PowerShell(git pull:*)",
+      "PowerShell(git merge:*)",
+      "PowerShell(git rebase:*)",
+      "PowerShell(git reset:*)",
+      "PowerShell(git revert:*)",
+      "PowerShell(git cherry-pick:*)",
+      "PowerShell(git tag:*)",
+      "PowerShell(git checkout:*)",
+      "PowerShell(git restore:*)",
+      "PowerShell(git switch:*)",
+      "PowerShell(git clean:*)",
+      "PowerShell(git stash:*)",
+      "PowerShell(git apply:*)",
+      "PowerShell(git am:*)",
+      "PowerShell(git filter-branch:*)",
+      "PowerShell(git filter-repo:*)",
+      "PowerShell(git gc:*)",
+      "PowerShell(git update-ref:*)",
+      "PowerShell(git reflog:*)",
+      "PowerShell(git notes:*)",
+      "PowerShell(git worktree:*)",
+      "PowerShell(git submodule:*)",
+      "PowerShell(git lfs migrate:*)",
+      "PowerShell(git lfs prune:*)"
+    ]
+  },
+  "includeGitInstructions": false,
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "shell": "powershell",
+            "if": "Bash(git *)",
+            "statusMessage": "Checking git write ban",
+            "command": "$p = [Console]::In.ReadToEnd() | ConvertFrom-Json; $c = $p.tool_input.command; if ($c -match '(?i)(^|[;&|(])\\s*git(\\s+(-C\\s+\\S+|-c\\s+\\S+|--\\S+))*\\s+(commit|add|rm|mv|push|pull|merge|rebase|reset|revert|cherry-pick|tag|checkout|restore|switch|clean|stash|apply|am|filter-branch|filter-repo|gc|update-ref|reflog|notes|worktree|submodule)\\b' -or $c -match '(?i)git[\\s\\S]*--amend' -or $c -match '(?i)git\\s+lfs\\s+(migrate|prune)') { Write-Output '{\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\",\"permissionDecision\":\"deny\",\"permissionDecisionReason\":\"Blocked by Docs/Agents/GIT_RULES.md section 0: agents change files, humans change history. Never run git write commands. Propose the command in the completion summary and let the human run it.\"}}' }"
+          }
+        ]
+      },
+      {
+        "matcher": "PowerShell",
+        "hooks": [
+          {
+            "type": "command",
+            "shell": "powershell",
+            "if": "PowerShell(git *)",
+            "statusMessage": "Checking git write ban",
+            "command": "$p = [Console]::In.ReadToEnd() | ConvertFrom-Json; $c = $p.tool_input.command; if ($c -match '(?i)(^|[;&|(])\\s*git(\\s+(-C\\s+\\S+|-c\\s+\\S+|--\\S+))*\\s+(commit|add|rm|mv|push|pull|merge|rebase|reset|revert|cherry-pick|tag|checkout|restore|switch|clean|stash|apply|am|filter-branch|filter-repo|gc|update-ref|reflog|notes|worktree|submodule)\\b' -or $c -match '(?i)git[\\s\\S]*--amend' -or $c -match '(?i)git\\s+lfs\\s+(migrate|prune)') { Write-Output '{\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\",\"permissionDecision\":\"deny\",\"permissionDecisionReason\":\"Blocked by Docs/Agents/GIT_RULES.md section 0: agents change files, humans change history. Never run git write commands. Propose the command in the completion summary and let the human run it.\"}}' }"
+          }
+        ]
+      }
+    ]
+  }
+}

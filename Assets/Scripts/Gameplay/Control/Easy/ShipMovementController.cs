@@ -1,4 +1,4 @@
-using HalloGames.Architecture.Initilizer;
+using HalloGames.Architecture.Initializer;
 using HalloGames.SpaceRTS.Management.Initialization;
 using UnityEngine;
 using UnityEngine.AI;
@@ -15,13 +15,13 @@ namespace HalloGames.SpaceRTS.Gameplay.Ship.Control
         public void MoveTo(Vector3 targetPos);
     }
 
-    public class ShipMovementController : MonoBehaviour, IMovementController, IInitilizable<ShipInitilizationData>
+    public class ShipMovementController : MonoBehaviour, IMovementController, IInitializable<ShipInitializationData>
     {
         [SerializeField] private NavMeshAgent _navMesh;
 
         public Vector3 CurrentVelocity => _navMesh.velocity;
 
-        public void Init(ShipInitilizationData data)
+        public void Init(ShipInitializationData data)
         {
             _navMesh.acceleration = data.ShipData.ShipHullData.DefaultShipAcceleration;
             _navMesh.speed = data.ShipData.ShipHullData.DefaultShipSpeed;
