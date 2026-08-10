@@ -1,4 +1,5 @@
 using HalloGames.Architecture.CoroutineManagement;
+using HalloGames.Architecture.Services;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -14,17 +15,13 @@ namespace HalloGames.Architecture.Frames
         private float _logicDeltaTime = 0;
         private float _accumulator = 0;
 
-        private TickDispatcher<ILogicTickable> _logicTicker;
-        private TickDispatcher<IUpdatable> _updateTicker;
-        private TickDispatcher<IFixedUpdatable> _fixedUpdateTicker;
+        private TickDispatcher<ILogicTickable> _logicTicker = new TickDispatcher<ILogicTickable>(static (t, dt) => t.Tick(dt));
+        private TickDispatcher<IUpdatable> _updateTicker = new TickDispatcher<IUpdatable>(static (t, dt) => t.UpdateTick(dt));
+        private TickDispatcher<IFixedUpdatable> _fixedUpdateTicker = new TickDispatcher<IFixedUpdatable>(static (t, dt) => t.FixedUpdateTick(dt));
 
         private void Awake()
         {
             _logicDeltaTime = 1f / _ticksPerSecond;
-
-            _logicTicker = new TickDispatcher<ILogicTickable>(static (t, dt) => t.Tick(dt));
-            _updateTicker = new TickDispatcher<IUpdatable>(static (t, dt) => t.Tick(dt));
-            _fixedUpdateTicker = new TickDispatcher<IFixedUpdatable>(static (t, dt) => t.Tick(dt));
         }
 
         private void Update()
@@ -32,12 +29,12 @@ namespace HalloGames.Architecture.Frames
             var deltaTime = Time.deltaTime;
             _updateTicker.Run(deltaTime);
 
-            AccumulateLogic();
+            AccumulateLogic(deltaTime);
         }
 
-        private void AccumulateLogic()
+        private void AccumulateLogic(float dt)
         {
-            _accumulator += Time.deltaTime;
+            _accumulator += dt;
 
             int steps = 0;
             while (_accumulator >= _logicDeltaTime)

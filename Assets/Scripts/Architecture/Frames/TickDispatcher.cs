@@ -20,6 +20,9 @@ namespace HalloGames.Architecture.Frames
 
         public void Register(TTickable tickable)
         {
+            if (_tickers.Contains(tickable))
+                return;
+
             _tickers.Add(tickable);
         }
 

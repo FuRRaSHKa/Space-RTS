@@ -1,3 +1,4 @@
+using HalloGames.Architecture.Services;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -16,29 +17,29 @@ namespace HalloGames.Architecture.Frames
 
     public interface IUpdatable : ITickable
     {
-        public void Tick(float deltaTime);
+        public void UpdateTick(float deltaTime);
 
     }
 
     public interface IFixedUpdatable : ITickable
     {
-        public void Tick(float deltaTime);
+        public void FixedUpdateTick(float deltaTime);
 
     }
 
-    public interface ILogicTicksDispatcher
+    public interface ILogicTicksDispatcher : IService
     {
         public void Register(ILogicTickable logicTickable);
         public void Unregister(ILogicTickable logicTickable);
     }
 
-    public interface IUpdateTicksDispatcher
+    public interface IUpdateTicksDispatcher : IService
     {
         public void Register(IUpdatable logicTickable);
         public void Unregister(IUpdatable logicTickable);
     }
 
-    public interface IFixedUpdateTicksDispatcher
+    public interface IFixedUpdateTicksDispatcher : IService
     {
         public void Register(IFixedUpdatable logicTickable);
         public void Unregister(IFixedUpdatable logicTickable);
