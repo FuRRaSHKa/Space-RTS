@@ -15,7 +15,7 @@ doc gets fixed.
 
 ## Project at a glance
 
-Space-RTS — a real-time strategy prototype in **Unity 2021.3.2f1**, URP, new Input System,
+Space-RTS — a real-time strategy prototype in **Unity 2022.3.62f2**, URP, new Input System,
 no asmdefs (everything in `Assembly-CSharp`), no tests, no save system.
 
 - Composition root: `Assets/Scripts/Management/ProviderBuilder.cs` → `RegisterServices()`
@@ -34,9 +34,9 @@ Namespaces do **not** follow folder paths — copy the `namespace` line from a n
 - Use `RoutineManager` for coroutines and `PoolManager` for anything spawned repeatedly.
 - **Do not commit, stage or push — ever, including when asked directly.** This overrides the
   usual "commit when the user asks" default: in this repo the agent edits the working tree and
-  proposes a command, the human runs it. The ban is enforced by `.claude/settings.json`
+  reports what changed; git itself is the human's business. The ban is enforced by `.claude/settings.json`
   (deny rules + a `PreToolUse` hook), so a refused git command is the rule working correctly —
   report it, don't route around it. Details and the sanctioned way to change it:
   [GIT_RULES.md §0](Docs/Agents/GIT_RULES.md).
 - End every task with the completion-summary format, including *Manual editor steps*,
-  *How to test manually* and the *Git handoff* block.
+  *How to test manually* and the *Working tree* block.

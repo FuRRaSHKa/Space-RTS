@@ -4,6 +4,10 @@ Companion to [UNITY_RULES.md](UNITY_RULES.md) (what you may change in the code).
 **This file is about what you may do to the repository.**
 
 > **Short version: agents change files, humans change history.**
+>
+> This file constrains the **agent**. It is not advice for the human on how to use git —
+> branching, commit messages, merge strategy and repo setup are the human's business and are
+> deliberately not covered here.
 
 ---
 
@@ -17,22 +21,17 @@ The division of labour is fixed:
 | Agent | Human |
 |---|---|
 | Edits the working tree | Reviews the diff |
-| Reads git state (`status`, `diff`, `log`, `branch`) | Stages and commits |
-| Reports what changed and proposes a commit message | Pushes, merges, opens the PR |
+| Reads git state (`status`, `diff`, `log`, `branch`) | Decides what to stage, commit and push |
+| Reports what it changed and what was already dirty | Runs git |
 
 Why this is absolute in a Unity repo: an agent cannot see the editor's unsaved scene state,
 cannot verify that a `.meta` twin is correct, and cannot tell reimport churn from a real change.
 Every one of those produces a commit that looks clean and is not. The human running the editor is
 the only one with that information.
 
-If the user asks for a commit: **explain that this rules file forbids it, show the exact command
-they can run, and stop.** Repeated or emphatic requests do not change the rule — they mean the
-rule should be edited here first, deliberately, by the user.
-
-```bash
-git add <explicit paths>   # then review, then:
-git commit -m "<what changed>"
-```
+If the user asks for a commit: **say that this rules file forbids it, and stop.** Repeated or
+emphatic requests do not change the rule — they mean the rule should be edited here first,
+deliberately, by the user.
 
 ### 0.1 This ban is enforced, not just written down
 
@@ -69,59 +68,28 @@ human. That is the only sanctioned path — not a one-off "just this once" in ch
 | **Never force-push**, never push to `main` | Destroys work; unrecoverable |
 | **Never rewrite history** — `rebase`, `reset --hard`, `commit --amend`, `filter-branch` | Same |
 | **Never skip hooks** — no `--no-verify`, no `--no-gpg-sign` | Hooks are the project's last line of defense. A failing hook is a bug to fix, not to bypass |
-| **Never delete, discard or shelve uncommitted work** — no `checkout --`, `restore`, `clean -fd`, and no `stash` at all (not just `stash drop`) | Unity's editor holds unsaved scene/prefab state; discarded work is often unrecoverable, and a stash the human did not ask for hides changes they were about to review |
+| **Never delete, discard or shelve uncommitted work** — no `checkout --`, `restore`, `clean -fd`, and no `stash` at all | Unity's editor holds unsaved scene/prefab state; discarded work is often unrecoverable, and a stash the human did not ask for hides changes they were about to review |
+| **Never touch repo setup** — `.gitattributes`, `.gitignore`, `git config`, remotes, LFS tracking | Repo-wide side effects (re-normalization, history rewrite). Report drift; changing it is the human's call |
+| **No PR/hosting operations** — `gh` is not installed and must not be worked around | The remote is `FuRRaSHKa/Space-RTS` on GitHub; everything there is human-driven |
 | **Interactive commands are unavailable** — no `rebase -i`, `add -i`, nothing that opens an editor | The agent has no TTY; they hang |
 
 **Read-only git is always allowed** and should be used freely: `status`, `diff`, `log`, `show`,
-`branch`, `blame`, `stash list`. Before any operation that touches the working tree, look at what
-you are about to affect and say what you found. When in doubt, ask.
+`branch`, `blame`, `stash list`. When in doubt, ask.
 
 ---
 
-## 1. This repository's setup — verified state
+## 1. This repository's setup — facts the agent needs
 
-Checked against the repo; **report drift, don't silently fix it** — changing these re-serializes
-or re-normalizes large parts of the project.
+Checked against the repo. All of it is **read-only context**: report drift, never fix it.
 
-| Item | State here | Agent action |
+| Item | State here | What it means for you |
 |---|---|---|
-| Asset serialization | `ProjectSettings/EditorSettings.asset` → `m_SerializationMode: 2` (**Force Text**) ✅ | Nothing. If it ever changes, everything below about diffs and conflicts stops applying — flag it loudly |
-| `.gitignore` | Official Unity ignore + project entries + the AI-tooling section ✅ | Extend only when asked |
-| `.gitattributes` | **Only `* text=auto`** ⚠️ — no `eol=lf`, no Unity YAML merge driver, no LFS patterns | See §1.1 — propose, do not apply |
-| UnityYAMLMerge driver | **Not configured** in git config ⚠️ | A YAML merge conflict cannot be resolved properly here — §3 |
-| Git LFS | Binary installed (`git-lfs 2.13.3`), **zero files tracked** ⚠️ | `.fbx`/`.png`/`.mat` are committed as ordinary blobs. See §1.2 |
-| Hooks | None installed | Nothing to skip; nothing to fix |
-| CI | None | "CI is green" is not a checkbox here — manual editor verification is |
-
-### 1.1 `.gitattributes` — missing, and adding it is a human decision
-
-Recommended shape, to **propose** in the summary rather than write silently (it changes how every
-YAML file merges and, with `eol=lf`, can touch line endings repo-wide):
-
-```gitattributes
-* text=auto
-
-# Unity YAML — use Unity's own merge tool, never a line-based merge
-*.unity      merge=unityyamlmerge eol=lf
-*.prefab     merge=unityyamlmerge eol=lf
-*.asset      merge=unityyamlmerge eol=lf
-*.mat        merge=unityyamlmerge eol=lf
-*.anim       merge=unityyamlmerge eol=lf
-*.controller merge=unityyamlmerge eol=lf
-*.meta       merge=unityyamlmerge eol=lf
-```
-
-The attribute alone does nothing: the driver must also be registered in git config
-(`merge.unityyamlmerge.*`, pointing at Unity's `UnityYAMLMerge` binary, shipped in
-`Editor/Data/Tools/`). Both halves are a human's one-time setup.
-
-### 1.2 LFS — installed but unused
-
-Nothing is LFS-tracked, and `Assets/Art/Temp/**` already holds `.fbx` and `.png` blobs in
-history. **Adding LFS tracking now does not migrate what is already committed** — that is a
-repo-wide history rewrite (`git lfs migrate`), a human decision, never an agent's. Do not add LFS
-patterns to `.gitattributes` on your own initiative; mention the situation if the repo starts
-gaining large binaries.
+| Asset serialization | `m_SerializationMode: 2` (**Force Text**) ✅ | Diffs and conflicts in YAML assets behave as §3 describes. If this ever changes, §3 stops applying — flag it loudly |
+| `.gitignore` | Official Unity ignore + project entries + the AI-tooling section | Extend only when explicitly asked |
+| `.gitattributes` | Only `* text=auto` — no Unity YAML merge driver | §3.1 option 1 is unavailable here |
+| UnityYAMLMerge driver | Not configured in git config | Same |
+| Git LFS | Installed, **zero files tracked**; `.fbx`/`.png` live in history as ordinary blobs | Never add LFS patterns on your own initiative — retro-tracking needs a history rewrite |
+| Hooks / CI | None | "CI is green" is not a checkbox here — manual editor verification is |
 
 ---
 
@@ -131,14 +99,14 @@ gaining large binaries.
 
 | Operation | Correct git action |
 |---|---|
-| Add an asset | `Foo.png` **and** `Foo.png.meta` in the same commit |
+| Add an asset | `Foo.png` **and** `Foo.png.meta` land together |
 | Add a folder | The folder's own `Foo.meta` too — Unity generates one per folder |
 | Delete an asset | Delete `Foo.png` **and** `Foo.png.meta` |
 | Move / rename an asset | Move both; **never** regenerate the `.meta` |
 
-A commit with an asset but no `.meta` makes Unity generate a *new* GUID on every other machine →
-every reference to that asset breaks. A commit with a `.meta` but no asset leaves an orphan Unity
-deletes on the next import, so the fix silently reverts itself.
+An asset without its `.meta` makes Unity generate a *new* GUID on every other machine → every
+reference to that asset breaks. A `.meta` without its asset leaves an orphan Unity deletes on the
+next import, so the fix silently reverts itself.
 
 **Whenever `Assets/` was touched, run this before handing work back and report the result:**
 
@@ -148,47 +116,38 @@ git status --porcelain Assets/ | sort
 
 Each non-`.meta` path under `Assets/` must have its `.meta` twin in the same list, and vice
 versa. Deleted folders must show their folder `.meta` as deleted too. Any mismatch goes in the
-summary as a **blocking** note — the human must not commit until it is resolved in the editor.
+summary as a **blocking** note.
 
 Note for agents in this repo: you create C# files, and **you do not create their `.meta`** —
 Unity does, on the next editor focus. So right after your change the `.meta` twin is legitimately
-absent. Say so explicitly: *"`Foo.cs` has no `.meta` yet — open the editor once before
-committing."*
+absent. Say so explicitly rather than presenting it as a problem.
 
 ---
 
 ## 3. Merge conflicts in Unity files
 
-An agent never starts a merge (§0). This section applies when a **human** already started one and
-asks for help resolving it.
+An agent never starts a merge (§0). This section applies only when a merge is already in progress
+and the agent is asked to help.
 
 ### 3.1 `.unity` / `.prefab` / `.asset` — do not hand-resolve
 
 These are line-based-hostile YAML: fileIDs, ordering and nested references make a "looks correct"
 textual merge produce a corrupt scene that opens with no error and silently loses objects.
 
-Allowed resolutions, in order of preference:
+1. `git mergetool` with UnityYAMLMerge — **unavailable here** (§1).
+2. Take one side whole (`--ours` / `--theirs`) — but the agent may not run those commands (§0),
+   so this is a hand-off, not an action.
+3. An agent must **not** merge YAML hunks by hand.
 
-1. `git mergetool` with **UnityYAMLMerge** configured — **not set up in this repo yet** (§1.1).
-2. **Take one side whole** (`git checkout --ours <file>` / `--theirs <file>`) and have a human
-   redo the other side's change in the editor. Slower, always correct. ← *the realistic option
-   here today*
-3. Nothing else. An agent must **not** merge YAML hunks by hand.
-
-If neither is available: stop, report the conflicting files, hand it to a human.
+In practice: stop, report the conflicting files, hand it over.
 
 ### 3.2 `.meta` conflicts
 
 A conflict inside a `.meta` almost always means **two GUIDs for one asset** — the same file was
-added independently on both branches. Keep the GUID already referenced by committed
-prefabs/scenes (usually the older branch's), and flag it for human verification.
+added independently on both sides. Report which GUID is already referenced by committed
+prefabs/scenes; do not pick one silently.
 
-### 3.3 LFS pointer conflicts
-
-Not applicable today (§1.2). If LFS is ever adopted: a conflicted LFS file shows two pointer
-texts, not two images. Pick a side, then `git lfs checkout <file>`. Never edit a pointer by hand.
-
-### 3.4 C# conflicts
+### 3.3 C# conflicts
 
 Normal textual merge — but after resolving, re-read
 [UNITY_RULES.md §1](UNITY_RULES.md#1-serialization-surfaces--identify-the-surface-first): a merge
@@ -197,120 +156,72 @@ bug the compiler will not catch.
 
 ---
 
-## 4. What must never enter a commit
+## 4. What must never be left in the working tree
 
-You will not be the one committing (§0) — but you **are** responsible for not leaving these in
-the working tree, and for naming them in your summary if they are already there.
+You will not be the one committing (§0) — but you **are** responsible for not leaving these
+behind, and for naming them in your summary if they are already there.
 
 - `Library/`, `Temp/`, `obj/`, `Logs/`, `Build/`, `UserSettings/`, `.vs/`.
 - Regenerated project files: `*.csproj`, `*.sln`, `*.user`.
 - Build outputs and archives: `*.apk`, `*.aab`, `*.ipa`, `*.unitypackage`, `*.zip`.
 - **Secrets and signing material:** keystores, `.p12`/`.mobileprovision`, API keys,
   service-account JSON, store passwords, analytics/backend tokens. If you see one already
-  tracked, **report it** — removing it needs a history rewrite plus key rotation, which is a
-  human decision.
+  tracked, **report it** and stop there.
 - Personal editor state and local AI-tool config (the `.gitignore` AI-tooling section covers the
-  common folders; if your tool writes somewhere else, report it instead of committing it).
+  common folders; if your tool writes somewhere else, report it).
 - **Unrelated files.** Unity rewrites `Packages/packages-lock.json`, `ProjectSettings/*` and
   `.csproj` files just by opening the project. If `git status` shows changes you did not make,
   **leave them alone and say so.**
-
-Sanity check to include in every handoff:
 
 ```bash
 git status --porcelain
 ```
 
-If it contains files you cannot explain in one sentence each, say so explicitly — the human needs
-to know which paths are yours and which were already dirty.
+If it contains files you cannot explain in one sentence each, say so explicitly — separating your
+paths from what was already dirty is the whole point of the report.
 
 ---
 
-## 5. Branching and commits — this project's conventions
-
-You do not create branches or commits (§0) — you **propose** them.
-
-| Item | Value here |
-|---|---|
-| Hosting | GitHub — `FuRRaSHKa/Space-RTS` |
-| CLI available to agents | **None** — `gh` is not installed. Do not attempt PR operations |
-| Default / target branch | `main` |
-| Integration branch | none |
-| Observed workflow | Solo, linear history, commits land directly on `main`; no merge commits, no PRs |
-| Work branch pattern | Rare (`Simngle-thread-perfomance-test`). When a branch is warranted: short descriptive kebab-case topic name |
-| History policy | Linear. Do not introduce merge commits without asking |
-| Commit message language | **English** |
-| Commit message pattern | Short sentence-case phrase, no ticket key, no prefix — `Fix projectile disabling`, `Rockets complete`, `Bullet refactor` |
-| Ticket key required | No — there is no tracker |
-| AI-tool attribution in commits | **No.** No `Co-Authored-By`, no generator footers |
-| Force-push | Never |
-
-Message guidelines that hold regardless:
-
-- Subject line: ≤ 72 chars, **what changed** — not "fix", not "update".
-- One logical change per commit. Code changes, asset reimport churn and package/config
-  regeneration are **separate** commits — mixing them makes the diff unreadable.
-- Bulk-generated noise (mass reimports, `packages-lock.json` refills, atlas rebuilds) gets its
-  own commit whose message says exactly that, so it can be skipped during review.
-
----
-
-## 6. Working-tree hygiene around the Unity editor
-
-- **Switching branches triggers a reimport.** Never switch while a build or import is running.
-- **Save the scene/project in the editor before any git operation** that touches the working
-  tree — Unity holds unsaved scene and prefab state in memory and git cannot see it. An agent
-  cannot save the editor's state; if unsaved work may exist, **ask**.
-- **After pulling asset changes the editor must reimport** before anything is verifiable.
-  "It compiles" is not a valid claim right after a pull.
-- New C# files only become real to Unity after the editor regains focus and compiles them — the
-  `.meta` appears then (§2).
-- `git stash` is a **human** tool here: better than discarding, but the agent may not run it
-  (§0.1) — if work is in the way, say so and let the human decide.
-- `git clean -fdx` deletes `Library/` and forces a full reimport. Treat it as destructive, not as
-  cleanup.
-
----
-
-## 7. Reading the repository (always safe, always first)
+## 5. Reading the repository (always safe, always first)
 
 ```bash
 git status                          # what is dirty, which branch
-git log --oneline -20               # message conventions in practice
+git log --oneline -20               # what has been happening here
 git diff                            # unstaged changes — including ones you did not make
 git diff --cached                   # what is already staged
-git branch -a                       # naming conventions in practice
+git branch -a
 ```
 
-**Infer conventions from the repository, not from your defaults.** The table in §5 was derived
-this way; if the history moves on, re-derive it and update §5.
+Run these at the start of a task, before the first edit, so you can tell your own changes from
+pre-existing ones at the end.
 
 ---
 
-## 8. Dangerous command reference
+## 6. Dangerous command reference
 
 | Command | Risk | Agent policy |
 |---|---|---|
-| `commit` / `add` / `rm --cached` | Writes history the agent cannot verify (§0) | **Never** — propose the command, let the human run it |
+| `commit` / `add` / `rm --cached` | Writes history the agent cannot verify (§0) | **Never** |
 | `push` / `merge` / `cherry-pick` / `revert` / `tag` | Same, plus affects the remote | **Never** |
 | `push --force` / `--force-with-lease` | Destroys remote history | **Never** |
-| `reset --hard` | Discards uncommitted work | Only with explicit instruction, after showing what is lost |
-| `clean -fd` / `-fdx` | Deletes untracked files; `-x` nukes `Library/` | Explicit instruction only |
-| `checkout -- <path>` / `restore` | Silently discards edits | Explicit instruction only |
-| `rebase` | Rewrites history | Never |
-| `commit --amend` | Same | Never |
-| `stash` (any form) | Hides work the human was about to review; `drop`/`clear` unrecoverable | **Never** — denied in `.claude/settings.json` |
-| `filter-branch` / `filter-repo` / BFG | Repo-wide history rewrite | Human decision, always |
-| `lfs migrate` | Repo-wide history rewrite | Human decision, always |
-| `git gc --prune=now` | Drops recoverable objects | Never during active work |
+| `reset` (any form) | Discards uncommitted work or rewrites history | **Never** |
+| `clean -fd` / `-fdx` | Deletes untracked files; `-x` nukes `Library/` and forces a full reimport | **Never** |
+| `checkout -- <path>` / `restore` / `switch` | Silently discards edits; branch switches trigger a reimport | **Never** |
+| `rebase` / `commit --amend` | Rewrites history | **Never** |
+| `stash` (any form) | Hides work the human was about to review | **Never** |
+| `filter-branch` / `filter-repo` / BFG / `lfs migrate` | Repo-wide history rewrite | **Never** |
+| `git gc --prune=now` | Drops recoverable objects | **Never** |
+| `config` / `remote` / `.gitattributes` edits | Repo-wide setup change | **Never** — report instead |
+
+All of the above are denied in `.claude/settings.json` (§0.1). A denial is the expected outcome,
+not a problem to solve.
 
 ---
 
-## 9. Handoff checklist
+## 7. Handoff
 
 The agent does not commit (§0) — it produces the working-tree change plus this checklist, filled
-in, so the human can review and commit in one pass. It attaches to the
-[completion summary](templates/completion-summary.md).
+in, and stops. It attaches to the [completion summary](templates/completion-summary.md).
 
 - [ ] `git status --porcelain` reviewed; **my paths named, pre-existing dirt named separately**.
 - [ ] No `Library/`, build output, `*.csproj`/`*.sln`, secrets, or unrelated files among my changes.
@@ -321,32 +232,30 @@ in, so the human can review and commit in one pass. It attaches to the
       ([UNITY_RULES.md §1](UNITY_RULES.md#1-serialization-surfaces--identify-the-surface-first)).
 - [ ] Manual editor steps and manual test steps are in the summary — they are the only
       verification this project has.
-- [ ] A commit message is **proposed**, in the project's style (§5), and left for the human to run.
 
-### Proposed-commit block for the summary
+### Working-tree report block for the summary
 
 ```markdown
-## Git handoff
-- My changes: `<paths>`
+## Working tree
+- Changed by me: `<paths>`
 - Already dirty before I started (not mine, untouched): `<paths | none>`
-- `.meta` status: `<all present | Foo.cs.meta will be generated by Unity>`
-- Suggested commit (run it yourself after review):
-
-  git add <explicit paths>
-  git commit -m "<Short sentence-case description>"
+- `.meta` status: `<all present | Foo.cs.meta will be generated by Unity on next editor focus>`
 ```
+
+State the facts and stop there. Do not propose commit commands, messages, branch names or any
+other git procedure — what to do with these changes is the human's decision, not the agent's
+suggestion.
 
 ---
 
-## 10. Keeping this file true
+## 8. Keeping this file true
 
-Re-derive and update when any of these change: hosting or available CLI, `.gitattributes` /
-LFS / merge-driver setup, branch protection, hooks or CI, commit-message conventions in the last
-20 commits, or repo-specific "do not touch" paths (today: `Assets/SpaceSkies Free/**`,
+Re-derive and update when any of these change: `.gitattributes` / LFS / merge-driver setup, hooks
+or CI, or repo-specific "do not touch" paths (today: `Assets/SpaceSkies Free/**`,
 `Assets/Data/Input/PlayerInputMaps.cs`, `Packages/`, `ProjectSettings/`).
 
 **§0.1 and `.claude/settings.json` are one unit** — if the deny list or the hook changes, this
 document changes in the same edit, and vice versa. A ban that is written here but not enforced,
 or enforced but not explained, is worse than either alone.
 
-Keep it lean. Delete rules that stop being true.
+Keep it lean, and keep it about the agent. Delete rules that stop being true.

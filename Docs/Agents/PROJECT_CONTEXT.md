@@ -9,12 +9,12 @@ Project-specific facts that fill in the `[project]` placeholders of [UNITY_RULES
 
 | | |
 |---|---|
-| Unity | **2021.3.2f1** |
-| Render pipeline | **URP 12.1.6** (`Assets/Art/Pipeline/`) |
-| C# language version | **9.0** (Unity 2021 LTS) — no `record`, no file-scoped namespaces, no `required` |
+| Unity | **2022.3.62f2** (`ProjectSettings/ProjectVersion.txt`) |
+| Render pipeline | **URP 14.0.12** (`Assets/Art/Pipeline/`) |
+| C# language version | **9.0** (Unity 2022 LTS) — no `record`, no file-scoped namespaces, no `required` |
 | Assembly layout | **No asmdefs** — everything compiles into `Assembly-CSharp` |
-| Input | **New Input System 1.3.0** — `Assets/Data/Input/PlayerInputMaps.inputactions` (+ generated `PlayerInputMaps.cs`) |
-| UI | uGUI + TextMeshPro 3.0.6 |
+| Input | **New Input System 1.14.0** — `Assets/Data/Input/PlayerInputMaps.inputactions` (+ generated `PlayerInputMaps.cs`) |
+| UI | uGUI + TextMeshPro 3.0.7 |
 | Target platform | Desktop/standalone prototype. Target **60 FPS**. |
 | Obfuscation | None |
 | Custom compile defines | None |

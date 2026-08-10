@@ -105,9 +105,9 @@ Three sections are non-negotiable:
   create assets, add pool rows. List each one as a checkbox with the exact object and field.
 - **How to test manually** — scene, action, expected result. There is no test suite; this is the
   only verification that exists.
-- **Git handoff** — your paths vs. pre-existing dirt, `.meta` status, and a **proposed** commit
-  command in the project's message style. You do not run it
-  ([GIT_RULES.md §9](GIT_RULES.md#9-handoff-checklist)).
+- **Working tree** — your paths vs. pre-existing dirt, and `.meta` status. A factual report and
+  nothing more: no commit commands, no message suggestions, no branch advice
+  ([GIT_RULES.md §7](GIT_RULES.md#7-handoff)).
 
 Say plainly what you did not do and why. A skipped part reported honestly is fine; a skipped part
 implied to be done is not.
@@ -138,6 +138,6 @@ report file paths and findings, not opinions about style; the agent that writes 
 responsible for Phase 4 and Phase 5.
 
 **Commits**
-Never — not even when explicitly asked. Agents change files, humans change history: propose the
-`git add` / `git commit` commands and the message, and stop there. Full rules and the reasoning:
-[GIT_RULES.md](GIT_RULES.md).
+Never — not even when explicitly asked. Agents change files, humans change history: report what
+changed and stop there. What to do with the change afterwards is not the agent's call to advise
+on. Full rules and the reasoning: [GIT_RULES.md](GIT_RULES.md).

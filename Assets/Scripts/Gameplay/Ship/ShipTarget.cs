@@ -28,7 +28,7 @@ namespace HalloGames.SpaceRTS.Gameplay.Ship
 
         private void Start()
         {
-            _shipDataObserver = new ShipDataObserver(_shipEntity.DeathHandler, _shipEntity.ShipMovement);
+            _shipDataObserver = new ShipDataObserver(_shipEntity.DeathController, _shipEntity.ShipMovement);
         }
 
         public void DealDamage(int damage)
@@ -39,13 +39,13 @@ namespace HalloGames.SpaceRTS.Gameplay.Ship
 
     public class ShipDataObserver : ITargetDataObserver
     {
-        private readonly IDeathHandler _deathHandler;
+        private readonly IDeathController _deathHandler;
         private readonly IMovementController _movementController;
 
         public Vector3 CurrentVelocity => _movementController.CurrentVelocity;
-        public IDeathHandler DeathHandler => _deathHandler;
+        public IDeathController DeathHandler => _deathHandler;
 
-        public ShipDataObserver(IDeathHandler deathHandler, IMovementController movementController)
+        public ShipDataObserver(IDeathController deathHandler, IMovementController movementController)
         {
             _deathHandler = deathHandler;
             _movementController = movementController;
@@ -62,7 +62,7 @@ namespace HalloGames.SpaceRTS.Gameplay.Targets
             get;
         }
 
-        public IDeathHandler DeathHandler
+        public IDeathController DeathHandler
         {
             get;
         }

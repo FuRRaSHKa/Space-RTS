@@ -15,7 +15,7 @@ namespace HalloGames.SpaceRTS.Gameplay.Ship
         private IMovementController _shipMovementController;
         private ITargetable _shipTarget;
         private IStatsController _statsController;
-        private IDeathHandler _deathHandler;
+        private IDeathController _deathController;
         private IWeaponController _weaponController;
 
         private SideData _side;
@@ -25,7 +25,7 @@ namespace HalloGames.SpaceRTS.Gameplay.Ship
         public IMovementController ShipMovement => _shipMovementController;
         public ITargetable ShipTarget => _shipTarget;
         public IStatsController StatsController => _statsController;
-        public IDeathHandler DeathHandler => _deathHandler;
+        public IDeathController DeathController => _deathController;
         public ShipData ShipData => _shipData;
         public IWeaponController WeaponController => _weaponController;
 
@@ -37,7 +37,7 @@ namespace HalloGames.SpaceRTS.Gameplay.Ship
 
         private void Awake()
         {
-            _deathHandler = GetComponent<IDeathHandler>();
+            _deathController = GetComponent<IDeathController>();
             _weaponController = GetComponent<IWeaponController>();
             _shipMovementController = GetComponent<IMovementController>();
             _shipTarget = GetComponent<ITargetable>();

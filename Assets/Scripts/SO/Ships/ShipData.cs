@@ -22,6 +22,5 @@ namespace HalloGames.SpaceRTS.Data.Ships
     {
         public StatData StatData;
         public int StartValue;
-        public int DamageOrder;
     }
 }

@@ -9,7 +9,7 @@ Before the first edit of every task, read — in this order:
 
 1. **[Docs/Agents/WORKFLOW.md](Docs/Agents/WORKFLOW.md)** — the required 5-phase process
    (Orient → Plan → Implement → Self-check → Report) and its gates.
-2. **[Docs/Agents/PROJECT_CONTEXT.md](Docs/Agents/PROJECT_CONTEXT.md)** — Unity 2021.3.2f1 / URP,
+2. **[Docs/Agents/PROJECT_CONTEXT.md](Docs/Agents/PROJECT_CONTEXT.md)** — Unity 2022.3.62f2 / URP,
    the `ServiceProvider` DI entry point, the boot chain, pooling, routines, namespaces.
 3. **[Docs/Agents/UNITY_RULES.md](Docs/Agents/UNITY_RULES.md)** — the Unity rule set:
    serialization, prefabs/meta, architecture, performance, code style.
@@ -52,8 +52,8 @@ that look like one-line changes.
 8. **Agents change files, humans change history.** Never `git commit`, `add`, `push`, `pull`,
    `merge`, `rebase`, `reset`, `checkout`, `restore`, `clean`, `stash`, `revert`, `cherry-pick`,
    `tag` or `--amend` — not even when asked in passing. Read-only git (`status`, `diff`, `log`,
-   `branch`, `show`, `blame`) is free and encouraged. Propose the commit command and the message;
-   let the human run it.
+   `branch`, `show`, `blame`) is free and encouraged. Report what changed and stop — the agent
+   does not advise on commits, messages, branches or merges either.
    **This one is machine-enforced**, not just documented: `.claude/settings.json` denies those
    commands on both the `Bash` and `PowerShell` tools and adds a `PreToolUse` hook that catches
    chained and flagged forms (`cd x && git commit`, `git -C . reset --hard`). If you hit a

@@ -11,7 +11,6 @@ namespace HalloGames.SpaceRTS.Gameplay.Ship.Stats
 {
     public interface IStatsController
     {
-        public event Action OnDeath;
         public event Action<StatData, int> OnStatChange;
 
         public Stat GetStat(StatData statsData);
@@ -20,7 +19,7 @@ namespace HalloGames.SpaceRTS.Gameplay.Ship.Stats
         public void DealDamage(int damage);
     }
 
-    public interface IDeathHandler
+    public interface IDeathController
     {
         public bool IsDead
         {
@@ -30,10 +29,14 @@ namespace HalloGames.SpaceRTS.Gameplay.Ship.Stats
         public event Action OnDeath;
     }
 
-    public class ShipStatsController : MonoBehaviour, IStatsController, IInitializable<ShipInitializationData>, IDeathHandler
+    public class ShipStatsController : MonoBehaviour, IStatsController, IInitializable<ShipInitializationData>, IDeathController
     {
+        private Dictionary<StatData, Stat> _stats = new Dictionary<StatData, Stat>(); 
+        private List<Stat> _damageOrderedStats = new List<Stat>();
+
+        private Stat _criticalStat;
+
         private bool _isDead = false;
-        private Dictionary<StatData, Stat> _stats = new Dictionary<StatData, Stat>();
 
         public bool IsDead => _isDead;
 
@@ -46,7 +49,7 @@ namespace HalloGames.SpaceRTS.Gameplay.Ship.Stats
             List<StatStruct> statDatas = data.ShipData.StatDatas;
             foreach (var statData in statDatas)
             {
-                Stat stat = new Stat(statData.StartValue, statData.DamageOrder);
+                Stat stat = new Stat(statData.StartValue, statData.StatData.DamageOrder);
 
                 stat.OnStatChange += () =>
                 {
@@ -55,6 +58,9 @@ namespace HalloGames.SpaceRTS.Gameplay.Ship.Stats
 
                 _stats.Add(statData.StatData, stat);
             }
+
+            _damageOrderedStats = _stats.Values.Where(w => w.DamageOrder >= 0).OrderByDescending(w => w.DamageOrder).ToList();
+            _criticalStat = _damageOrderedStats.Last();
         }
 
         public void ChangeStat(StatData statsData, int delta)
@@ -74,22 +80,20 @@ namespace HalloGames.SpaceRTS.Gameplay.Ship.Stats
 
         public void DealDamage(int damage)
         {
-            List<Stat> damageableStats = _stats.Values.Where(w => w.DamageOrder > 0).OrderByDescending(w => w.DamageOrder).ToList();
-
-            int tempDamage = Mathf.Abs(damage);
-            foreach (var stat in damageableStats)
+            damage = Mathf.Abs(damage);
+            foreach (var stat in _damageOrderedStats)
             {
-                int statValue = stat.GetValue();
-                stat.ChangeStat(-tempDamage);
-                if (statValue > tempDamage)
+                var statValue = stat.GetValue();
+                stat.ChangeStat(-damage);
+                if (statValue > damage)
                     break;
 
-                tempDamage -= statValue;
-                if (tempDamage < 0)
+                damage -= statValue;
+                if (damage < 0)
                     break;
             }
 
-            int health = damageableStats.Sum(a => a.GetValue());
+            int health = _criticalStat.GetValue();
             if (health <= 0)
                 Death();
         }
