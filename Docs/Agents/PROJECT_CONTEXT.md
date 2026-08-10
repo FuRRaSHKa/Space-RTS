@@ -100,6 +100,82 @@ components implementing `IInitializable<TData>` / `IDeInitializable`; the initia
 **A new prefab component that needs data implements `IInitializable<T>` — it does not go hunting
 for its owner with `GetComponentInParent`.**
 
+### Frame ticks — `CentralTicker`
+
+`Assets/Scripts/Architecture/Frames/`. One `CentralTicker` component in the scene owns the frame
+loop; game code implements a tick interface instead of writing its own `Update()`.
+
+Three independent channels, each with its **own method name** so one class can sit on two of them:
+
+| Interface | Method | Driven by | `deltaTime` you get |
+|---|---|---|---|
+| `IUpdatable` | `UpdateTick(float)` | `Update` | `Time.deltaTime` — varies per frame |
+| `ILogicTickable` | `Tick(float)` | fixed accumulator, `_ticksPerSecond` (30) | **constant** `1/30` |
+| `IFixedUpdatable` | `FixedUpdateTick(float)` | `FixedUpdate` | `Time.fixedDeltaTime` |
+
+Pick the channel by what the code does: **anything rendered** (rotation, lerp, camera, VFX,
+projectile movement) goes on `IUpdatable`, because the logic channel runs at 30 Hz and the
+stepping is visible. **Decisions** (reload timers, AI) go on `ILogicTickable` — they then become
+frame-rate independent, at the price of quantising to the 33 ms step. `IFixedUpdatable` has no
+consumers yet; it exists for physics.
+
+Never read `Time.deltaTime` inside a tick — use the parameter. On the logic channel they are
+different numbers, and `AccumulateLogic` deliberately drops the accumulator when a frame overruns
+`_maxTicksPerFrame` (spiral-of-death guard), so `Time.deltaTime` there is simply wrong.
+
+**Access is static, through `TickManager`** — the ticker is *not* a service and is **not** in
+`ProviderBuilder`. `CentralTicker` is a `MonoSingleton` that owns the three dispatchers;
+`TickManager` is a plain static facade over `CentralTicker.Instance`, exactly the way
+`RoutineManager` fronts `Routine`. This is deliberate: the ticker is engine-level infrastructure
+like `RoutineManager` and `PoolManager`, not game logic, so §"Singletons" allows it.
+
+```csharp
+private void OnEnable()  => TickManager.RegisterUpdate(this);
+private void OnDisable() => TickManager.UnregisterUpdate(this);
+```
+
+Six methods, one pair per channel: `RegisterUpdate`/`RegisterLogic`/`RegisterFixed` and their
+`Unregister…` twins. Names are explicit rather than overloaded on purpose — a class implementing
+two tick interfaces would make `Register(this)` ambiguous.
+
+**Register / unregister rule — the honest `OnEnable`/`OnDisable` pair.** Because access is static,
+the dependency exists from the first frame and there is nothing to inject. That means a component
+disabled with `SetActive(false)` correctly stops ticking and resumes when re-enabled — the same
+semantics as a plain `Update()`. `CentralTicker` carries `[DefaultExecutionOrder(-1000)]` so its
+`Instance` is set before anything registers.
+
+`Register…` asserts that an instance exists — a scene without a `CentralTicker` is a broken scene
+and should fail loudly. `Unregister…` is a silent no-op when the instance is already gone, because
+teardown order is not guaranteed and must not throw.
+
+`TickDispatcher.Run` also drops entries whose `UnityEngine.Object` has been destroyed, so a missed
+`Unregister` degrades to a wasted list slot instead of a `MissingReferenceException`. That is a
+safety net, not a licence to skip the pair.
+
+**Migration status: done for gameplay.** Every live gameplay component is on the ticker — do not
+add a new `Update()`, implement a tick interface and register in `OnEnable`. Three leftovers still
+declare one and are **not** bugs to fix in passing:
+
+- `CentralTicker` itself — it *is* the loop.
+- `Utils/FPS.cs` — a standalone debug counter, referenced by nothing (see §7). Deliberately left
+  on `Update()`: it has no injection point, so putting it on the ticker would mean it silently
+  does nothing when someone drags it into a scene to measure something.
+- the four empty `Gameplay/Ship/ShipStates/*` template stubs — someone else's WIP.
+
+Coroutines are a separate clock and still read `Time.deltaTime` inside `RoutineExtension` — that
+is by design, see below.
+
+`WeaponController` is the one consumer of the logic channel: its reload timer and the
+shoot/don't-shoot decision run at 30 Hz, which makes the rate of fire frame-rate independent and
+quantises it to the 33 ms step. Its targeter sits on the frame channel, and that ordering is
+correct — `CentralTicker.Update` runs `_updateTicker` (turret turns) **before** `AccumulateLogic`
+(weapon decides), so the decision always sees this frame's angle.
+
+Prefab components need **no wiring at all** — they call `TickManager` themselves in
+`OnEnable`/`OnDisable`. Factories and initializers (`WeaponFactory`, `ShipInitilizer`) know
+nothing about ticking and must not be given a dispatcher to hand out; a new tickable component on
+any prefab works the moment it implements the interface and registers itself.
+
 ### Coroutines — `RoutineManager` / `Routine`
 
 `Assets/Scripts/Architecture/CoroutineManagement/`. Fluent API, cancellable via `IStopable`:
@@ -165,8 +241,34 @@ needs the new value filled in by hand. List each asset in the summary.
 ## 6. House style, as actually written here
 
 - `[SerializeField] private Type _camelCase;` — everywhere in new code.
+- **Prefer `var` for local variables** — this is the owner's explicit preference and it wins over
+  the surrounding code. Much of the existing codebase declares locals with explicit types
+  (`GameObject chosenObject = …`, `Vector3 pos = …`); that is legacy, **not** a pattern to copy,
+  and equally **not** something to rewrite in a drive-by edit. Write new locals with `var`, leave
+  old ones alone until you are editing that line for another reason. Fields, parameters and
+  return types are unaffected — `var` is not legal there.
 - Public fields survive only in legacy serializable structs (`PoolPair.prefab`,
   `StatStruct.StatData`). **Do not "modernize" them** — the values live in prefabs and assets.
+- **`protected` is properties and methods — never a field.** No exceptions: a base class exposes
+  behaviour to its subclasses, not storage. A protected field is part of the contract a subclass
+  sees, yet nothing stops that subclass from writing to it whenever it likes;
+  `protected float DeltaTime { get; private set; }` states "the base writes, you read" *and* has
+  the compiler enforce it. Applied in `ProjectileController` / `ProjectileWrapper`.
+  **First ask whether the member needs to be `protected` at all** — in `ProjectileController`
+  three of six were only ever touched by the base class and simply became `private`, which is what
+  made a rule without exceptions possible. When state genuinely must reach a subclass, keep the
+  field `private` and expose it:
+  - **Serialized data** → `private` backing field + `protected` read-only property. Unity
+    serializes fields and never properties, so the field itself has to stay a field:
+    `[SerializeField] private LayerMask _layerMask;` + `protected int LayerMaskValue => _layerMask.value;`.
+    Renaming that field on the way needs `[FormerlySerializedAs]`, kept forever.
+  - **Value types holding internal state** (`NativeList<T>` and friends) → `private` field +
+    `protected` **method** that performs the operation, e.g. `AddRaycastCommand(...)`. A property
+    would hand back a *copy* of the struct: `_filtered.Capacity = n` through it fails to compile
+    (CS1612), while `_results.ResizeUninitialized(n)` compiles fine but reallocates the copy and
+    leaves the field pointing at freed memory. Never expose these through a property.
+  `Architecture` (`AbstractInitilizer`, `QuequeStateMachine`) still uses `protected _camelCase`
+  fields and was left alone deliberately — do not convert it in a drive-by edit.
 - Interfaces are frequently declared in the same file as their main implementation
   (`IWeaponFactory` + `WeaponFactory`, `IService`/`IServiceProvider` + `ServiceProvider`).
   Follow the local pattern of the file you edit.
@@ -196,7 +298,10 @@ There is no test suite and no debug console. To verify anything:
 
 1. Open `Assets/Scenes/SampleScene/SampleScene.unity`, enter play mode.
 2. Select ships with the mouse (`ObjectClicker` / `ShipsHandler`), right-click to move/attack.
-3. `Assets/Scripts/Utils/FPS.cs` shows the frame counter — use it when the change touches
-   `Update`, pooling, or spawn counts.
+3. For frame cost, use the **Stats overlay or the Profiler** — `Assets/Scripts/Utils/FPS.cs`
+   exists but is referenced by **nothing**: zero hits in `SampleScene` and in every prefab. To use
+   it you have to drag it onto an object and wire its `_text` field yourself. Whether it was
+   dropped from the scene on purpose is still an open question for the owner; until that is
+   answered, do not cite an in-scene FPS readout in a test plan.
 
 State this explicitly in every summary: which scene, which action, what to expect.

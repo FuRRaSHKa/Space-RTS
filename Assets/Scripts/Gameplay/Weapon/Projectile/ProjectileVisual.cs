@@ -1,6 +1,7 @@
 using HalloGames.SpaceRTS.Gameplay.Guns.Targeter;
 using HalloGames.SpaceRTS.Gameplay.Targets;
 using UnityEngine;
+using UnityEngine.Assertions;
 
 namespace HalloGames.SpaceRTS.Gameplay.Guns.Graphic
 {
@@ -18,8 +19,19 @@ namespace HalloGames.SpaceRTS.Gameplay.Guns.Graphic
             _weaponController = GetComponent<WeaponController>();
             _shooter = GetComponent<IShooter>();
 
+            Assert.IsNotNull(_shooter, $"{nameof(ProjectileVisual)}: no {nameof(IShooter)} on this object");
+
             _shooter.OnDealDamage += ShowHit;
             _shooter.OnShooting += ShowShootEffect;
+        }
+
+        private void OnDestroy()
+        {
+            if (_shooter == null)
+                return;
+
+            _shooter.OnDealDamage -= ShowHit;
+            _shooter.OnShooting -= ShowShootEffect;
         }
 
         private void ShowHit(Vector3 point, Vector3 normal)

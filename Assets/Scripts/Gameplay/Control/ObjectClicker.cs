@@ -1,10 +1,11 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using HalloGames.Architecture.Frames;
 using HalloGames.Architecture.Singletones;
 
 namespace HalloGames.SpaceRTS.Management.Input
 {
-    public class ObjectClicker : MonoSingleton<ObjectClicker>
+    public class ObjectClicker : MonoSingleton<ObjectClicker>, IUpdatable
     {
         [SerializeField] private LayerMask _targetLayer;
         [SerializeField] private LayerMask _backgroundLayer;
@@ -19,7 +20,17 @@ namespace HalloGames.SpaceRTS.Management.Input
             base.OverriddenAwake();
         }
 
-        private void Update()
+        private void OnEnable()
+        {
+            TickManager.RegisterUpdate(this);
+        }
+
+        private void OnDisable()
+        {
+            TickManager.UnregisterUpdate(this);
+        }
+
+        public void UpdateTick(float deltaTime)
         {
             Vector3 rawPos = Mouse.current.position.ReadValue();
             rawPos.z = 5;

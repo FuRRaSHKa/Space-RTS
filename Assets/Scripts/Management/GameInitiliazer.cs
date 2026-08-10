@@ -1,3 +1,4 @@
+using HalloGames.Architecture.Frames;
 using HalloGames.Architecture.Services;
 using HalloGames.SpaceRTS.Management.CameraManagement;
 using HalloGames.SpaceRTS.Management.Factories;
@@ -39,8 +40,10 @@ namespace HalloGames.SpaceRTS.Management
 
         private void InitInput()
         {
-            _shipInput.Initialize(_serviceProvider.GetService<IInput>());
-            _cameraMover.Initialize(_serviceProvider.GetService<IInput>());
+            var input = _serviceProvider.GetService<IInput>();
+
+            _shipInput.Initialize(input);
+            _cameraMover.Initialize(input);
         }
     }
 }

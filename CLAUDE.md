@@ -32,6 +32,9 @@ Namespaces do **not** follow folder paths — copy the `namespace` line from a n
 - New `[SerializeField]` = a manual wiring step for a human; list it and null-guard it.
 - Renaming a serialized field needs `[FormerlySerializedAs]`; enums are append-only.
 - Use `RoutineManager` for coroutines and `PoolManager` for anything spawned repeatedly.
+- **Never write `Update()`** — implement a tick interface (`IUpdatable` / `ILogicTickable` /
+  `IFixedUpdatable`) and get the dispatcher pushed in. `CentralTicker` owns the frame loop;
+  inside a tick use the `deltaTime` parameter, never `Time.deltaTime`.
 - **Do not commit, stage or push — ever, including when asked directly.** This overrides the
   usual "commit when the user asks" default: in this repo the agent edits the working tree and
   reports what changed; git itself is the human's business. The ban is enforced by `.claude/settings.json`

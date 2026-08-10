@@ -20,6 +20,15 @@ namespace HalloGames.SpaceRTS.Management.Input
             _input.OnTargetingClick += TargetClick;
         }
 
+        private void OnDestroy()
+        {
+            if (_input == null)
+                return;
+
+            _input.OnChoosingClick -= ChooseClick;
+            _input.OnTargetingClick -= TargetClick;
+        }
+
         private void ChooseClick()
         {
             GameObject chosenObject = ObjectClicker.Instance.GetCurrentObject();

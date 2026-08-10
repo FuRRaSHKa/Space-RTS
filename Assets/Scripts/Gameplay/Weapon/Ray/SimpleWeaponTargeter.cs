@@ -1,3 +1,4 @@
+using HalloGames.Architecture.Frames;
 using HalloGames.Architecture.Initializer;
 using HalloGames.SpaceRTS.Data.Weapon;
 using HalloGames.SpaceRTS.Gameplay.Targets;
@@ -16,7 +17,7 @@ namespace HalloGames.SpaceRTS.Gameplay.Guns.Targeter
         public void StopFollowing();
     }
 
-    public class SimpleWeaponTargeter : MonoBehaviour, IWeaponTargeter, IInitializable<WeaponData>
+    public class SimpleWeaponTargeter : MonoBehaviour, IWeaponTargeter, IUpdatable, IInitializable<WeaponData>
     {
         [SerializeField] private Transform _rotationPart;
         [SerializeField] private Transform _basement;
@@ -40,21 +41,21 @@ namespace HalloGames.SpaceRTS.Gameplay.Guns.Targeter
             _targetable = null;
         }
 
-        private void Update()
+        public void UpdateTick(float deltaTime)
         {
             if (_targetable == null)
-                RotateToDefault();
+                RotateToDefault(deltaTime);
             else
-                Rotate();
+                Rotate(deltaTime);
         }
 
-        private void RotateToDefault()
+        private void RotateToDefault(float deltaTime)
         {
             _currentRotation = Quaternion.LookRotation(_basement.forward, _basement.up);
-            _rotationPart.rotation = Quaternion.RotateTowards(_rotationPart.rotation, _currentRotation, _rotationSpeed * Time.deltaTime);
+            _rotationPart.rotation = Quaternion.RotateTowards(_rotationPart.rotation, _currentRotation, _rotationSpeed * deltaTime);
         }
 
-        private void Rotate()
+        private void Rotate(float deltaTime)
         {
             Vector3 direction = (_targetable.TargetTransform.position - _rotationPart.transform.position).normalized;
             _targetRotation = Quaternion.LookRotation(direction, _basement.up);
@@ -66,12 +67,22 @@ namespace HalloGames.SpaceRTS.Gameplay.Guns.Targeter
             direction = _basement.TransformDirection(localDirection).normalized;
 
             _currentRotation = Quaternion.LookRotation(direction, _basement.up);
-            _rotationPart.rotation = Quaternion.RotateTowards(_rotationPart.rotation, _currentRotation, _rotationSpeed * Time.deltaTime);
+            _rotationPart.rotation = Quaternion.RotateTowards(_rotationPart.rotation, _currentRotation, _rotationSpeed * deltaTime);
         }
 
         public void Init(WeaponData data)
         {
             _rotationSpeed = data.RotationSpeed;
+        }
+
+        private void OnEnable()
+        {
+            TickManager.RegisterUpdate(this);
+        }
+
+        private void OnDisable()
+        {
+            TickManager.UnregisterUpdate(this);
         }
     }
 }

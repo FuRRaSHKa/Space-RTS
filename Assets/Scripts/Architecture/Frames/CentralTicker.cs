@@ -1,5 +1,5 @@
 using HalloGames.Architecture.CoroutineManagement;
-using HalloGames.Architecture.Services;
+using HalloGames.Architecture.Singletones;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -7,7 +7,8 @@ using UnityEngine;
 
 namespace HalloGames.Architecture.Frames
 {
-    public class CentralTicker : MonoBehaviour, ILogicTicksDispatcher, IUpdateTicksDispatcher, IFixedUpdateTicksDispatcher
+    [DefaultExecutionOrder(-1000)]
+    public class CentralTicker : MonoSingleton<CentralTicker>, ILogicTicksDispatcher, IUpdateTicksDispatcher, IFixedUpdateTicksDispatcher
     {
         [SerializeField] private int _ticksPerSecond = 30;
         [SerializeField] private int _maxTicksPerFrame = 2;
@@ -19,9 +20,11 @@ namespace HalloGames.Architecture.Frames
         private TickDispatcher<IUpdatable> _updateTicker = new TickDispatcher<IUpdatable>(static (t, dt) => t.UpdateTick(dt));
         private TickDispatcher<IFixedUpdatable> _fixedUpdateTicker = new TickDispatcher<IFixedUpdatable>(static (t, dt) => t.FixedUpdateTick(dt));
 
-        private void Awake()
+        protected override void OverriddenAwake()
         {
             _logicDeltaTime = 1f / _ticksPerSecond;
+
+            base.OverriddenAwake();
         }
 
         private void Update()

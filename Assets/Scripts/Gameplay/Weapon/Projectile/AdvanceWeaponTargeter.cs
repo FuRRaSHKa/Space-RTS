@@ -1,3 +1,4 @@
+using HalloGames.Architecture.Frames;
 using HalloGames.Architecture.Initializer;
 using HalloGames.SpaceRTS.Data.Projectile;
 using HalloGames.SpaceRTS.Data.Weapon;
@@ -6,7 +7,7 @@ using UnityEngine;
 
 namespace HalloGames.SpaceRTS.Gameplay.Guns.Targeter
 {
-    public class AdvanceWeaponTargeter : MonoBehaviour, IWeaponTargeter, IInitializable<WeaponData>
+    public class AdvanceWeaponTargeter : MonoBehaviour, IWeaponTargeter, IUpdatable, IInitializable<WeaponData>
     {
         [SerializeField] private BulletData _bulletData;
         [SerializeField] private Transform _rotationPart;
@@ -31,21 +32,21 @@ namespace HalloGames.SpaceRTS.Gameplay.Guns.Targeter
             _targetable = null;
         }
 
-        private void Update()
+        public void UpdateTick(float deltaTime)
         {
             if (_targetable == null)
-                RotateToDefault();
+                RotateToDefault(deltaTime);
             else
-                Rotate();
+                Rotate(deltaTime);
         }
 
-        private void RotateToDefault()
+        private void RotateToDefault(float deltaTime)
         {
             _currentRotation = Quaternion.LookRotation(_basement.forward, _basement.up);
-            _rotationPart.rotation = Quaternion.RotateTowards(_rotationPart.rotation, _currentRotation, _rotationSpeed * Time.deltaTime);
+            _rotationPart.rotation = Quaternion.RotateTowards(_rotationPart.rotation, _currentRotation, _rotationSpeed * deltaTime);
         }
 
-        private void Rotate()
+        private void Rotate(float deltaTime)
         {
             Vector3 position = CalculatePos();
             Vector3 direction = (position - _rotationPart.transform.position).normalized;
@@ -58,7 +59,7 @@ namespace HalloGames.SpaceRTS.Gameplay.Guns.Targeter
             direction = _basement.TransformDirection(localDirection).normalized;
 
             _currentRotation = Quaternion.LookRotation(direction, _basement.up);
-            _rotationPart.rotation = Quaternion.RotateTowards(_rotationPart.rotation, _currentRotation, _rotationSpeed * Time.deltaTime);
+            _rotationPart.rotation = Quaternion.RotateTowards(_rotationPart.rotation, _currentRotation, _rotationSpeed * deltaTime);
         }
 
         private Vector3 CalculatePos()
@@ -94,6 +95,16 @@ namespace HalloGames.SpaceRTS.Gameplay.Guns.Targeter
         public void Init(WeaponData data)
         {
             _rotationSpeed = data.RotationSpeed;
+        }
+
+        private void OnEnable()
+        {
+            TickManager.RegisterUpdate(this);
+        }
+
+        private void OnDisable()
+        {
+            TickManager.UnregisterUpdate(this);
         }
     }
 }

@@ -37,6 +37,7 @@ namespace HalloGames.SpaceRTS.Management.Factories
             weapon.transform.position = parent.position;
 
             weapon.Initialize(weaponData);
+
             if (_factoryWeaponPairs.TryGetValue(weaponData.WeaponType, out var action))
                 action?.Invoke(weapon);
 

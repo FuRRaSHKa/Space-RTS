@@ -1,13 +1,15 @@
+using HalloGames.Architecture.Frames;
 using HalloGames.Architecture.Initializer;
 using HalloGames.SpaceRTS.Data.Weapon;
 using HalloGames.SpaceRTS.Gameplay.Guns.Targeter;
 using HalloGames.SpaceRTS.Gameplay.Targets;
 using System;
 using UnityEngine;
+using UnityEngine.Assertions;
 
 namespace HalloGames.SpaceRTS.Gameplay.Guns
 {
-    public class WeaponController : MonoBehaviour, IWeapon, IInitializable<WeaponData>
+    public class WeaponController : MonoBehaviour, IWeapon, ILogicTickable, IInitializable<WeaponData>
     {
         private float _shootTime;
         private float _maxAngleDeviation;
@@ -25,6 +27,9 @@ namespace HalloGames.SpaceRTS.Gameplay.Guns
         {
             _shooter = GetComponent<IShooter>();
             _weaponTargeter = GetComponent<IWeaponTargeter>();
+
+            Assert.IsNotNull(_shooter, $"{nameof(WeaponController)}: no {nameof(IShooter)} on this object");
+            Assert.IsNotNull(_weaponTargeter, $"{nameof(WeaponController)}: no {nameof(IWeaponTargeter)} on this object");
         }
 
         public void Init(WeaponData data)
@@ -32,6 +37,16 @@ namespace HalloGames.SpaceRTS.Gameplay.Guns
             _shootTime = data.ShootTime;
             _maxAngleDeviation = data.MaxAngleDeviation;
             _distance = data.Distance;
+        }
+
+        private void OnEnable()
+        {
+            TickManager.RegisterLogic(this);
+        }
+
+        private void OnDisable()
+        {
+            TickManager.UnregisterLogic(this);
         }
 
         public void StartShooting(ITargetable targetable)
@@ -46,7 +61,7 @@ namespace HalloGames.SpaceRTS.Gameplay.Guns
             _target = null;
         }
 
-        private void Update()
+        public void Tick(float deltaTime)
         {
             if (_currentTime > _shootTime)
             {
@@ -59,7 +74,7 @@ namespace HalloGames.SpaceRTS.Gameplay.Guns
                 return;
             }
 
-            _currentTime += Time.deltaTime;
+            _currentTime += deltaTime;
         }
 
         private void Shoot()

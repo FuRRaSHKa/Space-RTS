@@ -1,10 +1,12 @@
+using HalloGames.Architecture.Frames;
 using HalloGames.SpaceRTS.Gameplay.Guns.Targeter;
 using HalloGames.SpaceRTS.Gameplay.Targets;
 using UnityEngine;
+using UnityEngine.Assertions;
 
 namespace HalloGames.SpaceRTS.Gameplay.Guns.Graphic
 {
-    public class RayVisualizer : MonoBehaviour
+    public class RayVisualizer : MonoBehaviour, IUpdatable
     {
         [SerializeField] private ParticleSystem _particleSystem;
         [SerializeField] private Transform _shootPoint;
@@ -21,7 +23,27 @@ namespace HalloGames.SpaceRTS.Gameplay.Guns.Graphic
         private void Awake()
         {
             _shooter = GetComponent<IShooter>();
+            Assert.IsNotNull(_shooter, $"{nameof(RayVisualizer)}: no {nameof(IShooter)} on this object");
+
             _shooter.OnShooting += ShowShootEffect;
+        }
+
+        private void OnEnable()
+        {
+            TickManager.RegisterUpdate(this);
+        }
+
+        private void OnDisable()
+        {
+            TickManager.UnregisterUpdate(this);
+        }
+
+        private void OnDestroy()
+        {
+            if (_shooter == null)
+                return;
+
+            _shooter.OnShooting -= ShowShootEffect;
         }
 
         private void ShowShootEffect(ITargetable targetable)
@@ -40,12 +62,12 @@ namespace HalloGames.SpaceRTS.Gameplay.Guns.Graphic
             _visualize = false;
         }
 
-        private void Update()
+        public void UpdateTick(float deltaTime)
         {
             if (!_visualize)
                 return;
 
-            _curTime += Time.deltaTime;
+            _curTime += deltaTime;
             if (_curTime > _duration)
             {
                 EndVisualize();

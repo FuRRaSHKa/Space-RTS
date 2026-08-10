@@ -1,3 +1,4 @@
+using HalloGames.Architecture.Frames;
 using HalloGames.SpaceRTS.Management.Input;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -5,7 +6,7 @@ using UnityEngine.Serialization;
 
 namespace HalloGames.SpaceRTS.Management.CameraManagement
 {
-    public class CameraMover : MonoBehaviour
+    public class CameraMover : MonoBehaviour, IUpdatable
     {
         [SerializeField] private Transform _center;
 
@@ -51,29 +52,48 @@ namespace HalloGames.SpaceRTS.Management.CameraManagement
             _input.OnScrollChange += ZoomCamera;
         }
 
-        private void Update()
+        private void OnEnable()
+        {
+            TickManager.RegisterUpdate(this);
+        }
+
+        private void OnDisable()
+        {
+            TickManager.UnregisterUpdate(this);
+        }
+
+        private void OnDestroy()
+        {
+            if (_input == null)
+                return;
+
+            _input.OnScrollPressed -= RotateChange;
+            _input.OnScrollChange -= ZoomCamera;
+        }
+
+        public void UpdateTick(float deltaTime)
         {
             if (!_isCameraRotation)
-                MoveCenter();
+                MoveCenter(deltaTime);
             else
-                RotateCamera();
+                RotateCamera(deltaTime);
 
-            MoveCamera();
+            MoveCamera(deltaTime);
             LookAtCenter();
         }
 
-        private void MoveCamera()
+        private void MoveCamera(float deltaTime)
         {
-            _camera.localPosition = Vector3.Lerp(_camera.localPosition, _targetLocalPos, _zoomSpeed * Time.deltaTime);
+            _camera.localPosition = Vector3.Lerp(_camera.localPosition, _targetLocalPos, _zoomSpeed * deltaTime);
         }
 
-        private void RotateCamera()
+        private void RotateCamera(float deltaTime)
         {
             Vector2 camDelta = _input.MouseDelta;
             Vector3 rotation = _center.transform.eulerAngles;
 
-            rotation.x = Mathf.Clamp(rotation.x + -camDelta.y * _xRotationSensitivity * Time.deltaTime, _xRotationMinBorder, _xRotationMaxBorder);
-            rotation.y += camDelta.x * _yRotationSensitivity * Time.deltaTime;
+            rotation.x = Mathf.Clamp(rotation.x + -camDelta.y * _xRotationSensitivity * deltaTime, _xRotationMinBorder, _xRotationMaxBorder);
+            rotation.y += camDelta.x * _yRotationSensitivity * deltaTime;
 
             _center.rotation = Quaternion.Euler(rotation);
         }
@@ -108,7 +128,7 @@ namespace HalloGames.SpaceRTS.Management.CameraManagement
             _camera.LookAt(_center);
         }
 
-        private void MoveCenter()
+        private void MoveCenter(float deltaTime)
         {
             Vector2 mousePOS = Mouse.current.position.ReadValue();
             Vector2 res = new Vector2(Screen.width, Screen.height);
@@ -117,14 +137,14 @@ namespace HalloGames.SpaceRTS.Management.CameraManagement
             Quaternion rotation = Quaternion.Euler(new Vector3(0, _camera.eulerAngles.y, 0));
 
             if (mousePOS.x < _mouseMoveTriggerBorders)
-                direction += Vector3.left * _cameraMoveSpeed * Time.deltaTime;
+                direction += Vector3.left * _cameraMoveSpeed * deltaTime;
             else if (mousePOS.x > res.x - _mouseMoveTriggerBorders)
-                direction += Vector3.right * _cameraMoveSpeed * Time.deltaTime;
+                direction += Vector3.right * _cameraMoveSpeed * deltaTime;
 
             if (mousePOS.y < _mouseMoveTriggerBorders)
-                direction += Vector3.back * _cameraMoveSpeed * Time.deltaTime;
+                direction += Vector3.back * _cameraMoveSpeed * deltaTime;
             else if (mousePOS.y > res.y - _mouseMoveTriggerBorders)
-                direction += Vector3.forward * _cameraMoveSpeed * Time.deltaTime;
+                direction += Vector3.forward * _cameraMoveSpeed * deltaTime;
 
 
             _center.position += rotation * direction * (Mathf.Clamp01(_currentZoom / (_maxZoomDistance - _minZoomDistance)));

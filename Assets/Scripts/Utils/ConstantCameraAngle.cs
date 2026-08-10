@@ -1,3 +1,4 @@
+using HalloGames.Architecture.Frames;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -5,7 +6,7 @@ using UnityEngine;
 
 namespace HalloGames.Utilities
 {
-    public class ConstantCameraAngle : MonoBehaviour
+    public class ConstantCameraAngle : MonoBehaviour, IUpdatable
     {
         private Camera _camera;
 
@@ -14,7 +15,17 @@ namespace HalloGames.Utilities
             _camera = Camera.main;
         }
 
-        private void Update()
+        private void OnEnable()
+        {
+            TickManager.RegisterUpdate(this);
+        }
+
+        private void OnDisable()
+        {
+            TickManager.UnregisterUpdate(this);
+        }
+
+        public void UpdateTick(float deltaTime)
         {
             transform.LookAt(_camera.transform, Vector3.up);
         }

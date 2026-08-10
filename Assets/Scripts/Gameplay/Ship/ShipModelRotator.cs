@@ -1,10 +1,11 @@
+using HalloGames.Architecture.Frames;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class ShipModelRotator : MonoBehaviour
+public class ShipModelRotator : MonoBehaviour, IUpdatable
 {
     [SerializeField] private GameObject _model;
     [SerializeField] private float _speed;
@@ -22,7 +23,17 @@ public class ShipModelRotator : MonoBehaviour
         _rightRotation = Quaternion.Inverse(_leftRotation);
     }
 
-    private void Update()
+    private void OnEnable()
+    {
+        TickManager.RegisterUpdate(this);
+    }
+
+    private void OnDisable()
+    {
+        TickManager.UnregisterUpdate(this);
+    }
+
+    public void UpdateTick(float deltaTime)
     {
         Vector3 delta = transform.InverseTransformDirection(transform.position - _prevPosition).normalized;
 
@@ -36,7 +47,7 @@ public class ShipModelRotator : MonoBehaviour
         else
             rotation = Quaternion.Lerp(Quaternion.identity, _rightRotation, turn);
 
-        _model.transform.localRotation = Quaternion.Lerp(_model.transform.localRotation, rotation, _speed * Time.deltaTime);
+        _model.transform.localRotation = Quaternion.Lerp(_model.transform.localRotation, rotation, _speed * deltaTime);
         _prevPosition = transform.position;
     }
 }

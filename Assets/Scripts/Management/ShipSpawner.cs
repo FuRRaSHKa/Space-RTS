@@ -1,3 +1,4 @@
+using HalloGames.Architecture.Frames;
 using HalloGames.Architecture.Services;
 using HalloGames.Extensions.Math;
 using HalloGames.SpaceRTS.Data.Enums;

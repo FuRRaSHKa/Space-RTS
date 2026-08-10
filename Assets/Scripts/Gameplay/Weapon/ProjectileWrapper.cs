@@ -16,7 +16,7 @@ namespace HalloGames.SpaceRTS.Gameplay.Projectile
         private int _colliderInstanceId;
         private bool _toReturn;
 
-        protected ITargetable target;
+        protected ITargetable Target { get; }
 
         public int ColliderInstanceId => _colliderInstanceId;
         public bool ToReturn => _toReturn;
@@ -27,7 +27,7 @@ namespace HalloGames.SpaceRTS.Gameplay.Projectile
         public ProjectileWrapper(ProjectileObject projectile, ITargetable target, float lifeTime, int damage)
         {
             _projectile = projectile;
-            this.target = target;
+            Target = target;
             _lifeTime = lifeTime;
             _damage = damage;
             _projectileTransform = _projectile.transform;
@@ -40,13 +40,13 @@ namespace HalloGames.SpaceRTS.Gameplay.Projectile
         public void ExecuteHit(Vector3 point, Vector3 normal)
         {
             OnHit?.Invoke(point, normal);
-            target.DealDamage(_damage);
+            Target.DealDamage(_damage);
             Death();
         }
 
-        public bool UpdateLifeTime()
+        public bool UpdateLifeTime(float deltaTime)
         {
-            _currentTime += Time.deltaTime;
+            _currentTime += deltaTime;
             if (_currentTime > _lifeTime)
             {
                 Death();
@@ -89,7 +89,7 @@ namespace HalloGames.SpaceRTS.Gameplay.Projectile
         private float _currentRotationSpeed;
         private Vector3 _direction;
 
-        public Vector3 TargetPos => target.TargetTransform.position;
+        public Vector3 TargetPos => Target.TargetTransform.position;
         public RocketMovementStruct RocketMovement => new RocketMovementStruct(_maxRotationSpeed, _maxSpeed, _acceleration, _currentSpeed, _rotationAcceleration, _currentRotationSpeed, _direction);
 
         public RocketWrapper(ProjectileObject projectile, ITargetable target, float lifeTime, int damage, float rotationSpeed, float maxSpeed, float acceleration, float rotationAcceleration, float startSpeed, Vector3 direction) : base(projectile, target, lifeTime, damage)

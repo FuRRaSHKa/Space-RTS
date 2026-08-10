@@ -16,7 +16,7 @@ namespace HalloGames.SpaceRTS.Management.ProjectileManagement
                 filtered = filtered.AsParallelWriter()
             };
 
-            var raycasts = RaycastCommand.ScheduleBatch(raycastCommand, results, 1);
+            var raycasts = RaycastCommand.ScheduleBatch(raycastCommand, results, 32);
             JobHandle jobHandle = raycastResultJob.Schedule(count, 32, raycasts);
 
             raycasts.Complete();

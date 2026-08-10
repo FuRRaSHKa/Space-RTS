@@ -42,7 +42,7 @@ namespace HalloGames.Architecture.Frames
             for (int i = 0; i < count; i++)
             {
                 var tickable = _tickers[i];
-                if (tickable == null)
+                if (tickable == null || (tickable is UnityEngine.Object unnyObj && unnyObj == null))
                 {
                     markToRemove = true;
                     continue;
