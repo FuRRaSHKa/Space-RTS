@@ -1,6 +1,5 @@
 using HalloGames.Extensions.Collections;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -24,7 +23,7 @@ namespace HalloGames.Architecture.Events
 
                 for (int i = 0; i < _actions.Count; i++)
                 {
-                    var @action = _actions[i];
+                    var action = _actions[i];
                     if (action == null)
                     {
                         needToClear = true;
