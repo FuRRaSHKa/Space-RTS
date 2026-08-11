@@ -18,7 +18,7 @@ Project-specific facts that fill in the `[project]` placeholders of [UNITY_RULES
 | Target platform | Desktop/standalone prototype. Target **60 FPS**. |
 | Obfuscation | None |
 | Custom compile defines | None |
-| Async model | **Coroutines only** — via `RoutineManager` (see §4). No UniTask, no `Task`-based gameplay code. |
+| Async model | **Two tools, one boundary** (see §4): object-lifetime behaviour → coroutines via `RoutineManager`; operations (saves, loading, UI sequences) → **UniTask 2.5.11** (`com.cysharp.unitask`). No raw `Task` in gameplay code. |
 | Tween library | None (no DOTween) |
 | Localization | None |
 | Save system | **None** — nothing is persisted between sessions. If you add one, add a section here first. |
@@ -191,6 +191,28 @@ Use it instead of raw `StartCoroutine`. **Always keep the `IStopable` and stop t
 routine before starting a new one** on the same object — pooled objects are reused and a
 leftover routine will fire on a recycled instance.
 
+`Routine` is the tool for **behaviour bound to a scene object's lifetime** — it stops
+automatically with the object, which is exactly what pooled visuals need. For *operations*, see
+UniTask below; the boundary between the two is
+[UNITY_RULES.md §4.5](UNITY_RULES.md#45-async--two-tools-one-boundary).
+
+### Async operations — UniTask
+
+**UniTask 2.5.11** (`com.cysharp.unitask`, UPM git dependency pinned to the release tag in
+`Packages/manifest.json`) is the tool for **operations**: save/load I/O, asset and scene loading
+(incl. Addressables when they arrive), UI sequences — anything that returns a result, composes
+(`WhenAll`, chains), or leaves the main thread. Raw `Task` in gameplay code is forbidden.
+
+The full rule set — mandatory `CancellationToken`s, the per-spawn-cycle `CancellationTokenSource`
+on pooled objects, `.Forget()`, await-once, thread-pool hygiene — lives in
+[UNITY_RULES.md §4.5](UNITY_RULES.md#45-async--two-tools-one-boundary) and is not optional.
+
+Boundary in one line: **dies with the object → `Routine`; returns a result / composes →
+UniTask; runs every frame → `CentralTicker`.**
+
+Existing `Routine` call sites (`RocketObject`, `PoolObject`) stay as they are — do not migrate
+them for style. Debugging pending/leaked tasks: editor window **Window → UniTask Tracker**.
+
 ### Pooling — `PoolManager` / `ObjectPool` / `PoolObject`
 
 `Assets/Scripts/Architecture/Pools/`. Projectiles, VFX and anything spawned per-shot come from a
@@ -297,7 +319,8 @@ needs the new value filled in by hand. List each asset in the summary.
 There is no test suite and no debug console. To verify anything:
 
 1. Open `Assets/Scenes/SampleScene/SampleScene.unity`, enter play mode.
-2. Select ships with the mouse (`ObjectClicker` / `ShipsHandler`), right-click to move/attack.
+2. Select ships with the mouse (`ObjectClicker` / `ShipInput`), right-click to move/attack.
+   (`ShipsHandler` is dead code — referenced by nothing and absent from `SampleScene`.)
 3. For frame cost, use the **Stats overlay or the Profiler** — `Assets/Scripts/Utils/FPS.cs`
    exists but is referenced by **nothing**: zero hits in `SampleScene` and in every prefab. To use
    it you have to drag it onto an object and wire its `_text` field yourself. Whether it was

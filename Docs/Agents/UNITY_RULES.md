@@ -199,11 +199,39 @@ destroyed-object check.
 - **Pooled objects are reused**: everything hooked up in `EnableObject()` must be undone in
   `DisableObject()`, including running routines (`IStopable.Stop()`), target references and VFX.
 
-### 4.5 Async
+### 4.5 Async — two tools, one boundary
 
-- **This project uses coroutines only**, through `RoutineManager` / `Routine` — not raw
-  `StartCoroutine`, not `Task`, not UniTask. Keep the returned `IStopable` and stop it before
-  starting a replacement.
+- **Behaviour bound to a scene object's lifetime** (projectile flight, VFX delay, despawn
+  timer — anything that must stop when the object dies or deactivates) → coroutines through
+  `RoutineManager` / `Routine`, never raw `StartCoroutine`. Keep the returned `IStopable` and
+  stop it before starting a replacement; pooled objects stop it in `DisableObject()`.
+- **Operations** (save/load I/O, asset and scene loading incl. Addressables, UI sequences —
+  anything that returns a result, composes via `WhenAll`/chains, or leaves the main thread) →
+  **UniTask**. Raw `Task` in gameplay code is forbidden.
+- **Per-frame logic belongs to the ticker** (`IUpdatable` / `ILogicTickable`), not to either
+  async tool: no `while` + `await UniTask.Yield()` gameplay loops, no `yield return null`
+  gameplay loops.
+
+UniTask rules — each guards a real failure mode:
+
+- **Every async method takes a `CancellationToken`** and passes it to every await inside.
+  Async methods do *not* stop when the MonoBehaviour dies (coroutines do) — an untokened await
+  resumes on a destroyed object and NREs. On MonoBehaviours use `destroyCancellationToken`
+  (built into Unity 2022.2+).
+- **Pooled objects: `destroyCancellationToken` is not enough.** Despawn returns the instance
+  to the pool without destroying it, so the token never fires and the stale continuation hits
+  the *next* user of the instance. Own a `CancellationTokenSource` per spawn cycle: create it
+  in `EnableObject()`, `Cancel()` + `Dispose()` it in `DisableObject()`.
+- **Fire-and-forget is explicit:** `async UniTaskVoid` + `.Forget()`. Never drop a `UniTask`
+  unawaited — its exception disappears.
+- **A `UniTask` is awaited once.** It is a pooled struct: a second await (or storing it in a
+  field for later) reads recycled internals. Need multiple awaits → `.Preserve()`.
+- **Cancellation is an exception.** A broad `catch` around an await swallows
+  `OperationCanceledException` and breaks cancellation — catch specific exceptions, or rethrow
+  the OCE.
+- **After `UniTask.SwitchToThreadPool()` no Unity API** until back via
+  `UniTask.SwitchToMainThread()` / `Yield`. Thread-pool hops are for file I/O in the save
+  system, nothing else.
 
 ---
 
