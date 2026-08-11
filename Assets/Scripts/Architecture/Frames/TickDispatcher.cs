@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using HalloGames.Extensions.Collections;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -44,6 +45,7 @@ namespace HalloGames.Architecture.Frames
                 var tickable = _tickers[i];
                 if (tickable == null || (tickable is UnityEngine.Object unnyObj && unnyObj == null))
                 {
+                    _tickers[i] = null;
                     markToRemove = true;
                     continue;
                 }
@@ -52,27 +54,7 @@ namespace HalloGames.Architecture.Frames
             }
 
             if (markToRemove)
-                Compact();
-        }
-
-        private void Compact()
-        {
-            int write = 0;
-            int count = _tickers.Count;
-
-            for (int read = 0; read < count; read++)
-            {
-                var item = _tickers[read];
-                if (item == null)
-                    continue;
-
-                if (write != read)
-                    _tickers[write] = item;
-                
-                write++;
-            }
-
-            _tickers.RemoveRange(write, count - write);
+                _tickers.Compact();
         }
     }
 }
