@@ -13,8 +13,9 @@ namespace HalloGames.SpaceRTS.Management.ProjectileManagement
 
                 CalculateRocketMove(ShotProjectile[i], out Vector3 pos, out Vector3 moveDelta);
 
-                RaycastCommand raycastCommand = new RaycastCommand(pos, moveDelta, moveDelta.magnitude, LayerMaskValue);
-                AddRaycastCommand(raycastCommand);
+                float distance = moveDelta.magnitude;
+                if (distance > Vector3.kEpsilon)
+                    AddRaycastCommand(i, new RaycastCommand(pos, moveDelta / distance, distance, LayerMaskValue));
 
                 ShotProjectile[i].Transform.position += moveDelta;
             }
