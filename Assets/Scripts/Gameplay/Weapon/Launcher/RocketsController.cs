@@ -27,7 +27,9 @@ namespace HalloGames.SpaceRTS.Management.ProjectileManagement
             pos = rocket.Transform.position;
 
             float rotationSpeed = Mathf.MoveTowards(rocketMovementStruct.currentRotationSpeed, rocketMovementStruct.maxRotationSpeed, rocketMovementStruct.rotationAcceleration * DeltaTime);
-            rocket.Transform.rotation = Quaternion.RotateTowards(rocket.Transform.rotation, Quaternion.LookRotation((rocket.TargetPos - rocket.Transform.position).normalized), rocketMovementStruct.currentRotationSpeed * DeltaTime);
+            Vector3 toTarget = rocket.TargetPos - rocket.Transform.position;
+            if (toTarget.sqrMagnitude > Vector3.kEpsilon)
+                rocket.Transform.rotation = Quaternion.RotateTowards(rocket.Transform.rotation, Quaternion.LookRotation(toTarget), rotationSpeed * DeltaTime);
 
             float speed = Mathf.MoveTowards(rocketMovementStruct.currentSpeed, rocketMovementStruct.maxSpeed, rocketMovementStruct.acceleration * DeltaTime);
             Vector3 currentDirection = rocket.Transform.forward * speed;
