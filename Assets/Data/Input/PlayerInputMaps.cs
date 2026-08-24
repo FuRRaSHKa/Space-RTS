@@ -117,6 +117,15 @@ public partial class @PlayerInputMaps: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""Direction"",
+                    ""type"": ""Value"",
+                    ""id"": ""852d201f-e176-4e3b-9d8a-09828f2aeb4d"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
                 }
             ],
             ""bindings"": [
@@ -152,6 +161,61 @@ public partial class @PlayerInputMaps: IInputActionCollection2, IDisposable
                     ""action"": ""MouseDelta"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""2D Vector"",
+                    ""id"": ""4163469b-a58b-4dbe-a917-e9aeef314059"",
+                    ""path"": ""2DVector"",
+                    ""interactions"": """",
+                    ""processors"": ""NormalizeVector2"",
+                    ""groups"": """",
+                    ""action"": ""Direction"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""up"",
+                    ""id"": ""51ab6438-2e0f-45b1-ba05-ad55d59da7ec"",
+                    ""path"": ""<Keyboard>/w"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Direction"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""down"",
+                    ""id"": ""68e40f88-ba86-4e25-a021-fafb087df612"",
+                    ""path"": ""<Keyboard>/s"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Direction"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""left"",
+                    ""id"": ""42680898-ab47-4b5a-8d18-28ce129f5bf5"",
+                    ""path"": ""<Keyboard>/a"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Direction"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""right"",
+                    ""id"": ""23ee0a68-64cf-43c4-8b38-10af4f9ed59e"",
+                    ""path"": ""<Keyboard>/d"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Direction"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
                 }
             ]
         },
@@ -163,7 +227,7 @@ public partial class @PlayerInputMaps: IInputActionCollection2, IDisposable
                     ""name"": ""ChoosingClick"",
                     ""type"": ""Button"",
                     ""id"": ""23d39185-290a-42ba-aeee-1507c9512ffd"",
-                    ""expectedControlType"": ""Button"",
+                    ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
@@ -211,6 +275,7 @@ public partial class @PlayerInputMaps: IInputActionCollection2, IDisposable
         m_Camera_MouseScrollDelta = m_Camera.FindAction("MouseScrollDelta", throwIfNotFound: true);
         m_Camera_MouseScroll = m_Camera.FindAction("MouseScroll", throwIfNotFound: true);
         m_Camera_MouseDelta = m_Camera.FindAction("MouseDelta", throwIfNotFound: true);
+        m_Camera_Direction = m_Camera.FindAction("Direction", throwIfNotFound: true);
         // Input
         m_Input = asset.FindActionMap("Input", throwIfNotFound: true);
         m_Input_ChoosingClick = m_Input.FindAction("ChoosingClick", throwIfNotFound: true);
@@ -299,6 +364,7 @@ public partial class @PlayerInputMaps: IInputActionCollection2, IDisposable
     private readonly InputAction m_Camera_MouseScrollDelta;
     private readonly InputAction m_Camera_MouseScroll;
     private readonly InputAction m_Camera_MouseDelta;
+    private readonly InputAction m_Camera_Direction;
     /// <summary>
     /// Provides access to input actions defined in input action map "Camera".
     /// </summary>
@@ -322,6 +388,10 @@ public partial class @PlayerInputMaps: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Camera/MouseDelta".
         /// </summary>
         public InputAction @MouseDelta => m_Wrapper.m_Camera_MouseDelta;
+        /// <summary>
+        /// Provides access to the underlying input action "Camera/Direction".
+        /// </summary>
+        public InputAction @Direction => m_Wrapper.m_Camera_Direction;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -357,6 +427,9 @@ public partial class @PlayerInputMaps: IInputActionCollection2, IDisposable
             @MouseDelta.started += instance.OnMouseDelta;
             @MouseDelta.performed += instance.OnMouseDelta;
             @MouseDelta.canceled += instance.OnMouseDelta;
+            @Direction.started += instance.OnDirection;
+            @Direction.performed += instance.OnDirection;
+            @Direction.canceled += instance.OnDirection;
         }
 
         /// <summary>
@@ -377,6 +450,9 @@ public partial class @PlayerInputMaps: IInputActionCollection2, IDisposable
             @MouseDelta.started -= instance.OnMouseDelta;
             @MouseDelta.performed -= instance.OnMouseDelta;
             @MouseDelta.canceled -= instance.OnMouseDelta;
+            @Direction.started -= instance.OnDirection;
+            @Direction.performed -= instance.OnDirection;
+            @Direction.canceled -= instance.OnDirection;
         }
 
         /// <summary>
@@ -545,6 +621,13 @@ public partial class @PlayerInputMaps: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnMouseDelta(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Direction" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnDirection(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Input" which allows adding and removing callbacks.

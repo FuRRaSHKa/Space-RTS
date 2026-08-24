@@ -13,6 +13,7 @@ namespace HalloGames.SpaceRTS.Management.Initialization
         [SerializeField] private ShipSpawner _shipSpawner;
         [SerializeField] private BulletsController _bulletsController;
         [SerializeField] private RocketsController _rocketsController;
+        [SerializeField] private ObjectClicker _objectClicker;
 
         private IServiceProvider _serviceProvider;
 
@@ -44,6 +45,11 @@ namespace HalloGames.SpaceRTS.Management.Initialization
 
             IInput input = new MouseInput();
             _serviceProvider.AddService(input);
+
+            IKeyboardInput keyboardInput = new KeyboardInput();
+            _serviceProvider.AddService(keyboardInput);
+
+            _serviceProvider.AddService<ObjectClicker>(_objectClicker);
 
             IWeaponFactory weaponFactory = new WeaponFactory(_serviceProvider);
             _serviceProvider.AddService(weaponFactory);

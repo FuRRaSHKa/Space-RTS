@@ -1,7 +1,6 @@
 using HalloGames.Architecture.Frames;
 using HalloGames.SpaceRTS.Management.Input;
 using UnityEngine;
-using UnityEngine.InputSystem;
 using UnityEngine.Serialization;
 
 namespace HalloGames.SpaceRTS.Management.CameraManagement
@@ -36,6 +35,7 @@ namespace HalloGames.SpaceRTS.Management.CameraManagement
         private bool _isCameraRotation = false;
 
         private IInput _input;
+        private IKeyboardInput _keyboardInput;
 
         private void Awake()
         {
@@ -44,9 +44,10 @@ namespace HalloGames.SpaceRTS.Management.CameraManagement
             _currentZoom = _camera.localPosition.magnitude;
         }
 
-        public void Initialize(IInput input)
+        public void Initialize(IInput input, IKeyboardInput keyboardInput)
         {
             _input = input;
+            _keyboardInput = keyboardInput;
 
             _input.OnScrollPressed += RotateChange;
             _input.OnScrollChange += ZoomCamera;
@@ -130,22 +131,36 @@ namespace HalloGames.SpaceRTS.Management.CameraManagement
 
         private void MoveCenter(float deltaTime)
         {
-            Vector2 mousePOS = Mouse.current.position.ReadValue();
-            Vector2 res = new Vector2(Screen.width, Screen.height);
+            if (_input == null)
+                return;
 
             Vector3 direction = Vector3.zero;
             Quaternion rotation = Quaternion.Euler(new Vector3(0, _camera.eulerAngles.y, 0));
 
-            if (mousePOS.x < _mouseMoveTriggerBorders)
-                direction += Vector3.left * _cameraMoveSpeed * deltaTime;
-            else if (mousePOS.x > res.x - _mouseMoveTriggerBorders)
-                direction += Vector3.right * _cameraMoveSpeed * deltaTime;
+            if (_keyboardInput != null)
+            {
+                Vector2 keyboardDirection = _keyboardInput.Direction;
+                direction += new Vector3(keyboardDirection.x, 0f, keyboardDirection.y) * _cameraMoveSpeed * deltaTime;
+            }
 
-            if (mousePOS.y < _mouseMoveTriggerBorders)
-                direction += Vector3.back * _cameraMoveSpeed * deltaTime;
-            else if (mousePOS.y > res.y - _mouseMoveTriggerBorders)
-                direction += Vector3.forward * _cameraMoveSpeed * deltaTime;
+            if (_input.IsMouseOnScreen)
+            {
+                Vector2 mousePOS = _input.MouseScreenPosition;
+                Vector2 res = new Vector2(Screen.width, Screen.height);
 
+                if (mousePOS.x < _mouseMoveTriggerBorders)
+                    direction += Vector3.left * _cameraMoveSpeed * deltaTime;
+                else if (mousePOS.x > res.x - _mouseMoveTriggerBorders)
+                    direction += Vector3.right * _cameraMoveSpeed * deltaTime;
+
+                if (mousePOS.y < _mouseMoveTriggerBorders)
+                    direction += Vector3.back * _cameraMoveSpeed * deltaTime;
+                else if (mousePOS.y > res.y - _mouseMoveTriggerBorders)
+                    direction += Vector3.forward * _cameraMoveSpeed * deltaTime;
+            }
+
+            if (direction == Vector3.zero)
+                return;
 
             _center.position += rotation * direction * (Mathf.Clamp01(_currentZoom / (_maxZoomDistance - _minZoomDistance)));
             Vector3 pos = _center.position;

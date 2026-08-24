@@ -20,6 +20,7 @@ namespace HalloGames.SpaceRTS.Management.Input
         private ShipSelection _selection = new ShipSelection();
         private IInput _input;
         private IShipRegistry _shipRegistry;
+        private ObjectClicker _objectClicker;
         private Camera _camera;
 
         private bool _isPressed;
@@ -41,10 +42,11 @@ namespace HalloGames.SpaceRTS.Management.Input
             TickManager.UnregisterUpdate(this);
         }
 
-        public void Initialize(IInput input, IShipRegistry shipRegistry)
+        public void Initialize(IInput input, IShipRegistry shipRegistry, ObjectClicker objectClicker)
         {
             _input = input;
             _shipRegistry = shipRegistry;
+            _objectClicker = objectClicker;
 
             _input.OnChoosingPress += ChoosePress;
             _input.OnChoosingRelease += ChooseRelease;
@@ -113,7 +115,13 @@ namespace HalloGames.SpaceRTS.Management.Input
 
         private void SelectClicked()
         {
-            var chosenObject = ObjectClicker.Instance.GetCurrentObject();
+            if (_objectClicker == null)
+            {
+                _selection.Clear();
+                return;
+            }
+
+            var chosenObject = _objectClicker.GetCurrentObject();
             if (chosenObject != null && chosenObject.TryGetComponent(out IControllable controllable))
             {
                 var entity = chosenObject.GetComponentInParent<ShipEntity>();
@@ -161,11 +169,14 @@ namespace HalloGames.SpaceRTS.Management.Input
 
         private void TargetClick()
         {
-            var gameObject = ObjectClicker.Instance.GetCurrentObject();
+            if (_objectClicker == null)
+                return;
+
+            var gameObject = _objectClicker.GetCurrentObject();
             if (gameObject != null && gameObject.TryGetComponent(out ITargetable targetable))
                 _selection.TargetAll(targetable, _playerSide);
             else
-                _selection.TargetPositionAll(ObjectClicker.Instance.GetWorldMousePos(), _playerSide);
+                _selection.TargetPositionAll(_objectClicker.GetWorldMousePos(), _playerSide);
         }
     }
 }

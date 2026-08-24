@@ -1,11 +1,10 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
 using HalloGames.Architecture.Frames;
-using HalloGames.Architecture.Singletones;
+using HalloGames.Architecture.Services;
 
 namespace HalloGames.SpaceRTS.Management.Input
 {
-    public class ObjectClicker : MonoSingleton<ObjectClicker>, IUpdatable
+    public class ObjectClicker : MonoBehaviour, IUpdatable, IService
     {
         [SerializeField] private LayerMask _targetLayer;
         [SerializeField] private LayerMask _backgroundLayer;
@@ -13,11 +12,16 @@ namespace HalloGames.SpaceRTS.Management.Input
         private Camera _camera;
         private GameObject _currentObject;
         private Vector3 _pos;
+        private IInput _input;
 
-        protected override void OverriddenAwake()
+        private void Awake()
         {
             _camera = Camera.main;
-            base.OverriddenAwake();
+        }
+
+        public void Initialize(IInput input)
+        {
+            _input = input;
         }
 
         private void OnEnable()
@@ -32,7 +36,13 @@ namespace HalloGames.SpaceRTS.Management.Input
 
         public void UpdateTick(float deltaTime)
         {
-            Vector3 rawPos = Mouse.current.position.ReadValue();
+            if (_input == null || !_input.IsMouseOnScreen)
+            {
+                _currentObject = null;
+                return;
+            }
+
+            Vector3 rawPos = _input.MouseScreenPosition;
             rawPos.z = 5;
             Ray ray = _camera.ScreenPointToRay(rawPos);
 

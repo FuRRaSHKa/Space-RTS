@@ -41,9 +41,13 @@ namespace HalloGames.SpaceRTS.Management
         private void InitInput()
         {
             var input = _serviceProvider.GetService<IInput>();
+            var objectClicker = _serviceProvider.GetService<ObjectClicker>();
 
-            _shipInput.Initialize(input, _serviceProvider.GetService<IShipRegistry>());
-            _cameraMover.Initialize(input);
+            _shipInput.Initialize(input, _serviceProvider.GetService<IShipRegistry>(), objectClicker);
+            _cameraMover.Initialize(input, _serviceProvider.GetService<IKeyboardInput>());
+
+            if (objectClicker != null)
+                objectClicker.Initialize(input);
         }
     }
 }

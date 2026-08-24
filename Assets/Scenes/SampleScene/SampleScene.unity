@@ -338,7 +338,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _center: {fileID: 911077743}
   _cameraBorders: {x: 50, y: 0, z: 50}
-  _mouseMoveTriggerBorders: 50
+  _mouseMoveTriggerBorders: 100
   _cameraMoveSpeed: 20
   _xRotationMaxBorder: 359
   _xRotationMinBorder: 320
@@ -1508,6 +1508,7 @@ MonoBehaviour:
   _shipSpawner: {fileID: 451834346}
   _bulletsController: {fileID: 102239044}
   _rocketsController: {fileID: 102239045}
+  _objectClicker: {fileID: 227869400}
 --- !u!114 &2122716758
 MonoBehaviour:
   m_ObjectHideFlags: 0
