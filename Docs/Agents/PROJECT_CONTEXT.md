@@ -319,8 +319,13 @@ needs the new value filled in by hand. List each asset in the summary.
 There is no test suite and no debug console. To verify anything:
 
 1. Open `Assets/Scenes/SampleScene/SampleScene.unity`, enter play mode.
-2. Select ships with the mouse (`ObjectClicker` / `ShipInput`), right-click to move/attack.
-   (`ShipsHandler` is dead code — referenced by nothing and absent from `SampleScene`.)
+2. Select ships with the mouse: a single click picks one ship (`ObjectClicker` / `ShipInput`),
+   holding LMB and dragging past ~8 px draws a screen-space box that selects every **player-side**
+   ship inside it (`ShipInput` → `ShipSelection`, ships enumerated via the `IShipRegistry`
+   service). Right-click orders the whole selection to move/attack. Selection changes are
+   published as `SelectionChangedEvent` on `EventsManager`.
+   (`ShipsHandler` was the abandoned world-`Bounds` draft of box selection — superseded by
+   `ShipSelection`; the file awaits deletion by a human in the editor.)
 3. For frame cost, use the **Stats overlay or the Profiler** — `Assets/Scripts/Utils/FPS.cs`
    exists but is referenced by **nothing**: zero hits in `SampleScene` and in every prefab. To use
    it you have to drag it onto an object and wire its `_text` field yourself. Whether it was

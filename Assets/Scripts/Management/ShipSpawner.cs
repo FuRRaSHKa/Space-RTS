@@ -5,6 +5,7 @@ using HalloGames.SpaceRTS.Data.Enums;
 using HalloGames.SpaceRTS.Data.Ships;
 using HalloGames.SpaceRTS.Gameplay.Ship;
 using HalloGames.SpaceRTS.Management.Initialization;
+using HalloGames.SpaceRTS.Management.ShipManagement;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -21,6 +22,7 @@ namespace HalloGames.SpaceRTS.Management.Factories
         [SerializeField] private List<SpawnZone> _shipSpawnZones;
 
         private IServiceProvider _serviceProvider;
+        private IShipRegistry _shipRegistry;
 
         public void InitProvider(IServiceProvider serviceProvider)
         {
@@ -29,11 +31,14 @@ namespace HalloGames.SpaceRTS.Management.Factories
 
         public List<ShipEntity> CreateShips(List<ShipData> shipDatas, SideData gameSide)
         {
+            _shipRegistry ??= _serviceProvider.GetService<IShipRegistry>();
+
             List<ShipEntity> ships = new List<ShipEntity>();
 
             foreach (var ship in shipDatas)
             {
                 ShipEntity shipEntity = SpawnShip(ship, gameSide);
+                _shipRegistry.AddShip(shipEntity);
                 ships.Add(shipEntity);
             }
 

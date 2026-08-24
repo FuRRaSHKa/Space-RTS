@@ -2,6 +2,7 @@ using HalloGames.Architecture.Services;
 using HalloGames.SpaceRTS.Management.Factories;
 using HalloGames.SpaceRTS.Management.Input;
 using HalloGames.SpaceRTS.Management.ProjectileManagement;
+using HalloGames.SpaceRTS.Management.ShipManagement;
 using UnityEngine;
 
 namespace HalloGames.SpaceRTS.Management.Initialization
@@ -39,6 +40,7 @@ namespace HalloGames.SpaceRTS.Management.Initialization
         private void RegisterServices()
         {
             _serviceProvider.AddService<IShipsFactory>(_shipSpawner);
+            _serviceProvider.AddService<IShipRegistry>(new ShipRegistry());
 
             IInput input = new MouseInput();
             _serviceProvider.AddService(input);

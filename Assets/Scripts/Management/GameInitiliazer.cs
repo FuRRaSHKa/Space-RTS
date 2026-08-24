@@ -42,7 +42,7 @@ namespace HalloGames.SpaceRTS.Management
         {
             var input = _serviceProvider.GetService<IInput>();
 
-            _shipInput.Initialize(input);
+            _shipInput.Initialize(input, _serviceProvider.GetService<IShipRegistry>());
             _cameraMover.Initialize(input);
         }
     }

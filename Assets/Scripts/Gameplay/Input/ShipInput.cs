@@ -1,69 +1,171 @@
+using HalloGames.Architecture.Frames;
 using HalloGames.SpaceRTS.Data.Enums;
+using HalloGames.SpaceRTS.Gameplay.Ship;
 using HalloGames.SpaceRTS.Gameplay.Ship.Control;
 using HalloGames.SpaceRTS.Gameplay.Targets;
+using HalloGames.SpaceRTS.Management.ShipManagement;
+using HalloGames.SpaceRTS.UI;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace HalloGames.SpaceRTS.Management.Input
 {
-    public class ShipInput : MonoBehaviour
+    public class ShipInput : MonoBehaviour, IUpdatable
     {
+        private const float DragThresholdPixels = 8f;
+
         [SerializeField] private SideData _playerSide;
+        [SerializeField] private SelectionBoxView _selectionBoxView;
 
-        private IControllable _currentObject;
+        private ShipSelection _selection = new ShipSelection();
         private IInput _input;
+        private IShipRegistry _shipRegistry;
+        private Camera _camera;
 
-        public void Initialize(IInput input)
+        private bool _isPressed;
+        private bool _isDragging;
+        private Vector2 _pressScreenPos;
+
+        private void Awake()
+        {
+            _camera = Camera.main;
+        }
+
+        private void OnEnable()
+        {
+            TickManager.RegisterUpdate(this);
+        }
+
+        private void OnDisable()
+        {
+            TickManager.UnregisterUpdate(this);
+        }
+
+        public void Initialize(IInput input, IShipRegistry shipRegistry)
         {
             _input = input;
+            _shipRegistry = shipRegistry;
 
-            _input.OnChoosingClick += ChooseClick;
+            _input.OnChoosingPress += ChoosePress;
+            _input.OnChoosingRelease += ChooseRelease;
             _input.OnTargetingClick += TargetClick;
         }
 
         private void OnDestroy()
         {
+            _selection.Clear();
+
             if (_input == null)
                 return;
 
-            _input.OnChoosingClick -= ChooseClick;
+            _input.OnChoosingPress -= ChoosePress;
+            _input.OnChoosingRelease -= ChooseRelease;
             _input.OnTargetingClick -= TargetClick;
         }
 
-        private void ChooseClick()
+        public void UpdateTick(float deltaTime)
         {
-            GameObject chosenObject = ObjectClicker.Instance.GetCurrentObject();
-            if (chosenObject != null)
-            {
-                if (chosenObject.TryGetComponent(out IControllable controllable))
-                {
-                    if (controllable != _currentObject)
-                    {
-                        _currentObject?.DeSelect();
-                        _currentObject = controllable;
-                        _currentObject?.Select();
-                    }
+            if (_input == null || !_isPressed)
+                return;
 
+            var mousePos = _input.MouseScreenPosition;
+            if (!_isDragging)
+            {
+                if ((mousePos - _pressScreenPos).sqrMagnitude < DragThresholdPixels * DragThresholdPixels)
+                    return;
+
+                _isDragging = true;
+                if (_selectionBoxView != null)
+                    _selectionBoxView.Show(_pressScreenPos);
+            }
+
+            if (_selectionBoxView != null)
+                _selectionBoxView.UpdateBox(_pressScreenPos, mousePos);
+        }
+
+        private void ChoosePress()
+        {
+            _isPressed = true;
+            _isDragging = false;
+            _pressScreenPos = _input.MouseScreenPosition;
+        }
+
+        private void ChooseRelease()
+        {
+            if (!_isPressed)
+                return;
+
+            _isPressed = false;
+
+            if (_isDragging)
+            {
+                _isDragging = false;
+                if (_selectionBoxView != null)
+                    _selectionBoxView.Hide();
+
+                SelectInRect(_pressScreenPos, _input.MouseScreenPosition);
+            }
+            else
+            {
+                SelectClicked();
+            }
+        }
+
+        private void SelectClicked()
+        {
+            var chosenObject = ObjectClicker.Instance.GetCurrentObject();
+            if (chosenObject != null && chosenObject.TryGetComponent(out IControllable controllable))
+            {
+                var entity = chosenObject.GetComponentInParent<ShipEntity>();
+                if (entity != null)
+                {
+                    _selection.SetSingle(entity, controllable);
                     return;
                 }
             }
 
-            if (_currentObject != null)
+            _selection.Clear();
+        }
+
+        private void SelectInRect(Vector2 firstCorner, Vector2 secondCorner)
+        {
+            if (_camera == null)
+                return;
+
+            var min = Vector2.Min(firstCorner, secondCorner);
+            var max = Vector2.Max(firstCorner, secondCorner);
+            var selectionRect = new Rect(min, max - min);
+
+            var selectedShips = new List<(ShipEntity entity, IControllable controllable)>();
+            foreach (var ship in _shipRegistry.Ships)
             {
-                _currentObject.DeSelect();
-                _currentObject = null;
+                if (ship == null || ship.DeathController == null || ship.DeathController.IsDead)
+                    continue;
+
+                var screenPos = _camera.WorldToScreenPoint(ship.transform.position);
+                if (screenPos.z <= 0 || !selectionRect.Contains((Vector2)screenPos))
+                    continue;
+
+                var controllable = ship.GetComponentInChildren<IControllable>();
+                if (controllable == null || !controllable.IsEnableToControl(_playerSide))
+                    continue;
+
+                selectedShips.Add((ship, controllable));
             }
+
+            if (selectedShips.Count > 0)
+                _selection.SetGroup(selectedShips);
+            else
+                _selection.Clear();
         }
 
         private void TargetClick()
         {
-            if (_currentObject != null && _currentObject.IsEnableToControl(_playerSide))
-            {
-                GameObject gameObject = ObjectClicker.Instance.GetCurrentObject();
-                if (gameObject != null && gameObject.TryGetComponent(out ITargetable targetable))
-                    _currentObject.Target(targetable);
-                else
-                    _currentObject.TargetPosition(ObjectClicker.Instance.GetWorldMousePos());
-            }
+            var gameObject = ObjectClicker.Instance.GetCurrentObject();
+            if (gameObject != null && gameObject.TryGetComponent(out ITargetable targetable))
+                _selection.TargetAll(targetable, _playerSide);
+            else
+                _selection.TargetPositionAll(ObjectClicker.Instance.GetWorldMousePos(), _playerSide);
         }
     }
 }

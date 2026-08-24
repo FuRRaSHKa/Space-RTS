@@ -10,8 +10,10 @@ namespace HalloGames.SpaceRTS.Management.Input
         private PlayerInputMaps _inputActions;
 
         public Vector2 MouseDelta => _inputActions.Camera.MouseDelta.ReadValue<Vector2>();
+        public Vector2 MouseScreenPosition => Mouse.current.position.ReadValue();
 
-        public event Action OnChoosingClick;
+        public event Action OnChoosingPress;
+        public event Action OnChoosingRelease;
         public event Action OnTargetingClick;
         public event Action OnErase;
         public event Action<float> OnScrollChange;
@@ -26,13 +28,19 @@ namespace HalloGames.SpaceRTS.Management.Input
             _inputActions.Camera.MouseScroll.performed += MouseScrollPressed;
             _inputActions.Camera.MouseScroll.canceled += MouseScrollPressed;
 
-            _inputActions.Input.ChoosingClick.performed += ChoseClick;
+            _inputActions.Input.ChoosingClick.performed += ChoosePress;
+            _inputActions.Input.ChoosingClick.canceled += ChooseRelease;
             _inputActions.Input.TargetingClick.performed += TargetClick;
         }
 
-        private void ChoseClick(InputAction.CallbackContext callbackContext)
+        private void ChoosePress(InputAction.CallbackContext callbackContext)
         {
-            OnChoosingClick?.Invoke();
+            OnChoosingPress?.Invoke();
+        }
+
+        private void ChooseRelease(InputAction.CallbackContext callbackContext)
+        {
+            OnChoosingRelease?.Invoke();
         }
 
         private void TargetClick(InputAction.CallbackContext callbackContext)
@@ -62,13 +70,19 @@ namespace HalloGames.SpaceRTS.Management.Input
 
     public interface IInput : IService, IDisposable
     {
-        public event Action OnChoosingClick;
+        public event Action OnChoosingPress;
+        public event Action OnChoosingRelease;
         public event Action OnTargetingClick;
         public event Action OnErase;
         public event Action<float> OnScrollChange;
         public event Action<bool> OnScrollPressed;
 
         public Vector2 MouseDelta
+        {
+            get;
+        }
+
+        public Vector2 MouseScreenPosition
         {
             get;
         }
