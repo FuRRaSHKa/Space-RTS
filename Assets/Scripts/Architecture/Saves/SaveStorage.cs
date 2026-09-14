@@ -3,6 +3,7 @@ using HalloGames.Architecture.Saves.Data;
 using HalloGames.Architecture.Saves.ReadWrite;
 using HalloGames.Architecture.Saves.Serialize;
 using System;
+using UnityEngine.Assertions;
 
 namespace HalloGames.Architecture.Saves
 {
@@ -11,10 +12,15 @@ namespace HalloGames.Architecture.Saves
         private readonly IReadWriteProvider _localProvider;
         private readonly ISaveSerializer _saveSerializer;
 
+        private bool _saving = false;
+
         internal SaveStorage(IReadWriteProvider localProvider, ISaveSerializer saveSerializer)
         {
             _localProvider = localProvider;
             _saveSerializer = saveSerializer;
+
+            Assert.IsNotNull(saveSerializer);
+            Assert.IsNotNull(localProvider);
         }
 
         internal async UniTask<GameSavePair> Load(string userId)
@@ -71,12 +77,17 @@ namespace HalloGames.Architecture.Saves
 
         internal async UniTask Save(string userId, GameSaveContainer gameSaveData, GameSaveData newData)
         {
+            if (_saving)
+                return;
+
+            _saving = true;
             var bytes = _saveSerializer.Serialize(newData);
             gameSaveData.SaveData = bytes;
             SaveValidator.ValidateData(gameSaveData);
 
             bytes = _saveSerializer.Serialize(gameSaveData);
             await _localProvider.WriteSave(userId, bytes);
+            _saving = false;
         }
     }
 }

@@ -16,5 +16,11 @@ namespace HalloGames.Architecture.Events
         {
             return Instance._eventBus.Subscribe(action);
         }
+
+        public static void Unsubscribe<TEvent>(Action<TEvent> action) where TEvent : struct, IEvent
+        {
+           Instance._eventBus.Unsubscribe(action);
+        }
+
     }
 }   

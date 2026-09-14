@@ -1,10 +1,11 @@
 using HalloGames.Architecture.Exceptions;
 using HalloGames.Architecture.Saves.Data;
+using HalloGames.Architecture.Services;
 using System;
 
 namespace HalloGames.Architecture.Saves
 {
-    public abstract class BaseSave
+    public abstract class BaseSave : IService
     {
         internal string SaveName { get; }
 
@@ -29,14 +30,14 @@ namespace HalloGames.Architecture.Saves
             OnEnd();
         }
 
-        protected virtual void OnStart() 
+        protected virtual void OnStart()
         {
-        
+
         }
-        
-        protected virtual void OnEnd() 
+
+        protected virtual void OnEnd()
         {
-        
+
         }
     }
 
@@ -51,7 +52,7 @@ namespace HalloGames.Architecture.Saves
 
         internal override void ApplyData(SaveData saveData)
         {
-            if(saveData is TData data)
+            if (saveData is TData data)
                 Data = data;
             else
                 throw new TypeMismatchException(SaveType, saveData.GetType());
@@ -73,7 +74,7 @@ namespace HalloGames.Architecture.Saves
             return Data;
         }
 
-        internal virtual void OnDataSet() 
+        internal virtual void OnDataSet()
         {
 
         }

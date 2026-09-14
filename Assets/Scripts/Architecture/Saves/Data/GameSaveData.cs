@@ -29,6 +29,6 @@ namespace HalloGames.Architecture.Saves.Data
 
     public class GameSaveData : SaveData
     {
-        public Dictionary<string, object> _datas;
+        public Dictionary<string, SaveData> Datas = new Dictionary<string, SaveData>();
     }
 }
